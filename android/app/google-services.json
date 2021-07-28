@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1003695781225",
+    "project_id": "steponeproject-8de2e",
+    "storage_bucket": "steponeproject-8de2e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1003695781225:android:5dbcab6d790f9d02d679f8",
+        "android_client_info": {
+          "package_name": "com.example.steponedemo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1003695781225-bipg6g03nmh27f705qkor4ocku4206qa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.steponedemo",
+            "certificate_hash": "fa3b0bc7f2d7745299ab4f92d190d41fcc5ddce1"
+          }
+        },
+        {
+          "client_id": "1003695781225-ftokg1rvvh8shqrpo01s40o0a4jel3tm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6CyKjTk49U2uakKy9EzgtNU5wCMMwGmw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1003695781225-ftokg1rvvh8shqrpo01s40o0a4jel3tm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
