@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:steponedemo/MainCubit/MainCubitStates.dart';
 import 'package:steponedemo/Widgets/CustomAppBar.dart';
 import '../Helpers/Shared.dart';
 import '../ListsScreens/userslist.dart';
 import 'package:toast/toast.dart'as ss;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:steponedemo/MainCubit/AppCubit.dart';
-import 'package:steponedemo/MainCubit/newproductstats.dart';
 class Register extends StatefulWidget {
   @override
   _LoginState createState() => _LoginState();
@@ -19,7 +19,7 @@ class _LoginState extends State<Register> with WidgetsBindingObserver {
   bool issecure=true;
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AppCubit,newproductstates>(
+    return BlocConsumer<AppCubit,MainCubitState>(
       listener: (context, state) {
         if(state is exitapp){
           SystemNavigator.pop();
@@ -31,7 +31,7 @@ class _LoginState extends State<Register> with WidgetsBindingObserver {
               child: CustomAppbar("اضافة مستخدم"),
               preferredSize: Size.fromHeight(70),
             ),
-            body: BlocConsumer<AppCubit,newproductstates>(
+            body: BlocConsumer<AppCubit,MainCubitState>(
               listener: (context, state) {
                 if(state is emptyfeildregistersstate){
                   getsnackbar(context,"توجد حقول فارغة");

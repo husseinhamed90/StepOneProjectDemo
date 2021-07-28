@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:steponedemo/ClientsCubit/ClientsCubit.dart';
+import 'package:steponedemo/MainCubit/MainCubitStates.dart';
 import 'package:steponedemo/Models/AdminData.dart';
-import 'package:steponedemo/MainCubit/newproductstats.dart';
 import 'package:steponedemo/Models/Representative.dart';
 import 'package:steponedemo/Models/User.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc/bloc.dart';
 import 'package:steponedemo/RepresentatersCubit/RepresentaterCubit.dart';
 
-class AppCubit extends Cubit<newproductstates> {
+class AppCubit extends Cubit<MainCubitState> {
 
   AppCubit() : super(initialState());
 

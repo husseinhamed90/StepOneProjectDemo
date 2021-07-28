@@ -5,7 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:steponedemo/AddsScreens/newrepresentativepage.dart';
 import 'package:steponedemo/MainCubit/AppCubit.dart';
-import 'package:steponedemo/MainCubit/newproductstats.dart';
+import 'package:steponedemo/MainCubit/MainCubitStates.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,7 +18,6 @@ import 'package:steponedemo/OrdersCubit/ordersCubit.dart';
 import 'package:steponedemo/UserOrdersCubit/UserOrdersCubit.dart';
 import 'package:steponedemo/VisitsCubit/VisitsCubit.dart';
 import 'MainScreens/Login.dart';
-import 'package:steponedemo/MainCubit/newproductstats.dart';
 import 'package:steponedemo/Models/AdminData.dart';
 import 'package:steponedemo/Models/Representative.dart';
 import 'package:steponedemo/Models/User.dart';
@@ -80,7 +79,7 @@ class _MyAppState extends State<MyApp> {
                 (widget.representative!=null)? BlocProvider(create: (_) => RepresentaterCubit()..SetRepresentatvie(widget.representative)):BlocProvider(create: (_) => RepresentaterCubit()),
                 BlocProvider(create: (_) => NewsCubit()..getnews(),)
               ],
-              child: BlocConsumer<AppCubit,newproductstates>(
+              child: BlocConsumer<AppCubit,MainCubitState>(
 
                 listener: (context, state) {},
                 builder:(context, state) => ScreenUtilInit(

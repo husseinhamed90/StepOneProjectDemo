@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:steponedemo/BrandsCubit/BrandsCubit.dart';
 import 'package:steponedemo/BrandsCubit/BrandsStates.dart';
 import 'package:steponedemo/MainCubit/AppCubit.dart';
-import 'package:steponedemo/MainCubit/newproductstats.dart';
 import 'package:steponedemo/Models/brand.dart';
 import 'package:steponedemo/Widgets/CustomAppBar.dart';
 import '../Helpers/Utilites.dart';

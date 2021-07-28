@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:steponedemo/MainCubit/MainCubitStates.dart';
 import 'package:steponedemo/Widgets/CustomAppBar.dart';
 import '../Helpers/Shared.dart';
 import 'package:toast/toast.dart'as ss;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:steponedemo/MainCubit/AppCubit.dart';
-import 'package:steponedemo/MainCubit/newproductstats.dart';
 import 'package:steponedemo/Models/User.dart';
 class updateuser extends StatefulWidget {
   user olduser;
@@ -35,7 +35,7 @@ class _updateuserState extends State<updateuser> with WidgetsBindingObserver{
         child: CustomAppbar("تعديل بيانات المستخدم"),
         preferredSize: Size.fromHeight(70),
       ),
-      body: BlocConsumer<AppCubit,newproductstates>(
+      body: BlocConsumer<AppCubit,MainCubitState>(
         listener: (context, state) {
           if(state is emptyfeildregistersstate){
             getsnackbar(context,"توجد حقول فارغة");

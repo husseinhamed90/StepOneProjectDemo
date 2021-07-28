@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:steponedemo/MainCubit/MainCubitStates.dart';
 import '../AddsScreens/Addnewrepresentative.dart';
 import 'package:steponedemo/ClientsCubit/ClientsCubit.dart';
 import 'package:steponedemo/MainCubit/AppCubit.dart';
 import 'NewHome.dart';
 import 'package:steponedemo/RepresentatersCubit/RepresentaterCubit.dart';
 import '../Helpers/Shared.dart';
-import 'package:steponedemo/MainCubit/newproductstats.dart';
 
 import '../AddsScreens/newrepresentativepage.dart';
 class Login extends StatefulWidget {
@@ -59,7 +59,7 @@ class _LoginState extends State<Login> with WidgetsBindingObserver{
              ),
            ),
          ),
-         body:  BlocConsumer<AppCubit,newproductstates>(
+         body:  BlocConsumer<AppCubit,MainCubitState>(
            listener: (context, state) async {
              // if(state is userisadminstate){
              //   OpenService();
