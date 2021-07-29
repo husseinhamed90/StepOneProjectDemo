@@ -19,7 +19,6 @@ class NewsCubit extends Cubit<NewsCubitState> {
 
   void updateimagestate(File newfile){
     NewImage=null;
-
     pdfFile=newfile;
     emit(documentcome());
   }
@@ -137,6 +136,12 @@ class NewsCubit extends Cubit<NewsCubitState> {
       emit(newDeletedSuccfully());
     });
   }
+
+  void setImage(File file, {String typeofimage})async{
+    NewImage =file;
+    emit(imageiscome());
+  }
+
   Future getImagefromSourse(ImageSource source,File file) async {
     pdfFile=null;
     final pickedFile = await picker.getImage(

@@ -132,46 +132,4 @@ class EditOrder extends StatelessWidget {
       },
     );
   }
-
-  void showbootomsheeat(BuildContext context,ordersCubit v){
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.2,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              InkWell(
-                  onTap: () =>
-                      v.getOrdersImagefromSource(ImageSource.gallery,v.OrderImage),
-                  child: Image.asset(
-                    "assets/gallery.png",
-                    height: 70,
-                  )),
-              SizedBox(
-                width: 20,
-              ),
-              InkWell(
-                  onTap: () => v.getOrdersImagefromSource(ImageSource.camera,v.OrderImage),
-                  child: Image.asset(
-                    "assets/camera.png",
-                    height: 80,
-                  )),
-              InkWell(
-                  onTap: () async{
-                    File file =await uploaddocument(v.OrderImage,v.OrderDocumentFile);
-                    v.updateOrderimagestate(file);
-                  },
-                  child: Image.asset(
-                    "assets/document.png",
-                    height: 80,
-                  )),
-            ],
-          ),
-        );
-      },
-    );
-  }
 }

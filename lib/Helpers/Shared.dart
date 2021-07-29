@@ -2,11 +2,13 @@ import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:steponedemo/ClientsCubit/ClientsCubit.dart';
+import 'package:steponedemo/Helpers/Utilites.dart';
 import 'package:steponedemo/Models/User.dart';
 
 Widget getsnackbar(BuildContext context,String message){
@@ -56,11 +58,15 @@ Container gettextfeild(double width, String lable, double mergin,TextEditingCont
     ),
   );
 }
-
-Container returnphotoConatiner(String typeofoperation,String text,BuildContext context,ClientsCubit v,File file,String numberofimage,{String path}){
-  print("reload new data ");
-  print(file);
-  print(path);
+final picker = ImagePicker();
+Future<File> getImagefromSourse(ImageSource source) async {
+  final pickedFile = await picker.getImage(
+      source: source, preferredCameraDevice: CameraDevice.rear);
+  if (pickedFile != null) {
+    return File(pickedFile.path);
+  }
+}
+Container returnphotoConatiner(String typeofoperation,String text,BuildContext context,dynamic v,File file,{String path,String imagetype}){
   return  Container(
       margin: EdgeInsets.all(10),
       color: Colors.grey,
@@ -77,9 +83,17 @@ Container returnphotoConatiner(String typeofoperation,String text,BuildContext c
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  InkWell(onTap: () => v.getImagefromSourse(ImageSource.gallery,file,numberofimage),child: Image.asset("assets/gallery.png",height: 70)),
+                  InkWell(onTap: () async{
+
+                    File file =await getImagefromSourse(ImageSource.gallery);
+                    v.setImage(file,typeofimage: imagetype);
+                  },child: Image.asset("assets/gallery.png",height: 70)),
                   SizedBox(width: 20,),
-                  InkWell( onTap: () => v.getImagefromSourse(ImageSource.camera,file,numberofimage),child: Image.asset("assets/camera.png",height: 80)),
+                  InkWell( onTap: () async{
+                    File file =await getImagefromSourse(ImageSource.camera);
+                    v.setImage(file,typeofimage: imagetype);
+                  }
+                  ,child: Image.asset("assets/camera.png",height: 80)),
                 ],
               ),
             );
@@ -104,10 +118,17 @@ Container returnphotoConatiner(String typeofoperation,String text,BuildContext c
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                InkWell(onTap: () => v.getImagefromSourse(ImageSource.gallery,file,numberofimage),child: Image.asset("assets/gallery.png",height: 70)),
+                InkWell(onTap: () async{
+
+                  File file =await getImagefromSourse(ImageSource.gallery);
+                  v.setImage(file,typeofimage: imagetype);
+                },child: Image.asset("assets/gallery.png",height: 70)),
                 SizedBox(width: 20,),
-                InkWell( onTap: () => v.getImagefromSourse(ImageSource.camera,file,numberofimage),child: Image.asset("assets/camera.png",height: 80)),
-              ],
+                InkWell( onTap: () async{
+                  File file =await getImagefromSourse(ImageSource.camera);
+                  v.setImage(file,typeofimage: imagetype);
+                }
+                    ,child: Image.asset("assets/camera.png",height: 80)),              ],
             ),
           );
         },);
@@ -116,6 +137,62 @@ Container returnphotoConatiner(String typeofoperation,String text,BuildContext c
 
   );
 }
+void showbootomsheeat(BuildContext context,dynamic v){
+  showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      return Container(
+        height: MediaQuery.of(context).size.height * 0.2,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            InkWell(
+                onTap: () async {
+                    File file  =await getImagefromSourse(ImageSource.gallery);
+                    v.setImage(file);
+                    },
+                child: Image.asset(
+                  "assets/gallery.png",
+                  height: 70,
+                )),
+            SizedBox(
+              width: 20,
+            ),
+            InkWell(
+                onTap: () async{
+                  File file  =await getImagefromSourse(ImageSource.gallery);
+                  v.setImage(file);
+                },
+                child: Image.asset(
+                  "assets/camera.png",
+                  height: 80,
+                )),
+            InkWell(
+                onTap: () async{
+                  File file =await uploaddocument();
+                  v.updateimagestate(file);
+                },
+                child: Image.asset(
+                  "assets/document.png",
+                  height: 80,
+                )),
+          ],
+        ),
+      );
+    },
+  );
+}
+Future<File> uploaddocument() async {
+
+  FilePickerResult result = await FilePicker.platform.pickFiles();
+  if (result != null) {
+    File file = File(result.files.single.path);
+    return file;
+  } else {
+  }
+}
+
 
 Widget BuildRaw(BuildContext context,String label,TextEditingController controller){
   return Container(

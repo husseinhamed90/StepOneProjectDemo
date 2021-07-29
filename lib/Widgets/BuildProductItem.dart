@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:steponedemo/BrandsCubit/BrandsCubit.dart';
 import 'package:steponedemo/Helpers/Shared.dart';
 import 'package:steponedemo/Helpers/Utilites.dart';
@@ -42,10 +45,35 @@ Widget BuildProductItem(TrProduct trProduct,
         InkWell(
           onTap: () {
             if(AppCubit.get(context).currentuser.usertype=="admin"){
-              showbootomsheeatWithoutDocument(
-                  context, brandsCubit, "product",
-                  currentbrand: Currentbrand,
-                  index: currentindex);
+              // showbootomsheeatWithoutDocument(
+              //     context, brandsCubit, "product",
+              //     currentbrand: Currentbrand,
+              //     index: currentindex);
+
+              showModalBottomSheet(context: context, builder: (context) {
+                return Container(
+                  height: MediaQuery.of(context).size.height*0.2,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      InkWell(onTap: () async{
+
+                        File file =await getImagefromSourse(ImageSource.gallery);
+                        brandsCubit.setImage(file,typeofimage: "product");
+                        await brandsCubit.updateProduct(Currentbrand.products[currentindex], Currentbrand, currentindex);
+
+                      },child: Image.asset("assets/gallery.png",height: 70)),
+                      SizedBox(width: 20,),
+                      InkWell( onTap: () async{
+                        File file =await getImagefromSourse(ImageSource.camera);
+                        brandsCubit.setImage(file,typeofimage: "product");
+                        await brandsCubit.updateProduct(Currentbrand.products[currentindex], Currentbrand, currentindex);
+                      }
+                          ,child: Image.asset("assets/camera.png",height: 80)),              ],
+                  ),
+                );
+              },);
             }
           },
           child: Container(

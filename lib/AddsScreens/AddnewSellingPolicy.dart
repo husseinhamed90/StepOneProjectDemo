@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 import 'package:mime/mime.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:steponedemo/Helpers/Shared.dart';
 import 'package:steponedemo/SellingPolicyCubit/PolicyCubit.dart';
 import 'package:steponedemo/SellingPolicyCubit/PolicyCubitState.dart';
 import 'package:steponedemo/Widgets/CircularProgressIndicatorForDownload.dart';
@@ -163,47 +164,6 @@ class AddnewSellingPolicyss extends StatelessWidget {
             labelStyle: TextStyle(fontSize: 20),
             hintStyle: TextStyle(fontSize: 17, fontWeight: FontWeight.normal)),
       ),
-    );
-  }
-  void showbootomsheeat(BuildContext context,PolicyCubit v){
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.2,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              InkWell(
-                  onTap: () =>
-                      v.getImagefromSourse(ImageSource.gallery,v.PolicyImage),
-                  child: Image.asset(
-                    "assets/gallery.png",
-                    height: 70,
-                  )),
-              SizedBox(
-                width: 20,
-              ),
-              InkWell(
-                  onTap: () => v.getImagefromSourse(ImageSource.camera,v.PolicyImage),
-                  child: Image.asset(
-                    "assets/camera.png",
-                    height: 80,
-                  )),
-              InkWell(
-                  onTap: () async{
-                    File file =await uploaddocument(v.PolicyImage,v.PolicyDocumentFile);
-                    v.updateimagestate(file);
-                  },
-                  child: Image.asset(
-                    "assets/document.png",
-                    height: 80,
-                  )),
-            ],
-          ),
-        );
-      },
     );
   }
 }

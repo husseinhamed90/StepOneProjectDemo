@@ -6,7 +6,9 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
    <application
-        android:label="steponedemo"
+
+       android:requestLegacyExternalStorage="true"
+       android:label="steponedemo"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

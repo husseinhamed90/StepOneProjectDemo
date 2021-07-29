@@ -24,20 +24,20 @@ import 'package:steponedemo/OrdersCubit/ordersCubit.dart';
 import 'package:steponedemo/SellingPolicyCubit/PolicyCubit.dart';
 import '../Models/file.dart';
 
-Future<File> uploaddocument(File PolicyImage, File pdfFile) async {
-
-  FilePickerResult result = await FilePicker.platform.pickFiles();
-
-  PolicyImage = null;
-  if (result != null) {
-    File file = File(result.files.single.path);
-    pdfFile = file;
-    return pdfFile;
-  } else {
-    pdfFile = null;
-    return pdfFile;
-  }
-}
+// Future<File> uploaddocument() async {
+//
+//   FilePickerResult result = await FilePicker.platform.pickFiles();
+//
+//   PolicyImage = null;
+//   if (result != null) {
+//     File file = File(result.files.single.path);
+//     pdfFile = file;
+//     return pdfFile;
+//   } else {
+//     pdfFile = null;
+//     return pdfFile;
+//   }
+// }
 
 List<visit> groupVisitsByTypeOfClock(List<visit> visits) {
   final groups = groupBy(visits, (visit e) {
@@ -132,46 +132,47 @@ Future<List<TrProduct>> readExcelFile(String fileName)async {
   return products;
 }
 
-void showbootomsheeatWithoutDocument(BuildContext context, BrandsCubit v, String typeofitem, {brand currentbrand, int index}) {
 
-  showModalBottomSheet(
-    context: context,
-    builder: (context) {
-      return Container(
-        height: MediaQuery.of(context).size.height * 0.2,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            InkWell(
-                onTap: () {
-                  v.getMainImagefromSourse(
-                      ImageSource.gallery, v.image, typeofitem,
-                      currentbrand: currentbrand, index: index);
-                },
-                child: Image.asset(
-                  "assets/gallery.png",
-                  height: 70,
-                )),
-            SizedBox(
-              width: 20,
-            ),
-            InkWell(
-                onTap: () {
-                  v.getMainImagefromSourse(
-                      ImageSource.camera, v.image, typeofitem,
-                      currentbrand: currentbrand, index: index);
-                },
-                child: Image.asset(
-                  "assets/camera.png",
-                  height: 80,
-                )),
-          ],
-        ),
-      );
-    },
-  );
-}
+// void showbootomsheeatWithoutDocument(BuildContext context, BrandsCubit v, String typeofitem, {brand currentbrand, int index}) {
+//
+//   showModalBottomSheet(
+//     context: context,
+//     builder: (context) {
+//       return Container(
+//         height: MediaQuery.of(context).size.height * 0.2,
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           crossAxisAlignment: CrossAxisAlignment.center,
+//           children: [
+//             InkWell(
+//                 onTap: () {
+//                   v.getImagefromSourse(
+//                       ImageSource.gallery, v.image, typeofitem: typeofitem,currentbrand: currentbrand
+//                       ,  index: index);
+//                 },
+//                 child: Image.asset(
+//                   "assets/gallery.png",
+//                   height: 70,
+//                 )),
+//             SizedBox(
+//               width: 20,
+//             ),
+//             InkWell(
+//                 onTap: () {
+//                   v.getImagefromSourse(
+//                       ImageSource.camera, v.image, typeofitem: typeofitem,
+//                       currentbrand: currentbrand, index: index);
+//                 },
+//                 child: Image.asset(
+//                   "assets/camera.png",
+//                   height: 80,
+//                 )),
+//           ],
+//         ),
+//       );
+//     },
+//   );
+// }
 
 String getTime() {
   List<String> ss = [];
@@ -242,6 +243,9 @@ Future<UploadTask> UploadFileToServer (String typeofTransaction,File pdfFile,dyn
             UploadDocument(typeofTransaction,pdfFile, cubit, newsellingpolicy, collection, typeoflist);
           });
         });
+      }
+      else{
+        UploadDocument(typeofTransaction,pdfFile, cubit, newsellingpolicy, collection, typeoflist);
       }
     }
     else{
@@ -352,13 +356,19 @@ void UpdateList(dynamic cubit){
 
 Future<void> launchURL(String url, String extention, String title,dynamic cubit) async {
   Dio dio = new Dio();
+
   try {
+    print("xxxxxx");
     await Permission.storage.request();
+
     OpenFile.open("/storage/emulated/0/Download/$title.$extention")
         .then((value) async {
+print(value.type);
       if (value.type.index == 1) {
+        print("xxxxxx2");
         String path = await ExtStorage.getExternalStoragePublicDirectory(
             ExtStorage.DIRECTORY_DOWNLOADS);
+        print("xxxxxx2");
         String fullPath = "$path/$title.$extention";
         await downloadFileOnLocalStorage(dio, url, fullPath, title, extention,cubit);
       }
@@ -368,11 +378,13 @@ Future<void> launchURL(String url, String extention, String title,dynamic cubit)
 
 Future downloadFileOnLocalStorage(Dio dio, String url, String savePath, String title, String extention,dynamic cubit) async {
   try {
+    print("vvvvvvvvvvvv");
     Response response = await dio.get(
       url,
       onReceiveProgress:(received, total) {
         int percentage;
         if (total != -1) {
+
           percentage =int.parse((received / total * 100).toStringAsFixed(0));
           if(percentage==100){
             cubit.ReturnfileisdownloadedState();
@@ -389,9 +401,11 @@ Future downloadFileOnLocalStorage(Dio dio, String url, String savePath, String t
             return status < 500;
           }),
     );
+    print("vvvvvvvvvvvv");
     File file = File(savePath);
     var raf = file.openSync(mode: FileMode.write);
     raf.writeFromSync(response.data);
+    print("vvvvvvvvvvv22v");
     OpenFile.open("/storage/emulated/0/Download/$title.$extention")
         .then((valuee) {});
     await raf.close();

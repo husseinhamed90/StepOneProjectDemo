@@ -60,100 +60,102 @@ class AddnewBrand extends StatelessWidget {
           body: Container(
             child: ListView(
               children: [
+                // Container(
+                //   margin: EdgeInsets.all(10),
+                //   color: Colors.grey,
+                //   width: MediaQuery.of(context).size.width - 20,
+                //   height: MediaQuery.of(context).size.height * 0.2,
+                //   child: v.image == null ?
+                //   InkWell(
+                //     onTap: () {
+                //       showbootomsheeatWithoutDocument(context,v,"brand");
+                //     },
+                //     child: Column(
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       children: [
+                //         Center(
+                //           child: Image.asset(
+                //             "assets/addimage.png",
+                //             height: (MediaQuery.of(context).size.height * 0.2)*0.5,
+                //           ),
+                //         ),
+                //         Container(
+                //           height: (MediaQuery.of(context).size.height * 0.2)*0.5,
+                //           child: Center(
+                //             child: AutoSizeText(
+                //               "اضافة صورة".tr,
+                //               style: TextStyle(
+                //                   fontSize: 20, fontWeight: FontWeight.bold),maxLines: 1,
+                //             ),
+                //           ),
+                //         )
+                //       ],
+                //     ),
+                //   ) :
+                //   InkWell(
+                //       onTap: () {
+                //         showbootomsheeatWithoutDocument(context,v,"brand");
+                //       },
+                //       child: Image.file(v.image)),
+                // ),
+                returnphotoConatiner("insert","اضافة صورة",context,v,v.image,imagetype: "brand"),
+
                 Container(
-                  margin: EdgeInsets.all(10),
-                  color: Colors.grey,
-                  width: MediaQuery.of(context).size.width - 20,
-                  height: MediaQuery.of(context).size.height * 0.2,
-                  child: v.image == null ?
-                  InkWell(
-                    onTap: () {
-                      showbootomsheeatWithoutDocument(context,v,"brand");
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Image.asset(
-                            "assets/addimage.png",
-                            height: (MediaQuery.of(context).size.height * 0.2)*0.5,
-                          ),
-                        ),
-                        Container(
-                          height: (MediaQuery.of(context).size.height * 0.2)*0.5,
-                          child: Center(
-                            child: AutoSizeText(
-                              "اضافة صورة".tr,
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),maxLines: 1,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ) :
-                  InkWell(
+                    margin: EdgeInsets.all(10),
+                    color: Colors.grey,
+                    width: MediaQuery.of(context).size.width - 20,
+                    height: MediaQuery.of(context).size.height * 0.2,
+                    child: v.pdfFile == null ?
+                    InkWell(
                       onTap: () {
-                        showbootomsheeatWithoutDocument(context,v,"brand");
+                        showbootomsheeat(context,v);
                       },
-                      child: Image.file(v.image)),
-                ),
-                Container(
-                  margin: EdgeInsets.all(10),
-                  color: Colors.grey,
-                  width: MediaQuery.of(context).size.width - 20,
-                  height: MediaQuery.of(context).size.height * 0.2,
-                  child: v.pdfFile == null ?
-                  InkWell(
-                    onTap: () {
-                      showbootomsheeat(context,v);
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Image.asset(
-                            "assets/addimage.png",
-                            height: (MediaQuery.of(context).size.height * 0.2)*0.5,
-                          ),
-                        ),
-                        Container(
-                          height: (MediaQuery.of(context).size.height * 0.2)*0.5,
-                          child: Center(
-                            child: AutoSizeText(
-                              "اضافة ملف".tr,
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),maxLines: 1,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: Image.asset(
+                              "assets/addimage.png",
+                              height: (MediaQuery.of(context).size.height * 0.2)*0.5,
                             ),
                           ),
-                        )
-                      ],
-                    ),
-                  ):
-                  InkWell(
-                    onTap: () {
-                      print(v.pdfFile.path);
-                      showbootomsheeat(context,v);
-                    },
-                    child: Container(
-                      width: MediaQuery.of(context).size.width - 20,
-                      height: MediaQuery.of(context).size.height * 0.2,
-                      child: Column(
-                        children: [
-                          SizedBox(height:  (MediaQuery.of(context).size.height * 0.2)*0.1,),
-                          Image.asset('assets/document.png',height: (MediaQuery.of(context).size.height * 0.2)*0.6,),
-                          Spacer(),
                           Container(
-                            height: (MediaQuery.of(context).size.height * 0.2)*0.3,
-                            alignment: Alignment.bottomCenter,
-                            child: Text(v.pdfFile.path.substring(49,v.pdfFile.path.length),style: TextStyle(
-                                fontSize: 20,fontWeight: FontWeight.bold
-                            ),),
+                            height: (MediaQuery.of(context).size.height * 0.2)*0.5,
+                            child: Center(
+                              child: AutoSizeText(
+                                "اضافة ملف".tr,
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),maxLines: 1,
+                              ),
+                            ),
                           )
                         ],
                       ),
-                    ),
-                  )
+                    ):
+                    InkWell(
+                      onTap: () {
+                        print(v.pdfFile.path);
+                        showbootomsheeat(context,v);
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width - 20,
+                        height: MediaQuery.of(context).size.height * 0.2,
+                        child: Column(
+                          children: [
+                            SizedBox(height:  (MediaQuery.of(context).size.height * 0.2)*0.1,),
+                            Image.asset('assets/document.png',height: (MediaQuery.of(context).size.height * 0.2)*0.6,),
+                            Spacer(),
+                            Container(
+                              height: (MediaQuery.of(context).size.height * 0.2)*0.3,
+                              alignment: Alignment.bottomCenter,
+                              child: Text(v.pdfFile.path.substring(49,v.pdfFile.path.length),style: TextStyle(
+                                  fontSize: 20,fontWeight: FontWeight.bold
+                              ),),
+                            )
+                          ],
+                        ),
+                      ),
+                    )
                 ),
                 Row(
                   children: [

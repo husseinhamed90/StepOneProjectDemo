@@ -31,20 +31,24 @@ class BrandsCubit extends Cubit<BrandsStates> {
   List<brand> brands = [];
 
 
-  Future getMainImagefromSourse(ImageSource source, File file, String typeofitem, {brand currentbrand, int index}) async {
+  Future<File> getImagefromSourse(ImageSource source, File file, {String typeofitem, brand currentbrand, int index}) async {
     final pickedFile = await picker.getImage(
         source: source, preferredCameraDevice: CameraDevice.rear);
     if (pickedFile != null) {
       file = File(pickedFile.path);
-      if (typeofitem == "brand")
-        image = file;
-      else {
-        productimage = file;
-        await updateProduct(currentbrand.products[index], currentbrand, index);
-      }
-      emit(imageiscome(image));
+      return file;
     }
   }
+  void setImage(File file, {String typeofimage})async{
+    if (typeofimage == "brand")
+      image = file;
+    else {
+      productimage = file;
+      //await updateProduct(currentbrand.products[index], currentbrand, index);
+    }
+    emit(imageiscome(image));
+  }
+
 
   Future getCachedData() async {
 
@@ -189,9 +193,7 @@ class BrandsCubit extends Cubit<BrandsStates> {
 
   Future InsertProductIntoDatabase(TrProduct trProduct) async {
     database.transaction((txn) {
-      return txn
-          .rawInsert(
-          'INSERT INTO products (Item,ClientID,Description,Q,Retail,path) VALUES ("${trProduct.Item}","${choosenclient.ClientID}", "${trProduct.Description}", ${trProduct.Q},${trProduct.Retail},"${trProduct.path}")')
+      return txn.rawInsert('INSERT INTO products (Item,ClientID,Description,Q,Retail,path) VALUES ("${trProduct.Item}","${choosenclient.ClientID}", "${trProduct.Description}", ${trProduct.Q},${trProduct.Retail},"${trProduct.path}")')
           .then((value) {
         print("Record added Successfully");
       });
@@ -248,7 +250,7 @@ class BrandsCubit extends Cubit<BrandsStates> {
     Brands.where("brandcode", isEqualTo: prevbrand.prandcode).get().then((value) {
       prevbrand.products[index] = trProduct;
       Brands.doc(value.docs.first.id).update({"products": prevbrand.toJson()["products"]});
-      DocumentReference documentReference =FirebaseFirestore.instance.collection("ImagesWithCodes").doc(trProduct.Item);
+      DocumentReference documentReference =FirebaseFirestore.instance.collection("ImagesWithCodes").doc(trProduct.Item.replaceAll(new RegExp(r'[^\w\s]+'),''));
       documentReference.set({"imageUrl":path}).then((value) {
         getbrands().then((value) {
           emit(brandupdated());
@@ -303,35 +305,54 @@ class BrandsCubit extends Cubit<BrandsStates> {
 
   void LoadDatafromExcelFile(brand currentbrand, String transactiontype, {brand updatedbrand}) async{
     try {
-      emit(loadingbrangforupdate());
-      String extention = p.extension(pdfFile.path).split('.')[1];
-      String filename = p.basename(pdfFile.path);
-      Reference ref =
-      FirebaseStorage.instance.ref().child('${extention}s/$filename');
-      UploadTask uploadedfileProgress = ref.putFile(
-          pdfFile, SettableMetadata(contentType: 'application/$extention'));
-      uploadedfileProgress.snapshotEvents.listen((snapshot) {
-        double percentage = getRemainingPercentage(snapshot);
-        emit(fileisuploadingprogress(percentage));
-        //cubit.ReturnPercentageState(percentage);
-      }, onError: (Object e) {});
-      uploadedfileProgress.then((value) {
-        value.ref.getDownloadURL().then((valuee) async {
-          if (transactiontype == "Insert") {
-            currentbrand.excelfilepath = valuee;
-            currentbrand.products =  await readExcelFile(pdfFile.path);
-            Brands.add(currentbrand.toJson()).then((value) {
-              Brands.doc(value.id).update({"id": value.id});
-              emit(brandadded());
-              getbrands();
-            });
-          } else if (transactiontype == "update") {
-            updatedbrand.excelfilepath = valuee;
-            updatedbrand.products = await readExcelFile(pdfFile.path);
-            setUpdatedBrand(currentbrand, updatedbrand);
-          }
+
+      if(pdfFile!=null){
+        emit(loadingbrangforupdate());
+        String extention = p.extension(pdfFile.path).split('.')[1];
+        String filename = p.basename(pdfFile.path);
+        Reference ref =
+        FirebaseStorage.instance.ref().child('${extention}s/$filename');
+        UploadTask uploadedfileProgress = ref.putFile(
+            pdfFile, SettableMetadata(contentType: 'application/$extention'));
+        uploadedfileProgress.snapshotEvents.listen((snapshot) {
+          double percentage = getRemainingPercentage(snapshot);
+          emit(fileisuploadingprogress(percentage));
+          //cubit.ReturnPercentageState(percentage);
+        }, onError: (Object e) {});
+        uploadedfileProgress.then((value) {
+          value.ref.getDownloadURL().then((valuee) async {
+            if (transactiontype == "Insert") {
+              currentbrand.excelfilepath = valuee;
+              currentbrand.products =  await readExcelFile(pdfFile.path);
+              Brands.add(currentbrand.toJson()).then((value) {
+                Brands.doc(value.id).update({"id": value.id});
+                emit(brandadded());
+                getbrands();
+              });
+            } else if (transactiontype == "update") {
+              updatedbrand.excelfilepath = valuee;
+              updatedbrand.products = await readExcelFile(pdfFile.path);
+              setUpdatedBrand(currentbrand, updatedbrand);
+            }
+          });
         });
-      });
+      }
+      else{
+        if (transactiontype == "Insert") {
+          currentbrand.excelfilepath = "https://icons.iconarchive.com/icons/custom-icon-design/mono-general-2/512/document-icon.png";
+          currentbrand.products =  [];
+          Brands.add(currentbrand.toJson()).then((value) {
+            Brands.doc(value.id).update({"id": value.id});
+            emit(brandadded());
+            getbrands();
+          });
+        } else if (transactiontype == "update") {
+          updatedbrand.excelfilepath = currentbrand.excelfilepath;
+          updatedbrand.products = currentbrand.products;
+          setUpdatedBrand(currentbrand, updatedbrand);
+        }
+      }
+
     } catch (e) {}
   }
 
@@ -352,6 +373,7 @@ class BrandsCubit extends Cubit<BrandsStates> {
   }
 
   Future<void> addnewbrand(TextEditingController brandname, TextEditingController brandecode) async {
+    //print(image.path);
     if (brandname.text == "" || brandecode.text == "") {
       emit(emptystringfound());
     } else {

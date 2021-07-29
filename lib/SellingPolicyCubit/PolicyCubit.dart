@@ -27,7 +27,13 @@ class PolicyCubit extends Cubit<PolicyCubitState> {
     emit(documentcome());
   }
 
-  Future getMainImagefromSourse(ImageSource source,File file) async {
+  void setImage(File file, {String typeofimage})async{
+    PolicyImage =file;
+    emit(imageiscome());
+  }
+
+  Future getImagefromSourse(ImageSource source,File file) async {
+    PolicyDocumentFile=null;
     final pickedFile = await picker.getImage(
         source: source, preferredCameraDevice: CameraDevice.rear);
     if (pickedFile != null) {
@@ -115,15 +121,6 @@ class PolicyCubit extends Cubit<PolicyCubitState> {
         }
       }
     }
-  }
-  Future getImagefromSourse(ImageSource source,File file) async {
-    final pickedFile = await picker.getImage(
-        source: source, preferredCameraDevice: CameraDevice.rear);
-    if (pickedFile != null) {
-      file = File(pickedFile.path);
-      PolicyImage=file;
-      emit(imageiscome());
-    } else {}
   }
 
   void ReturnPercentageState(double percentage){

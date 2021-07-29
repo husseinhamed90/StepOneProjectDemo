@@ -25,7 +25,8 @@ class ordersCubit extends Cubit<ordersStates> {
   File Ordermainimage;
   File OrderDocumentFile;
 
-  void updateOrderimagestate(File newfile){
+  void updateimagestate(File newfile){
+    OrderImage=null;
     OrderDocumentFile=newfile;
     emit(documentcome());
   }

@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 import 'package:mime/mime.dart';
+import 'package:steponedemo/Helpers/Shared.dart';
 import 'package:steponedemo/Models/News.dart';
 import 'package:steponedemo/NewsCubit/NewsCubit.dart';
 import 'package:steponedemo/NewsCubit/NewsCubitState.dart';
@@ -147,47 +148,6 @@ class AddnewNews extends StatelessWidget {
             labelStyle: TextStyle(fontSize: 20),
             hintStyle: TextStyle(fontSize: 17, fontWeight: FontWeight.normal)),
       ),
-    );
-  }
-  void showbootomsheeat(BuildContext context,NewsCubit v){
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.2,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              InkWell(
-                  onTap: () =>
-                      v.getImagefromSourse(ImageSource.gallery,v.NewImage),
-                  child: Image.asset(
-                    "assets/gallery.png",
-                    height: 70,
-                  )),
-              SizedBox(
-                width: 20,
-              ),
-              InkWell(
-                  onTap: () => v.getImagefromSourse(ImageSource.camera,v.NewImage),
-                  child: Image.asset(
-                    "assets/camera.png",
-                    height: 80,
-                  )),
-              InkWell(
-                  onTap: () async{
-                    File file =await uploaddocument(v.NewImage,v.pdfFile);
-                    v.updateimagestate(file);
-                  },
-                  child: Image.asset(
-                    "assets/document.png",
-                    height: 80,
-                  )),
-            ],
-          ),
-        );
-      },
     );
   }
 }

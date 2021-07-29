@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 import 'package:mime/mime.dart';
+import 'package:steponedemo/Helpers/Shared.dart';
 import 'package:steponedemo/Models/News.dart';
 import 'package:steponedemo/NewsCubit/NewsCubit.dart';
 import 'package:steponedemo/NewsCubit/NewsCubitState.dart';
@@ -171,7 +172,7 @@ class EditNew extends StatelessWidget {
                   )),
               InkWell(
                   onTap: () async{
-                    File file =await uploaddocument(v.NewImage,v.pdfFile);
+                    File file =await uploaddocument();
                     v.updateimagestate(file);
                   },
                   child: Image.asset(

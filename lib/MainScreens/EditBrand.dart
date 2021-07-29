@@ -68,7 +68,7 @@ class EditBrand extends StatelessWidget {
                   child: v.image == null ?
                   InkWell(
                     onTap: () {
-                      showbootomsheeatWithoutDocument(context,v,"brand");
+                      //showbootomsheeatWithoutDocument(context,v,"brand");
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -84,7 +84,7 @@ class EditBrand extends StatelessWidget {
                   ) :
                   InkWell(
                       onTap: () {
-                        showbootomsheeatWithoutDocument(context,v,"brand");
+                       // showbootomsheeatWithoutDocument(context,v,"brand");
                       },
                       child: Image.file(v.image)),
                 ),

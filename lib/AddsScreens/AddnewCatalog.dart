@@ -59,40 +59,7 @@ class AddnewCatalog extends StatelessWidget {
             body: Container(
               child: ListView(
                 children: [
-                  Container(
-                    margin: EdgeInsets.all(10),
-                    color: Colors.grey,
-                    width: MediaQuery.of(context).size.width - 20,
-                    height: MediaQuery.of(context).size.height * 0.2,
-                    child: v.mainimage == null ?
-                    InkWell(
-                      onTap: () {
-                        showbootomsheeatWithoutDocument(context,v);
-                      },
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            "assets/addimage.png",
-                            height: 55,
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                            "اضافة صورة".tr,
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
-                    ) :
-                    InkWell(
-                        onTap: () {
-                          showbootomsheeatWithoutDocument(context,v);
-                        },
-                        child: Image.file(v.mainimage)),
-                  ),
+                  returnphotoConatiner("insert","اضافة صورة",context,v,v.mainimage,imagetype: "mainimage"),
                   Container(
                     margin: EdgeInsets.all(10),
                     color: Colors.grey,
@@ -174,7 +141,6 @@ class AddnewCatalog extends StatelessWidget {
     );
   }
 
-
   void showbootomsheeat(BuildContext context,CatalogCubit v){
     showModalBottomSheet(
       context: context,
@@ -202,7 +168,7 @@ class AddnewCatalog extends StatelessWidget {
                   )),
               InkWell(
                   onTap: () async{
-                    File file =await uploaddocument(v.CatalogImage,v.pdfFile);
+                    File file =await uploaddocument();
                     v.updateimagestate(file);
                   },
                   child: Image.asset(
@@ -215,37 +181,4 @@ class AddnewCatalog extends StatelessWidget {
       },
     );
   }
-  void showbootomsheeatWithoutDocument(BuildContext context,CatalogCubit v){
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.2,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              InkWell(
-                  onTap: () =>
-                      v.getMainImagefromSourse(ImageSource.gallery,v.mainimage),
-                  child: Image.asset(
-                    "assets/gallery.png",
-                    height: 70,
-                  )),
-              SizedBox(
-                width: 20,
-              ),
-              InkWell(
-                  onTap: () => v.getMainImagefromSourse(ImageSource.camera,v.mainimage),
-                  child: Image.asset(
-                    "assets/camera.png",
-                    height: 80,
-                  )),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
 }

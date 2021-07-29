@@ -187,7 +187,7 @@ class EditCatalog extends StatelessWidget {
                   )),
               InkWell(
                   onTap: () async{
-                    File file =await uploaddocument(v.CatalogImage,v.pdfFile);
+                    File file =await uploaddocument();
                     v.updateimagestate(file);
                   },
                   child: Image.asset(

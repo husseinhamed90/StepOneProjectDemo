@@ -74,14 +74,10 @@ class AddnewOrder extends StatelessWidget {
                       width: MediaQuery.of(context).size.width - 20,
                       height: MediaQuery.of(context).size.height * 0.2,
                       child: Column(
-
                         children: [
                           SizedBox(height:  (MediaQuery.of(context).size.height * 0.2)*0.1,),
                           (lookupMimeType("${p.basename(v.OrderDocumentFile.path)}"+".${p.extension(v.OrderDocumentFile.path).split('.')[1]}").split("/")[0])=="application"?Image.asset('assets/document.png',height: (MediaQuery.of(context).size.height * 0.2)*0.5,):
                           Image.network('https://www.clipartmax.com/png/full/225-2253433_music-video-play-function-comments-video-gallery-icon-png.png',height: (MediaQuery.of(context).size.height * 0.2)*0.5,),
-
-                          // SizedBox(height:  (MediaQuery.of(context).size.height * 0.2)*0.1,),
-                          // Image.asset('assets/document.png',height: (MediaQuery.of(context).size.height * 0.2)*0.5,),
                           Spacer(),
                           Container(
                             alignment: Alignment.bottomCenter,
@@ -137,48 +133,6 @@ class AddnewOrder extends StatelessWidget {
             },
             child: Icon(Icons.save),
             backgroundColor: Colors.blueAccent,
-          ),
-        );
-      },
-    );
-  }
-
-  void showbootomsheeat(BuildContext context,ordersCubit v){
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.2,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              InkWell(
-                  onTap: () =>
-                      v.getOrdersImagefromSource(ImageSource.gallery,v.OrderImage),
-                  child: Image.asset(
-                    "assets/gallery.png",
-                    height: 70,
-                  )),
-              SizedBox(
-                width: 20,
-              ),
-              InkWell(
-                  onTap: () => v.getOrdersImagefromSource(ImageSource.camera,v.OrderImage),
-                  child: Image.asset(
-                    "assets/camera.png",
-                    height: 80,
-                  )),
-              InkWell(
-                  onTap: () async{
-                    File file =await uploaddocument(v.OrderImage,v.OrderDocumentFile);
-                    v.updateOrderimagestate(file);
-                  },
-                  child: Image.asset(
-                    "assets/document.png",
-                    height: 80,
-                  )),
-            ],
           ),
         );
       },

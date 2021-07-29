@@ -26,18 +26,23 @@ class ClientsCubit extends Cubit<ClientsCubitState> {
     emit(Clinteletedsuccfully());
   }
 
-  Future getImagefromSourse(ImageSource source, File file,String imagenumber) async {
+  Future<File> getImagefromSourse(ImageSource source, File file,{String imagenumber}) async {
     final pickedFile = await picker.getImage(
         source: source, preferredCameraDevice: CameraDevice.rear);
     if (pickedFile != null) {
-      if(imagenumber=="first"){
-        image = File(pickedFile.path);
-      }
-      else{
-        image2 = File(pickedFile.path);
-      }
+      return File(pickedFile.path);
       emit(imageiscome());
     } else {}
+  }
+
+  void setImage(File file, {String typeofimage})async{
+    if(typeofimage=="first"){
+      image = file;
+    }
+    else{
+      image2 = file;
+    }
+    emit(imageiscome());
   }
 
   Future<String> getfromsharedprefrences(String key) async {

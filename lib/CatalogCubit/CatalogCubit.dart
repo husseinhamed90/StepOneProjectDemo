@@ -70,6 +70,15 @@ class CatalogCubit extends Cubit<CatalogStates>{
     } else {}
   }
 
+  void setImage(File file, {String typeofimage})async{
+    if (typeofimage == "mainimage")
+      mainimage = file;
+    else if(typeofimage =="catalogimage"){
+      CatalogImage = file;
+    }
+    emit(imageiscome());
+  }
+
   Future<void> addCatalog(Catalog catalog,
       TextEditingController title,) async {
 
@@ -90,9 +99,10 @@ class CatalogCubit extends Cubit<CatalogStates>{
           emit(upladingisfinished());
         });
       }
-      else{
+      if(CatalogImage!=null)
+        UploadFileToServer("Insert",CatalogImage, this, catalog, catalogcollection, Catalogs,typeoflist: "catalog",mainimage: mainimage,isthereMainImageInItem: true);
+      else
         UploadFileToServer("Insert",pdfFile, this, catalog, catalogcollection, Catalogs,typeoflist: "catalog",mainimage: mainimage,isthereMainImageInItem: true);
-      }
     }
 
   }

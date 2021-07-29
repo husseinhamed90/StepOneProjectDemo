@@ -32,7 +32,7 @@ class _LoginState extends State<Login> with WidgetsBindingObserver{
     OpenService() async {
 
       try {
-        await channel.invokeMethod('openservice',{"id":AppCubit.get(context).currentuser.location});
+        //await channel.invokeMethod('openservice',{"id":AppCubit.get(context).currentuser.location});
       } on PlatformException catch (ex) {
         print(ex.message);
       }

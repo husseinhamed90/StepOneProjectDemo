@@ -85,8 +85,8 @@ class _AddNewrepresentativeState extends State<AddnewClientPage> {
             body: Container(
               child: ListView(
                 children: [
-                  returnphotoConatiner("insert","اضافة صورة الكارت (1)",context,v,v.image,"first"),
-                  returnphotoConatiner("insert","اضافة صورة الكارت (2)",context,v,v.image2,"second"),
+                  returnphotoConatiner("insert","اضافة صورة الكارت (1)",context,v,v.image,imagetype: "first"),
+                  returnphotoConatiner("insert","اضافة صورة الكارت (2)",context,v,v.image2,imagetype: "second"),
                   Row(
                     children: [
                       gettextfeild((MediaQuery.of(context).size.width-40)*0.6,"اسم العميل",10,Clientname),
