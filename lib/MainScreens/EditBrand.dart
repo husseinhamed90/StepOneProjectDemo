@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:steponedemo/BrandsCubit/BrandsCubit.dart';
 import 'package:steponedemo/BrandsCubit/BrandsStates.dart';
+import 'package:steponedemo/Helpers/Shared.dart';
 import 'package:steponedemo/Models/brand.dart';
 import 'package:steponedemo/Widgets/CircularProgressParForUpload.dart';
 import 'package:steponedemo/Widgets/CustomAppBar.dart';
@@ -68,7 +69,7 @@ class EditBrand extends StatelessWidget {
                   child: v.image == null ?
                   InkWell(
                     onTap: () {
-                      //showbootomsheeatWithoutDocument(context,v,"brand");
+                      showbootomsheeat(context,v,imagetype: "brand");
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -84,7 +85,7 @@ class EditBrand extends StatelessWidget {
                   ) :
                   InkWell(
                       onTap: () {
-                       // showbootomsheeatWithoutDocument(context,v,"brand");
+                        showbootomsheeat(context,v,imagetype: "brand");
                       },
                       child: Image.file(v.image)),
                 ),
@@ -96,7 +97,7 @@ class EditBrand extends StatelessWidget {
                     child: v.pdfFile == null ?
                     InkWell(
                       onTap: () {
-                        showbootomsheeat(context,v);
+                        showbootomsheeatWithDocumentOnly(context,v);
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -112,8 +113,7 @@ class EditBrand extends StatelessWidget {
                     ):
                     InkWell(
                       onTap: () {
-                        print(v.pdfFile.path);
-                        showbootomsheeat(context,v);
+                        showbootomsheeatWithDocumentOnly(context,v);
                       },
                       child: Container(
                         width: MediaQuery.of(context).size.width - 20,
@@ -156,42 +156,6 @@ class EditBrand extends StatelessWidget {
             },
             child: Icon(Icons.save),
             backgroundColor: Colors.blueAccent,
-          ),
-        );
-      },
-    );
-  }
-
-  Container gettextfeild(double width, String lable, double mergin, TextEditingController controller) {
-    return Container(
-      width: width,
-      margin: EdgeInsets.all(mergin),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-            labelText: lable,
-            hintText: lable,
-            labelStyle: TextStyle(fontSize: 20),
-            hintStyle: TextStyle(fontSize: 17, fontWeight: FontWeight.normal)),
-      ),
-    );
-  }
-  void showbootomsheeat(BuildContext context,BrandsCubit v){
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          // color: Colors.red,
-          height: MediaQuery.of(context).size.height * 0.15,
-          child: Center(
-            child: InkWell(
-                onTap: () async{
-                  await v.uploadExcelFile();
-                },
-                child: Image.asset(
-                  "assets/document.png", height: MediaQuery.of(context).size.height * 0.1,
-
-                )),
           ),
         );
       },

@@ -23,11 +23,13 @@ class PolicyCubit extends Cubit<PolicyCubitState> {
   FirebaseFirestore.instance.collection('Sellingpolicy');
 
   void updateimagestate(File newfile){
+    PolicyImage=null;
     PolicyDocumentFile=newfile;
     emit(documentcome());
   }
 
   void setImage(File file, {String typeofimage})async{
+    PolicyDocumentFile=null;
     PolicyImage =file;
     emit(imageiscome());
   }

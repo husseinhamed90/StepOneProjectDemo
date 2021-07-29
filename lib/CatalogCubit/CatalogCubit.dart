@@ -48,7 +48,6 @@ class CatalogCubit extends Cubit<CatalogStates>{
     Catalogs = [];
     CatalogImage = null;
     mainimage=null;
-    //title.text = "";
     pdfFile = null;
     emit(loaddatafromfirebase());
     catalogcollection.get().then((QuerySnapshot querySnapshot) {

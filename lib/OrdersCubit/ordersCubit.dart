@@ -25,6 +25,11 @@ class ordersCubit extends Cubit<ordersStates> {
   File Ordermainimage;
   File OrderDocumentFile;
 
+  void setImage(File file, {String typeofimage})async{
+    OrderDocumentFile=null;
+    OrderImage =file;
+    emit(imageiscome());
+  }
   void updateimagestate(File newfile){
     OrderImage=null;
     OrderDocumentFile=newfile;

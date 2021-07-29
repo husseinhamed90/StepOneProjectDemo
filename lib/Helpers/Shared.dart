@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:steponedemo/BrandsCubit/BrandsCubit.dart';
 import 'package:steponedemo/ClientsCubit/ClientsCubit.dart';
 import 'package:steponedemo/Helpers/Utilites.dart';
 import 'package:steponedemo/Models/User.dart';
@@ -67,6 +68,8 @@ Future<File> getImagefromSourse(ImageSource source) async {
   }
 }
 Container returnphotoConatiner(String typeofoperation,String text,BuildContext context,dynamic v,File file,{String path,String imagetype}){
+  print("cccccccccccccccc");
+  print(file);
   return  Container(
       margin: EdgeInsets.all(10),
       color: Colors.grey,
@@ -76,28 +79,7 @@ Container returnphotoConatiner(String typeofoperation,String text,BuildContext c
       file== null
           ?  InkWell(
         onTap: () {
-          showModalBottomSheet(context: context, builder: (context) {
-            return Container(
-              height: MediaQuery.of(context).size.height*0.2,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  InkWell(onTap: () async{
-
-                    File file =await getImagefromSourse(ImageSource.gallery);
-                    v.setImage(file,typeofimage: imagetype);
-                  },child: Image.asset("assets/gallery.png",height: 70)),
-                  SizedBox(width: 20,),
-                  InkWell( onTap: () async{
-                    File file =await getImagefromSourse(ImageSource.camera);
-                    v.setImage(file,typeofimage: imagetype);
-                  }
-                  ,child: Image.asset("assets/camera.png",height: 80)),
-                ],
-              ),
-            );
-          },);
+          showbootomsheeat(context,v,imagetype: imagetype);
         },
         child: (typeofoperation=="insert")?Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -111,33 +93,13 @@ Container returnphotoConatiner(String typeofoperation,String text,BuildContext c
             ),)
           ],
         ):Image.network(path)) : InkWell(onTap: () {
-        showModalBottomSheet(context: context, builder: (context) {
-          return Container(
-            height: MediaQuery.of(context).size.height*0.2,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                InkWell(onTap: () async{
-
-                  File file =await getImagefromSourse(ImageSource.gallery);
-                  v.setImage(file,typeofimage: imagetype);
-                },child: Image.asset("assets/gallery.png",height: 70)),
-                SizedBox(width: 20,),
-                InkWell( onTap: () async{
-                  File file =await getImagefromSourse(ImageSource.camera);
-                  v.setImage(file,typeofimage: imagetype);
-                }
-                    ,child: Image.asset("assets/camera.png",height: 80)),              ],
-            ),
-          );
-        },);
+        showbootomsheeat(context,v,imagetype: imagetype);
         },
           child: Image.file(file))
 
   );
 }
-void showbootomsheeat(BuildContext context,dynamic v){
+void showbootomsheeat(BuildContext context,dynamic v, {String imagetype}){
   showModalBottomSheet(
     context: context,
     builder: (context) {
@@ -150,7 +112,7 @@ void showbootomsheeat(BuildContext context,dynamic v){
             InkWell(
                 onTap: () async {
                     File file  =await getImagefromSourse(ImageSource.gallery);
-                    v.setImage(file);
+                    v.setImage(file,typeofimage:imagetype);
                     },
                 child: Image.asset(
                   "assets/gallery.png",
@@ -161,14 +123,14 @@ void showbootomsheeat(BuildContext context,dynamic v){
             ),
             InkWell(
                 onTap: () async{
-                  File file  =await getImagefromSourse(ImageSource.gallery);
-                  v.setImage(file);
+                  File file  =await getImagefromSourse(ImageSource.camera);
+                  v.setImage(file,typeofimage:imagetype);
                 },
                 child: Image.asset(
                   "assets/camera.png",
                   height: 80,
                 )),
-            InkWell(
+            (imagetype!="brand")?InkWell(
                 onTap: () async{
                   File file =await uploaddocument();
                   v.updateimagestate(file);
@@ -176,7 +138,7 @@ void showbootomsheeat(BuildContext context,dynamic v){
                 child: Image.asset(
                   "assets/document.png",
                   height: 80,
-                )),
+                )):Container(),
           ],
         ),
       );
@@ -192,6 +154,28 @@ Future<File> uploaddocument() async {
   } else {
   }
 }
+void showbootomsheeatWithDocumentOnly(BuildContext context,BrandsCubit v){
+  showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      return Container(
+        // color: Colors.red,
+        height: MediaQuery.of(context).size.height * 0.15,
+        child: Center(
+          child: InkWell(
+              onTap: () async{
+                await v.uploadExcelFile();
+              },
+              child: Image.asset(
+                "assets/document.png", height: MediaQuery.of(context).size.height * 0.1,
+
+              )),
+        ),
+      );
+    },
+  );
+}
+
 
 
 Widget BuildRaw(BuildContext context,String label,TextEditingController controller){

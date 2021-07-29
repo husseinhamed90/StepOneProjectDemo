@@ -57,32 +57,7 @@ class EditCatalog extends StatelessWidget {
           body: Container(
             child: ListView(
               children: [
-                Container(
-                  margin: EdgeInsets.all(10),
-                  color: Colors.grey,
-                  width: MediaQuery.of(context).size.width - 20,
-                  height: MediaQuery.of(context).size.height * 0.2,
-                  child: v.mainimage == null ?
-                  InkWell(
-                    onTap: () {
-                      showbootomsheeatWithoutDocument(context,v);
-                    },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.network(
-                          catalog.mainimagepath,
-                          height: MediaQuery.of(context).size.height*0.2-30,
-                        ),
-                      ],
-                    ),
-                  ) :
-                  InkWell(
-                      onTap: () {
-                        showbootomsheeatWithoutDocument(context,v);
-                      },
-                      child: Image.file(v.mainimage)),
-                ),
+                returnphotoConatiner("edit","تعديل الصورة",context,v,v.mainimage,path: catalog.mainimagepath,imagetype: "mainimage"),
                 Container(
                   margin: EdgeInsets.all(10),
                   color: Colors.grey,
@@ -145,10 +120,7 @@ class EditCatalog extends StatelessWidget {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
-              print(v.mainimage);
-              print(v.CatalogImage);
               catalog.title=title.text;
-              //Catalog catalog=new Catalog(title.text);
               v.editCatalog(catalog,title);
             },
             child: Icon(Icons.save),
@@ -158,79 +130,4 @@ class EditCatalog extends StatelessWidget {
       },
     );
   }
-
-
-  void showbootomsheeat(BuildContext context,CatalogCubit v){
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.2,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              InkWell(
-                  onTap: () => v.getImagefromSourse(ImageSource.gallery,v.CatalogImage),
-                  child: Image.asset(
-                    "assets/gallery.png",
-                    height: 70,
-                  )),
-              SizedBox(
-                width: 20,
-              ),
-              InkWell(
-                  onTap: () => v.getImagefromSourse(ImageSource.camera,v.CatalogImage),
-                  child: Image.asset(
-                    "assets/camera.png",
-                    height: 80,
-                  )),
-              InkWell(
-                  onTap: () async{
-                    File file =await uploaddocument();
-                    v.updateimagestate(file);
-                  },
-                  child: Image.asset(
-                    "assets/document.png",
-                    height: 80,
-                  )),
-            ],
-          ),
-        );
-      },
-    );
-  }
-  void showbootomsheeatWithoutDocument(BuildContext context,CatalogCubit v){
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.2,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              InkWell(
-                  onTap: () =>
-                      v.getMainImagefromSourse(ImageSource.gallery,v.mainimage),
-                  child: Image.asset(
-                    "assets/gallery.png",
-                    height: 70,
-                  )),
-              SizedBox(
-                width: 20,
-              ),
-              InkWell(
-                  onTap: () => v.getMainImagefromSourse(ImageSource.camera,v.mainimage),
-                  child: Image.asset(
-                    "assets/camera.png",
-                    height: 80,
-                  )),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
 }

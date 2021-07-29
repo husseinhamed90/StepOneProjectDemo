@@ -44,11 +44,15 @@ class BrandsCubit extends Cubit<BrandsStates> {
       image = file;
     else {
       productimage = file;
-      //await updateProduct(currentbrand.products[index], currentbrand, index);
     }
     emit(imageiscome(image));
   }
 
+  void updateimagestate(File newfile){
+    image=null;
+    pdfFile=newfile;
+    emit(imageiscome(image));
+  }
 
   Future getCachedData() async {
 

@@ -60,46 +60,7 @@ class AddnewBrand extends StatelessWidget {
           body: Container(
             child: ListView(
               children: [
-                // Container(
-                //   margin: EdgeInsets.all(10),
-                //   color: Colors.grey,
-                //   width: MediaQuery.of(context).size.width - 20,
-                //   height: MediaQuery.of(context).size.height * 0.2,
-                //   child: v.image == null ?
-                //   InkWell(
-                //     onTap: () {
-                //       showbootomsheeatWithoutDocument(context,v,"brand");
-                //     },
-                //     child: Column(
-                //       mainAxisAlignment: MainAxisAlignment.center,
-                //       children: [
-                //         Center(
-                //           child: Image.asset(
-                //             "assets/addimage.png",
-                //             height: (MediaQuery.of(context).size.height * 0.2)*0.5,
-                //           ),
-                //         ),
-                //         Container(
-                //           height: (MediaQuery.of(context).size.height * 0.2)*0.5,
-                //           child: Center(
-                //             child: AutoSizeText(
-                //               "اضافة صورة".tr,
-                //               style: TextStyle(
-                //                   fontSize: 20, fontWeight: FontWeight.bold),maxLines: 1,
-                //             ),
-                //           ),
-                //         )
-                //       ],
-                //     ),
-                //   ) :
-                //   InkWell(
-                //       onTap: () {
-                //         showbootomsheeatWithoutDocument(context,v,"brand");
-                //       },
-                //       child: Image.file(v.image)),
-                // ),
                 returnphotoConatiner("insert","اضافة صورة",context,v,v.image,imagetype: "brand"),
-
                 Container(
                     margin: EdgeInsets.all(10),
                     color: Colors.grey,
@@ -108,7 +69,7 @@ class AddnewBrand extends StatelessWidget {
                     child: v.pdfFile == null ?
                     InkWell(
                       onTap: () {
-                        showbootomsheeat(context,v);
+                        showbootomsheeatWithDocumentOnly(context,v);
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -134,8 +95,7 @@ class AddnewBrand extends StatelessWidget {
                     ):
                     InkWell(
                       onTap: () {
-                        print(v.pdfFile.path);
-                        showbootomsheeat(context,v);
+                        showbootomsheeatWithDocumentOnly(context,v);
                       },
                       child: Container(
                         width: MediaQuery.of(context).size.width - 20,
@@ -185,27 +145,4 @@ class AddnewBrand extends StatelessWidget {
       },
     );
   }
-
-  void showbootomsheeat(BuildContext context,BrandsCubit v){
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-         // color: Colors.red,
-          height: MediaQuery.of(context).size.height * 0.15,
-          child: Center(
-            child: InkWell(
-                onTap: () async{
-                  await v.uploadExcelFile();
-                },
-                child: Image.asset(
-                  "assets/document.png", height: MediaQuery.of(context).size.height * 0.1,
-
-                )),
-          ),
-        );
-      },
-    );
-  }
-
 }
