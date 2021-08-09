@@ -201,9 +201,11 @@ class _EditVisitState extends State<EditVisit> {
                                 children: [
                                   Container(
                                     width: constraints.maxWidth*0.3,
-                                    child: Text("سبب الزيارة : ",style: TextStyle(
-                                        fontSize: 20
-                                    ),),
+                                    child: FittedBox(
+                                      child: AutoSizeText("سبب الزيارة : ",style: TextStyle(
+                                          fontSize: 16
+                                      ),maxLines: 1,),
+                                    ),
                                   ),
                                   // SizedBox(width: 20,),
                                   Container(
@@ -242,7 +244,7 @@ class _EditVisitState extends State<EditVisit> {
                                   Container(
                                     width: constraints.maxWidth*0.3,
                                     child: Text("الساعة",style: TextStyle(
-                                        fontSize: 20
+                                        fontSize: 16
                                     ),),
                                   ),
                                   Container(
@@ -301,7 +303,7 @@ class _EditVisitState extends State<EditVisit> {
                                     width: constraints.maxWidth*0.3,
                                     child: FittedBox(
                                       child: AutoSizeText("الزيارة القادمة ",style: TextStyle(
-                                          fontSize: 20
+                                          fontSize: 16
                                       ),maxLines: 1,),
                                     ),
                                   ),

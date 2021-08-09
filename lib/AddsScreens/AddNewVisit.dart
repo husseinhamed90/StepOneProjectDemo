@@ -160,158 +160,161 @@ class _AddnewVisitState extends State<AddnewVisit> {
                 Expanded(
                   child: (!brandsCubit.foucesstateForVisitSearchBar)?
                   Container(
-                    height: double.infinity,
-                    width: double.infinity,
-                    child: Column(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(right: 20,left: 20,top: 10,bottom: 10),
-                          height: 50,
+                      height: double.infinity,
+                      width: double.infinity,
+                      child: Column(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(right: 20,left: 20,top: 10,bottom: 10),
+                            height: 50,
 
-                          child: LayoutBuilder(
-                            builder: (context, constraints) => Row(
-                              children: [
-                                Container(
-                                  width: constraints.maxWidth*0.3,
-                                  child: Text("سبب الزيارة : ",style: TextStyle(
-                                      fontSize: 20
-                                  ),),
-                                ),
-                               // SizedBox(width: 20,),
-                                Container(
-                                  key: Key("value3"),
-                                  width: constraints.maxWidth*0.7,
-                                  child: DropdownButton(
+                            child: LayoutBuilder(
+                              builder: (context, constraints) => Row(
+                                children: [
+                                  Container(
 
-                                    value: reason,
-                                    iconSize: constraints.maxWidth*0.07,
-                                    items:reasons.map((String items) {
-                                      return DropdownMenuItem(
-                                          value: items,
-                                          child: Container(width: constraints.maxWidth*0.63,child: AutoSizeText(items,style: TextStyle(fontSize: 18),maxLines: 1,))
-                                      );
-                                    }
-                                    ).toList(),
-                                    onChanged: (String newValue){
-                                      setState(() {
-                                        reason = newValue;
-                                      });
-                                    },
+                                    width: constraints.maxWidth*0.3,
+                                    child: FittedBox(
+                                      child: AutoSizeText("سبب الزيارة : ",style: TextStyle(
+                                          fontSize: 16
+                                      ),maxLines: 1,),
+                                    ),
                                   ),
-                                )
-                              ],
-                            ),
-                          ),
-                          width: double.infinity,
-
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 50,
-                          margin: EdgeInsets.only(right: 20,left: 20,top: 10,bottom: 10),
-                          child: LayoutBuilder(
-                            builder: (context, constraints) => Row(
-                              children: [
-                                Container(
-                                  width: constraints.maxWidth*0.3,
-                                  child: Text("الساعة ",style: TextStyle(
-                                      fontSize: 20
-                                  ),),
-                                ),
-                                Container(
-
-                                  width: constraints.maxWidth*0.35,
-                                  child: Center(
+                                  // SizedBox(width: 20,),
+                                  Container(
+                                    key: Key("value3"),
+                                    width: constraints.maxWidth*0.7,
                                     child: DropdownButton(
-                                      value: choosentime,
-                                      items: hours.map<DropdownMenuItem<String>>((String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value),
+
+                                      value: reason,
+                                      iconSize: constraints.maxWidth*0.07,
+                                      items:reasons.map((String items) {
+                                        return DropdownMenuItem(
+                                            value: items,
+                                            child: Container(width: constraints.maxWidth*0.63,child: AutoSizeText(items,style: TextStyle(fontSize: 18),maxLines: 1,))
                                         );
-                                      }).toList(),
+                                      }
+                                      ).toList(),
                                       onChanged: (String newValue){
                                         setState(() {
-                                          choosentime = newValue;
+                                          reason = newValue;
                                         });
                                       },
                                     ),
-                                  ),
-                                ),
-                                Container(
-                                  width: constraints.maxWidth*0.35,
-                                  child: Center(
-                                    child: DropdownButton(
-                                      value: timezonetype,
-                                      items: clocktypes
-                                          .map<DropdownMenuItem<String>>((String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value),
-                                        );
-                                      }).toList(),
-                                      onChanged: (String newValue){
-                                        setState(() {
-                                          timezonetype = newValue;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ],
+                                  )
+                                ],
+                              ),
                             ),
+                            width: double.infinity,
 
                           ),
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: 50,
-                          margin: EdgeInsets.only(right: 20,left: 20,top: 10,bottom: 10),
-                          child: LayoutBuilder(
-                            builder: (context, constraints) => Row(
-                              children: [
-                                Container(
-                                  width: constraints.maxWidth*0.3,
-                                  child: FittedBox(
-                                    child: AutoSizeText("الزيارة القادمة ",style: TextStyle(
-                                        fontSize: 20
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 50,
+                            margin: EdgeInsets.only(right: 20,left: 20,top: 10,bottom: 10),
+                            child: LayoutBuilder(
+                              builder: (context, constraints) => Row(
+                                children: [
+                                  Container(
+                                    width: constraints.maxWidth*0.3,
+                                    child: AutoSizeText("الساعة ",style: TextStyle(
+                                        fontSize: 16
                                     ),maxLines: 1,),
                                   ),
-                                ),
-                                Container(
+                                  Container(
 
-                                  height: 55,
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.all(Radius.circular(10))
-                                  ),
-                                  width: constraints.maxWidth*0.5,
-                                  child: TextFormField(
-                                    controller: dateController,
-                                    decoration: InputDecoration(
-                                      enabled: false,
-                                        border: InputBorder.none,
-                                       // contentPadding: EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
-                                       // hintText: "ادخل اسم العميل"
+                                    width: constraints.maxWidth*0.35,
+                                    child: Center(
+                                      child: DropdownButton(
+                                        value: choosentime,
+                                        items: hours.map<DropdownMenuItem<String>>((String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String newValue){
+                                          setState(() {
+                                            choosentime = newValue;
+                                          });
+                                        },
+                                      ),
                                     ),
                                   ),
-                                ),
-                                InkWell(onTap: () {
+                                  Container(
+                                    width: constraints.maxWidth*0.35,
+                                    child: Center(
+                                      child: DropdownButton(
+                                        value: timezonetype,
+                                        items: clocktypes
+                                            .map<DropdownMenuItem<String>>((String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String newValue){
+                                          setState(() {
+                                            timezonetype = newValue;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
 
-                                },child: Container(
-                                  width: constraints.maxWidth*0.2,
-                                  child: CircleAvatar(child: IconButton(icon: Icon(Icons.date_range,), onPressed: (){
-                                    _selectDate(context);
-                                  })),
-                                 )),
-                              ],
                             ),
-
                           ),
-                        )
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 50,
+                            margin: EdgeInsets.only(right: 20,left: 20,top: 10,bottom: 10),
+                            child: LayoutBuilder(
+                              builder: (context, constraints) => Row(
+                                children: [
+                                  Container(
+                                    width: constraints.maxWidth*0.3,
+                                    child: FittedBox(
+                                      child: AutoSizeText("الزيارة القادمة ",style: TextStyle(
+                                          fontSize: 16
+                                      ),maxLines: 1,),
+                                    ),
+                                  ),
+                                  Container(
 
-                      ],
-                    )
+                                    height: 55,
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.all(Radius.circular(10))
+                                    ),
+                                    width: constraints.maxWidth*0.5,
+                                    child: TextFormField(
+                                      controller: dateController,
+                                      decoration: InputDecoration(
+                                        enabled: false,
+                                        border: InputBorder.none,
+                                        // contentPadding: EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
+                                        // hintText: "ادخل اسم العميل"
+                                      ),
+                                    ),
+                                  ),
+                                  InkWell(onTap: () {
+
+                                  },child: Container(
+                                    width: constraints.maxWidth*0.2,
+                                    child: CircleAvatar(child: IconButton(icon: Icon(Icons.date_range,), onPressed: (){
+                                      _selectDate(context);
+                                    })),
+                                  )),
+                                ],
+                              ),
+
+                            ),
+                          )
+
+                        ],
+                      )
                   ):
                   ListView.builder(
                     itemBuilder: (context, index) {

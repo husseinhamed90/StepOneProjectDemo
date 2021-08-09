@@ -11,6 +11,7 @@ import 'package:steponedemo/BrandsCubit/BrandsCubit.dart';
 import 'package:steponedemo/ClientsCubit/ClientsCubit.dart';
 import 'package:steponedemo/Helpers/Utilites.dart';
 import 'package:steponedemo/Models/User.dart';
+import 'package:steponedemo/VisitsCubit/VisitsCubit.dart';
 
 Widget getsnackbar(BuildContext context,String message){
   final snackBar = SnackBar(
@@ -24,12 +25,53 @@ Widget getsnackbar(BuildContext context,String message){
   );
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
-
-Container gettextfeild(double width, String lable, double mergin,TextEditingController controller) {
+Widget buildRow(double width,double height,VisitsCubit brandsCubit,int index ,String text,String label,BuildContext context,String date){
+  return Container(
+    width: double.infinity,
+    height: height,
+    child: Row(
+      children: [
+        Container(
+          alignment: Alignment.centerRight,
+          height: height,
+          width:width,
+          child: FittedBox(
+            child: AutoSizeText(label,style: TextStyle(
+                fontSize: 18,color: Colors.red
+            ),maxLines: 1,textAlign: TextAlign.start,),
+          ),
+        ),
+        Expanded(
+          child: Container(
+            height: height,
+            alignment: Alignment.centerRight,
+            child: FittedBox(
+              child: AutoSizeText(text,style: TextStyle(
+                  fontSize: 18
+              ),maxLines: 1),
+            ),
+          ),
+        ),
+        (label=="معاد الزيارة : ")?IconButton(
+          icon: Icon(Icons.delete,
+              color: Colors.red, size: height*0.7),
+          onPressed: () {
+            ShowDialogbox(context,(){
+              Navigator.pop(context);
+              brandsCubit.Deletevisit(brandsCubit.visits[index],date);
+            });
+          },
+          padding: EdgeInsets.zero,
+        ):Container(),
+      ],
+    ),
+  );
+}
+Container gettextfeild(double width, String lable, double margin,TextEditingController controller) {
   return Container(
     width: width,
 
-    margin: EdgeInsets.all(mergin),
+    margin: EdgeInsets.all(margin),
     child: Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,

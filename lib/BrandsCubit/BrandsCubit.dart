@@ -309,7 +309,6 @@ class BrandsCubit extends Cubit<BrandsStates> {
 
   void LoadDatafromExcelFile(brand currentbrand, String transactiontype, {brand updatedbrand}) async{
     try {
-
       if(pdfFile!=null){
         emit(loadingbrangforupdate());
         String extention = p.extension(pdfFile.path).split('.')[1];
@@ -335,7 +334,29 @@ class BrandsCubit extends Cubit<BrandsStates> {
               });
             } else if (transactiontype == "update") {
               updatedbrand.excelfilepath = valuee;
-              updatedbrand.products = await readExcelFile(pdfFile.path);
+              List<TrProduct>newListOfProducts=await readExcelFile(pdfFile.path);
+              List<TrProduct>oldListOfProducts = currentbrand.products;
+              print("old");
+              print(oldListOfProducts.length);
+              print("new");
+              print(newListOfProducts.length);
+              for(int i =0;i<oldListOfProducts.length;i++){
+                bool isFound=false;
+                for(int j =0;j<newListOfProducts.length;j++){
+                  if(oldListOfProducts[j].Item==newListOfProducts[i].Item){
+                    print(oldListOfProducts[j].Item);
+                    print(newListOfProducts[i].Item);
+
+                    oldListOfProducts[j]=newListOfProducts[i];
+                    isFound=true;
+                    break;
+                  }
+                }
+                if(isFound==false){
+                  oldListOfProducts.removeAt(i);
+                }
+              }
+              updatedbrand.products=oldListOfProducts;
               setUpdatedBrand(currentbrand, updatedbrand);
             }
           });

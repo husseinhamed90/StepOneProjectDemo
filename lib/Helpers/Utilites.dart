@@ -23,22 +23,6 @@ import 'package:steponedemo/NewsCubit/NewsCubit.dart';
 import 'package:steponedemo/OrdersCubit/ordersCubit.dart';
 import 'package:steponedemo/SellingPolicyCubit/PolicyCubit.dart';
 import '../Models/file.dart';
-
-// Future<File> uploaddocument() async {
-//
-//   FilePickerResult result = await FilePicker.platform.pickFiles();
-//
-//   PolicyImage = null;
-//   if (result != null) {
-//     File file = File(result.files.single.path);
-//     pdfFile = file;
-//     return pdfFile;
-//   } else {
-//     pdfFile = null;
-//     return pdfFile;
-//   }
-// }
-
 List<visit> groupVisitsByTypeOfClock(List<visit> visits) {
   final groups = groupBy(visits, (visit e) {
     return e.typeofclock;
@@ -95,7 +79,6 @@ Future<List<TrProduct>> readExcelFile(String fileName)async {
   var excel = Excel.decodeBytes(bytes);
   List<TrProduct> products = [];
   List<String>colums=[];
-  print(excel.tables.keys);
   for (int k = 0; k < excel.tables["List"].rows[0].length; k++) {
     if(excel.tables["List"].rows[0][k].contains("Retail")){
       colums.add("Retail المستهلك");
@@ -119,11 +102,10 @@ Future<List<TrProduct>> readExcelFile(String fileName)async {
       map[colums[k]]=item[k];
     }
 
-    await FirebaseFirestore.instance.collection("ImagesWithCodes").doc(map['Item']).get().then((value){
-
+    await FirebaseFirestore.instance.collection("ImagesWithCodes").doc( map['Item'].replaceAll(new RegExp(r'[^\w\s]+'),'')).get().then((value){
       map["path"]=value.data()['imageUrl'];
       products.add(TrProduct.fromJson(map));
-    }).onError((error, stackTrace) {
+    }).catchError((error, stackTrace) {
       map["path"]="https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
       products.add(TrProduct.fromJson(map));
     });
@@ -131,48 +113,6 @@ Future<List<TrProduct>> readExcelFile(String fileName)async {
   print("return list now");
   return products;
 }
-
-
-// void showbootomsheeatWithoutDocument(BuildContext context, BrandsCubit v, String typeofitem, {brand currentbrand, int index}) {
-//
-//   showModalBottomSheet(
-//     context: context,
-//     builder: (context) {
-//       return Container(
-//         height: MediaQuery.of(context).size.height * 0.2,
-//         child: Row(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           crossAxisAlignment: CrossAxisAlignment.center,
-//           children: [
-//             InkWell(
-//                 onTap: () {
-//                   v.getImagefromSourse(
-//                       ImageSource.gallery, v.image, typeofitem: typeofitem,currentbrand: currentbrand
-//                       ,  index: index);
-//                 },
-//                 child: Image.asset(
-//                   "assets/gallery.png",
-//                   height: 70,
-//                 )),
-//             SizedBox(
-//               width: 20,
-//             ),
-//             InkWell(
-//                 onTap: () {
-//                   v.getImagefromSourse(
-//                       ImageSource.camera, v.image, typeofitem: typeofitem,
-//                       currentbrand: currentbrand, index: index);
-//                 },
-//                 child: Image.asset(
-//                   "assets/camera.png",
-//                   height: 80,
-//                 )),
-//           ],
-//         ),
-//       );
-//     },
-//   );
-// }
 
 String getTime() {
   List<String> ss = [];
@@ -358,17 +298,14 @@ Future<void> launchURL(String url, String extention, String title,dynamic cubit)
   Dio dio = new Dio();
 
   try {
-    print("xxxxxx");
     await Permission.storage.request();
 
     OpenFile.open("/storage/emulated/0/Download/$title.$extention")
         .then((value) async {
 print(value.type);
       if (value.type.index == 1) {
-        print("xxxxxx2");
         String path = await ExtStorage.getExternalStoragePublicDirectory(
             ExtStorage.DIRECTORY_DOWNLOADS);
-        print("xxxxxx2");
         String fullPath = "$path/$title.$extention";
         await downloadFileOnLocalStorage(dio, url, fullPath, title, extention,cubit);
       }
@@ -378,7 +315,6 @@ print(value.type);
 
 Future downloadFileOnLocalStorage(Dio dio, String url, String savePath, String title, String extention,dynamic cubit) async {
   try {
-    print("vvvvvvvvvvvv");
     Response response = await dio.get(
       url,
       onReceiveProgress:(received, total) {
@@ -401,11 +337,9 @@ Future downloadFileOnLocalStorage(Dio dio, String url, String savePath, String t
             return status < 500;
           }),
     );
-    print("vvvvvvvvvvvv");
     File file = File(savePath);
     var raf = file.openSync(mode: FileMode.write);
     raf.writeFromSync(response.data);
-    print("vvvvvvvvvvv22v");
     OpenFile.open("/storage/emulated/0/Download/$title.$extention")
         .then((valuee) {});
     await raf.close();

@@ -24,8 +24,6 @@ class _BuildBtandItemState extends State<BuildBtandItem> {
 
     return InkWell(
       onTap: () async {
-        print("vvvvvvvvvvvvvvvvvv");
-        //print(widget.brandsCubit.choosenclient.orderitems);
         Navigator.push(context,
             MaterialPageRoute(builder: (context) =>
                 Products(widget.currentbrand),));

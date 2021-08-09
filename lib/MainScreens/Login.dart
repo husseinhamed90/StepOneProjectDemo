@@ -61,25 +61,12 @@ class _LoginState extends State<Login> with WidgetsBindingObserver{
          ),
          body:  BlocConsumer<AppCubit,MainCubitState>(
            listener: (context, state) async {
-             // if(state is userisadminstate){
-             //   OpenService();
-             //   Navigator.push(context, MaterialPageRoute(builder: (context) => AddNewrepresentative(state.id),));
-             // }
-             // else
              if(state is admindataiscame){
                OpenService();
                Navigator.push(context, MaterialPageRoute(builder: (context) => Newrepresentativepage(AppCubit.get(context).currentuser.id),));
-              //  OpenService();
-              // if(AppCubit.get(context).currentadmindata!=null)
-              //       Navigator.push(context, MaterialPageRoute(builder: (context) => Newrepresentativepage(AppCubit.get(context).currentuser.id),));
-              // else
-              //   {
-              //     getsnackbar(context,"لا توجد بيانات للادمن حتي الان");
-              //   }
              }
              else if(state is noadmindatafound){
                getsnackbar(context,"لا توجد بيانات للادمن حتي الان");
-
              }
              else if(state is adminuser){
                Navigator.push(context, MaterialPageRoute(builder: (context) => AddNewrepresentative(AppCubit.get(context).currentuser.id),));

@@ -118,7 +118,6 @@ class BuildItemContent extends StatelessWidget {
           )
         ],
       ),
-      // child: Text("ddd"),
     );
   }
 }
