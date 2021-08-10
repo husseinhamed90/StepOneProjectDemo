@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -73,20 +74,21 @@ String getDate(List<String>ss){
   return ff[0];
 }
 
-Future<List<TrProduct>> readExcelFile(String fileName)async {
+Future<List<TrProduct>> readExcelFile(String fileName,BrandsCubit brandsCubit)async {
   File file = File(fileName);
   var bytes = file.readAsBytesSync();
   var excel = Excel.decodeBytes(bytes);
   List<TrProduct> products = [];
-  List<String>colums=[];
+  List<String>columns=[];
   for (int k = 0; k < excel.tables["List"].rows[0].length; k++) {
     if(excel.tables["List"].rows[0][k].contains("Retail")){
-      colums.add("Retail المستهلك");
+      columns.add("Retail المستهلك");
     }
     else{
-      colums.add(excel.tables["List"].rows[0][k]);
+      columns.add(excel.tables["List"].rows[0][k]);
     }
   }
+  int count =0;
   for (int i = 2; i < excel.tables["List"].rows.length; i++) {
     List<dynamic> item = [];
     Map<String,dynamic>map={};
@@ -95,22 +97,25 @@ Future<List<TrProduct>> readExcelFile(String fileName)async {
         Formula d = excel.tables["List"].rows[i][k];
         item.add(d.value);
       } else {
+
         item.add(excel.tables["List"].rows[i][k]);
       }
     }
     for (int k = 0; k < excel.tables["List"].rows[0].length; k++) {
-      map[colums[k]]=item[k];
+      map[columns[k]]=item[k];
     }
-
-    await FirebaseFirestore.instance.collection("ImagesWithCodes").doc( map['Item'].replaceAll(new RegExp(r'[^\w\s]+'),'')).get().then((value){
-      map["path"]=value.data()['imageUrl'];
-      products.add(TrProduct.fromJson(map));
-    }).catchError((error, stackTrace) {
-      map["path"]="https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
-      products.add(TrProduct.fromJson(map));
-    });
+    if( map['Item']!="End"){
+      await FirebaseFirestore.instance.collection("ImagesWithCodes").doc( map['Item'].replaceAll(new RegExp(r'[^\w\s]+'),'')).get().then((value){
+        map["path"]=value.data()['imageUrl'];
+        products.add(TrProduct.fromJson(map));
+      }).catchError((error, stackTrace) {
+        map["path"]="https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
+        products.add(TrProduct.fromJson(map));
+      });
+    }
+    count++;
+    brandsCubit.emitnumberofloadedfilesfromexel(count/(excel.tables["List"].rows.length));
   }
-  print("return list now");
   return products;
 }
 

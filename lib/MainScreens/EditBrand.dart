@@ -53,6 +53,36 @@ class EditBrand extends StatelessWidget {
         else if(state is fileisuploadingprogress){
           return CircularProgressParForUpload(state.percentage);
         }
+        else if(state is readingexcelFileInProgess){
+          return Scaffold(body: Container(child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(child: CircularProgressIndicator(),),
+              Text("جاري تحميل المنتجات من الملف",style: TextStyle(
+                  fontSize: 25
+              ),)
+            ],
+          ),));
+
+        }
+        else if(state is numberoffilestillNow){
+          return CircularProgressParForUpload(state.numberOfLoadedFiles);
+        }
+
+        else if(state is orderproductsInProgress){
+          return Scaffold(body: Container(child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(child: CircularProgressIndicator(),),
+              Text("جاري ترتيب المنتجات",style: TextStyle(
+                  fontSize: 25
+              ),)
+            ],
+          ),));
+
+        }
         return  Scaffold(
           appBar: PreferredSize(
             child: CustomAppbar("تعديل البراند"),

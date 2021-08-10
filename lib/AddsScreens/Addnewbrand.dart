@@ -11,6 +11,7 @@ import 'package:steponedemo/BrandsCubit/BrandsStates.dart';
 import 'package:steponedemo/Helpers/Shared.dart';
 import 'package:steponedemo/Models/Catalog.dart';
 import 'package:steponedemo/Models/brand.dart';
+import 'package:steponedemo/Widgets/CircularProgressIndicatorForDownload.dart';
 import 'package:steponedemo/Widgets/CircularProgressParForUpload.dart';
 import 'package:steponedemo/Widgets/CustomAppBar.dart';
 import '../Helpers/Utilites.dart';
@@ -51,6 +52,36 @@ class AddnewBrand extends StatelessWidget {
         }
         else if(state is fileisuploadingprogress){
           return CircularProgressParForUpload(state.percentage);
+        }
+        else if(state is numberoffilestillNow){
+          return CircularProgressParForUpload(state.numberOfLoadedFiles);
+        }
+        else if(state is readingexcelFileInProgess){
+          return Scaffold(body: Container(child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(child: CircularProgressIndicator(),),
+              Text("جاري تحميل المنتجات من الملف",style: TextStyle(
+                  fontSize: 25
+              ),)
+            ],
+          ),));
+
+        }
+
+        else if(state is orderproductsInProgress){
+          return Scaffold(body: Container(child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(child: CircularProgressIndicator(),),
+              Text("جاري ترتيب المنتجات",style: TextStyle(
+                fontSize: 25
+              ),)
+            ],
+          ),));
+
         }
         return  Scaffold(
           appBar: PreferredSize(

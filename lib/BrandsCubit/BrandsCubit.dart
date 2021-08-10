@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -288,10 +289,14 @@ class BrandsCubit extends Cubit<BrandsStates> {
         newbrand.products = currentbrand.products;
         setUpdatedBrand(currentbrand, newbrand);
       }
+     DocumentSnapshot documentSnapshot =await FirebaseFirestore.instance.collection("OrderedBrands").doc(currentbrand.prandcode).get();
+      await FirebaseFirestore.instance.collection("OrderedBrands").doc(currentbrand.prandcode).delete();
+      await FirebaseFirestore.instance.collection("OrderedBrands").doc(newbrand.prandcode).set(documentSnapshot.data());
     }
   }
 
   void setUpdatedBrand(brand prevBrand, brand NewBrand) {
+    print(NewBrand.products.length);
     Brands.doc(prevBrand.id).update(NewBrand.toJson()).then((value) {
       emit(brandupdated());
       getbrands();
@@ -302,11 +307,64 @@ class BrandsCubit extends Cubit<BrandsStates> {
     emit(branddeleted());
     Brands.where("brandcode", isEqualTo: brandss.prandcode).get().then((value) {
       Brands.doc(value.docs.first.id).delete();
+      FirebaseFirestore.instance.collection("OrderedBrands").doc(brandss.prandcode).delete();
       getbrands();
       emit(branddeletedsuccfully());
     });
   }
 
+  Future<List<TrProduct>> orderproducts(brand currentbrand,List<TrProduct>products)async{
+    await FirebaseFirestore.instance.collection("OrderedBrands").doc(currentbrand.prandcode).get().then((value) async {
+      int count=1;
+      if(value.exists==false){
+        Map<String,dynamic>orderedBrand={};
+        for(int i=0;i<products.length;i++){
+          orderedBrand["${products[i].Item}"]=i;
+        }
+        FirebaseFirestore.instance.collection("OrderedBrands").doc(currentbrand.prandcode).set(orderedBrand);
+      }
+      else{
+        Map<String,dynamic>orderNumbers={};
+        Map<String,dynamic>newItems={};
+        Map<String,TrProduct>foundItems={};
+        Map<String,TrProduct>notfoundItems={};
+        List<TrProduct> newList =[];
+        for(int i=0;i<products.length;i++){
+          if(value.data().containsKey(products[i].Item)){
+            foundItems[products[i].Item]=products[i];
+            orderNumbers[products[i].Item]=value.data()[products[i].Item];
+          }
+          else{
+            notfoundItems[products[i].Item]=products[i];
+            newItems[products[i].Item]=value.data().length+count;
+            count++;
+          }
+        }
+        if(newItems.keys.isEmpty==false){
+          await FirebaseFirestore.instance.collection("OrderedBrands").doc(currentbrand.prandcode).get().then((value) async {
+            Map<String,dynamic> newmap ={};
+            newmap.addAll(value.data());
+            newmap.addAll(newItems);
+            await FirebaseFirestore.instance.collection("OrderedBrands").doc(currentbrand.prandcode).set( newmap);
+          });
+        }
+        var sortedKeys = orderNumbers.keys.toList(growable:false)..sort((k1, k2) => orderNumbers[k1].compareTo(orderNumbers[k2]));
+        LinkedHashMap sortedMap = new LinkedHashMap.fromIterable(sortedKeys, key: (k) => k, value: (k) => orderNumbers[k]);
+        sortedMap.forEach((key, value) {
+          newList.add(foundItems[key]);
+        });
+        notfoundItems.forEach((key, value) {
+          newList.add(value);
+        });
+        products=newList;
+      }
+
+    });
+    return products;
+  }
+  void emitnumberofloadedfilesfromexel(double numberofFiles){
+    emit(numberoffilestillNow(numberofFiles));
+  }
   void LoadDatafromExcelFile(brand currentbrand, String transactiontype, {brand updatedbrand}) async{
     try {
       if(pdfFile!=null){
@@ -326,7 +384,11 @@ class BrandsCubit extends Cubit<BrandsStates> {
           value.ref.getDownloadURL().then((valuee) async {
             if (transactiontype == "Insert") {
               currentbrand.excelfilepath = valuee;
-              currentbrand.products =  await readExcelFile(pdfFile.path);
+              emit(readingexcelFileInProgess());
+              List<TrProduct>products=await readExcelFile(pdfFile.path,this);
+              emit(orderproductsInProgress());
+              products =await orderproducts(currentbrand, products);
+              currentbrand.products=products;
               Brands.add(currentbrand.toJson()).then((value) {
                 Brands.doc(value.id).update({"id": value.id});
                 emit(brandadded());
@@ -334,29 +396,11 @@ class BrandsCubit extends Cubit<BrandsStates> {
               });
             } else if (transactiontype == "update") {
               updatedbrand.excelfilepath = valuee;
-              List<TrProduct>newListOfProducts=await readExcelFile(pdfFile.path);
-              List<TrProduct>oldListOfProducts = currentbrand.products;
-              print("old");
-              print(oldListOfProducts.length);
-              print("new");
-              print(newListOfProducts.length);
-              for(int i =0;i<oldListOfProducts.length;i++){
-                bool isFound=false;
-                for(int j =0;j<newListOfProducts.length;j++){
-                  if(oldListOfProducts[j].Item==newListOfProducts[i].Item){
-                    print(oldListOfProducts[j].Item);
-                    print(newListOfProducts[i].Item);
-
-                    oldListOfProducts[j]=newListOfProducts[i];
-                    isFound=true;
-                    break;
-                  }
-                }
-                if(isFound==false){
-                  oldListOfProducts.removeAt(i);
-                }
-              }
-              updatedbrand.products=oldListOfProducts;
+              emit(readingexcelFileInProgess());
+              List<TrProduct>products=await readExcelFile(pdfFile.path,this);
+              emit(orderproductsInProgress());
+              products = await orderproducts(currentbrand, products);
+              updatedbrand.products=products;
               setUpdatedBrand(currentbrand, updatedbrand);
             }
           });
@@ -398,7 +442,6 @@ class BrandsCubit extends Cubit<BrandsStates> {
   }
 
   Future<void> addnewbrand(TextEditingController brandname, TextEditingController brandecode) async {
-    //print(image.path);
     if (brandname.text == "" || brandecode.text == "") {
       emit(emptystringfound());
     } else {

@@ -32,3 +32,11 @@ class clientnotchoosen extends BrandsStates{}
 class excelfileloaded extends BrandsStates{}
 class ItemIsRemovedFromLocalDataBase extends BrandsStates{}
 
+class readingexcelFileInProgess extends BrandsStates{}
+class orderproductsInProgress extends BrandsStates{}
+
+class numberoffilestillNow extends BrandsStates{
+  final double numberOfLoadedFiles;
+  numberoffilestillNow(this.numberOfLoadedFiles);
+}
+
