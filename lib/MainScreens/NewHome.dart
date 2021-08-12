@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:steponedemo/ListsScreens/NewsList.dart';
 import 'package:steponedemo/AddsScreens/Addnewrepresentative.dart';
 import 'package:steponedemo/ListsScreens/BrandsList.dart';
@@ -10,6 +11,7 @@ import 'package:steponedemo/CatalogCubit/CatalogCubit.dart';
 import 'package:steponedemo/ListsScreens/CatalogsList.dart';
 import 'package:steponedemo/MainCubit/AppCubit.dart';
 import 'package:steponedemo/OrdersCubit/ordersCubit.dart';
+import 'package:steponedemo/constants.dart';
 import '../ListsScreens/Clientss.dart';
 import 'package:steponedemo/Widgets/CustomDialog.dart';
 import 'InfoCard.dart';
@@ -36,137 +38,39 @@ class newhomepage extends StatelessWidget {
   newhomepage(this.title, [this.usertype]);
   newhomepage.constructorWithrepresentative(this.currentuser, this.representative, [this.usertype]);
 
-
-  static const channel = MethodChannel('service');
   openCalcualtor() async {
     try {
       await channel.invokeMethod('opencalc');
     } on PlatformException catch (ex) {
-      print(ex.message);
     }
   }
-
-  List<String> images;
-  List<String> names;
   @override
   Widget build(BuildContext context) {
-    images = [
-      'assets/representativedata.jpeg',
-      'assets/customersdata.jpeg',
-      'assets/agenda.jpeg',
-      'assets/calculator.jpeg',
-      'assets/catalog.jpeg',
-      'assets/makeOrder.jpeg',
-      'assets/policysell.jpeg',
-      'assets/orders.jpeg',
-      'assets/contactusv.jpeg',
-      'assets/reportsmainscreen.jpeg',
-      'assets/News.jpeg',
-      'assets/newuser.jpeg'
-    ];
-
-    names = [
-      'بيانات المندوب',
-      'بيانات العملاء',
-      'مواعيد الزيارات',
-      'الة حاسبة',
-      'كتالوج',
-      'عمل اورد',
-      'السياسة البيعية',
-      'احدث جرد',
-      'اتصل بنا',
-      'التقارير',
-      'اخر الاخبار',
-      'اضافة مستخدم'
-    ];
     List<Function> functions = [
-      () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddNewrepresentative(title),
-            ));
-      },
-      () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Clintess(),
-            ));
-      },
-      () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Schadule(),
-            ));
-      },
-      () {
-        openCalcualtor();
-      },
+      () {Get.to(AddNewrepresentative(title));},
+      () {Get.to(Clintess());},
+      () {Get.to(Schadule());},
+      () {openCalcualtor();},
       () async {
         await CatalogCubit.get(context).getCatlogs();
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CatalogsList(),
-            ));
+        Get.to(CatalogsList());
       },
-      () {
-
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => BrandsList(),
-            ));
-      },
-      () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Sellingpolicypage(),
-            ));
-      },
+      () {Get.to(BrandsList());},
+      () {Get.to(Sellingpolicypage());},
       () async {
         await ordersCubit.get(context).getOrders();
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Orderspage(),
-            ));
+        Get.to(Orderspage());
       },
-      () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => InfoCart(),
-            ));
-      },
-      () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Reports(),
-            ));
-      },
-      () {
+      () {Get.to(InfoCart());},
+      () {Get.to(Reports());},
+      () async {
         NewsCubit.get(context).SetNewNumberOfNews();
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => NewsListpage(),
-            ));
+        await NewsCubit.get(context).getnews();
+        Get.to(NewsListpage());
       },
       () {
-        if (AppCubit.get(context).currentuser.usertype == "admin") {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Register(),
-              ));
-        } else {
-          CustomDialog(context);
-        }
+        if (AppCubit.get(context).currentuser.usertype == "admin") { Get.to(Register());}
+        else {CustomDialog(context);}
       }
     ];
     return BlocConsumer<NewsCubit, NewsCubitState>(
@@ -193,15 +97,13 @@ class newhomepage extends StatelessWidget {
                   child: AppBar(
                     centerTitle: true,
                     title: Container(
-
                       width: 0.5.sw,
-                      height: 40,
+                      height: 32,
                       child: FittedBox(
                         child: AutoSizeText(
                           "${(RepresentaterCubit.get(context).currentrepresentative.represtativename == null) ? "" : RepresentaterCubit.get(context).currentrepresentative.represtativename}",
                           style: TextStyle(
                               color: Colors.black,
-                              fontSize: 12,
                               fontWeight: FontWeight.bold),
                           maxLines: 1,
                         ),
@@ -233,7 +135,7 @@ class newhomepage extends StatelessWidget {
                                       width: 40,
                                     )),
                                 Positioned(
-                                    width: 80,
+                                    width: 75,
                                     child: AutoSizeText(
                                       "${NewsCubit.get(context).numofnewnews}",
                                       style: TextStyle(
