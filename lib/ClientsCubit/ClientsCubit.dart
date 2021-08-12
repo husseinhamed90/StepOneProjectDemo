@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:steponedemo/ClientsCubit/ClientsCubitStates.dart';
+import 'package:steponedemo/Helpers/Shared.dart';
 import 'package:steponedemo/Models/Client.dart';
 
 class ClientsCubit extends Cubit<ClientsCubitState> {
@@ -73,50 +74,66 @@ class ClientsCubit extends Cubit<ClientsCubitState> {
     }
   }
 
+  void GetCurrentUser(String id) {
+    if (id == "") {
+      userid = "";
+    } else {
+      userid = id;
+
+    }
+    emit(GetUserIDSate());
+  }
+
+  void resetImagesToNull(){
+    image=null;
+    image2=null;
+  }
+  Future<void> updateClient(Client client, Client oldclient) async {
+    emit(updatestatuesloading());
+    if (image == null) {
+      client.path = oldclient.path;
+    }
+    else{
+      client.path= await getUrlofImage(image);
+    }
+    if (image2 == null) {
+      client.path2 = oldclient.path2;
+    }
+    else{
+      client.path2= await getUrlofImage(image2);
+    }
+    client.id = userid;
+    client.ClientID=oldclient.ClientID;
+    ClintsCollection.doc(oldclient.ClientID).update(client.toJson()).then((value) async {
+      await getClintess();
+      emit(clientupdatedstate());
+    });
+  }
   Future<void> addClient(
-    Client client,
-    TextEditingController Clientname,
-    TextEditingController Clientcode,
-    TextEditingController Clientphone,
-    TextEditingController Clientaddress,
-    TextEditingController Clientarea,
-    File _image, File _image2,
-    String id,
-  ) async {
+      Client client,
+      TextEditingController Clientname,
+      TextEditingController Clientcode,
+      TextEditingController Clientphone,
+      TextEditingController Clientaddress,
+      TextEditingController Clientarea,
+      File _image, File _image2,
+      String id,
+      ) async {
     if (Clientname.text == "") {
       emit(validclientstate());
     } else {
       emit(loaddatafromfirebase());
-      FirebaseStorage storage = FirebaseStorage.instance;
       if (image==null) {
-        client.path =
-            "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
+        client.path = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
       }
       else{
-        Reference ref =
-        storage.ref().child("image1" + DateTime.now().toString());
-        UploadTask uploadTask = ref.putFile(image);
-        await uploadTask.then((res) async {
-          await res.ref.getDownloadURL().then((value) {
-            print("image is come");
-            client.path = value;
-          });
-        });
+        client.path=await getUrlofImage(image);
       }
       if(image2==null){
-        client.path2 =
-        "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
+        client.path2 = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
       }
       else{
-        Reference ref =
-        storage.ref().child("image1" + DateTime.now().toString());
-        UploadTask uploadTask = ref.putFile(image2);
-        await uploadTask.then((res)async {
-          await res.ref.getDownloadURL().then((value) {
-            print("image 2 is come");
-            client.path2 = value;
-          });
-        });
+        client.path2=await getUrlofImage(image2);
       }
       client.id = id;
       ClintsCollection.add(client.toJson()).then((value) {
@@ -133,48 +150,4 @@ class ClientsCubit extends Cubit<ClientsCubitState> {
     }
   }
 
-  void GetCurrentUser(String id) {
-    if (id == "") {
-      userid = "";
-    } else {
-      userid = id;
-
-    }
-    emit(GetUserIDSate());
-  }
-
-  Future<void> updateClient(Client client, Client oldclient) async {
-    emit(updatestatuesloading());
-    FirebaseStorage storage = FirebaseStorage.instance;
-    if (image == null) {
-      client.path = oldclient.path;
-    }
-    else{
-      Reference ref = storage.ref().child("image1" + DateTime.now().toString());
-      UploadTask uploadTask = ref.putFile(image);
-      await uploadTask.then((res) async {
-        await res.ref.getDownloadURL().then((value) {
-          client.path = value;
-        });
-      });
-    }
-    if (image2 == null) {
-      client.path2 = oldclient.path2;
-    }
-    else{
-      Reference ref = storage.ref().child("image1" + DateTime.now().toString());
-      UploadTask uploadTask = ref.putFile(image2);
-      await uploadTask.then((res) async{
-        await res.ref.getDownloadURL().then((value) {
-          client.path2 = value;
-        });
-      });
-    }
-    client.id = userid;
-    client.ClientID=oldclient.ClientID;
-    ClintsCollection.doc(oldclient.ClientID).update(client.toJson()).then((value) async {
-      await getClintess();
-      emit(clientupdatedstate());
-    });
-  }
 }

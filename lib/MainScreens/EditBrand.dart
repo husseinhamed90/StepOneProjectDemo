@@ -69,7 +69,6 @@ class EditBrand extends StatelessWidget {
         else if(state is numberoffilestillNow){
           return CircularProgressParForUpload(state.numberOfLoadedFiles);
         }
-
         else if(state is orderproductsInProgress){
           return Scaffold(body: Container(child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -191,5 +190,4 @@ class EditBrand extends StatelessWidget {
       },
     );
   }
-
 }

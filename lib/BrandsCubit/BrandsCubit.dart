@@ -232,31 +232,34 @@ class BrandsCubit extends Cubit<BrandsStates> {
 
   void deleteProduct(TrProduct trProduct,brand prevbrand,int index)async{
     emit(loadingbrangforupdate());
-    Brands.where("brandcode", isEqualTo: prevbrand.prandcode)
-        .get().then((value) {
-
+    Brands.where("brandcode", isEqualTo: prevbrand.prandcode).get().then((value) {
       prevbrand.products.removeAt(index);
-      Brands.doc(value.docs.first.id)
-          .update({"products": prevbrand.toJson()["products"]}).then((value) {
+      Brands.doc(value.docs.first.id).update({"products": prevbrand.toJson()["products"]}).then((value) {
             getbrands();
       });
-
     });
+  }
+
+  Future<String> getUrlofImage(File file)async{
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference ref = storage.ref().child("image1" + DateTime.now().toString());
+    UploadTask uploadTask = ref.putFile(file);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    String path = await taskSnapshot.ref.getDownloadURL();
+
+    return path;
   }
 
   Future<void> updateProduct(TrProduct trProduct, brand prevbrand, int index) async {
     emit(loadingbrangforupdate());
-    FirebaseStorage storage = FirebaseStorage.instance;
-    Reference ref = storage.ref().child("image1" + DateTime.now().toString());
-    UploadTask uploadTask = ref.putFile(productimage);
-    TaskSnapshot taskSnapshot = await uploadTask;
-    String path = await taskSnapshot.ref.getDownloadURL();
-    trProduct.path = path;
+
+    trProduct.path =await getUrlofImage(productimage);
     Brands.where("brandcode", isEqualTo: prevbrand.prandcode).get().then((value) {
       prevbrand.products[index] = trProduct;
       Brands.doc(value.docs.first.id).update({"products": prevbrand.toJson()["products"]});
-      DocumentReference documentReference =FirebaseFirestore.instance.collection("ImagesWithCodes").doc(trProduct.Item.replaceAll(new RegExp(r'[^\w\s]+'),''));
-      documentReference.set({"imageUrl":path}).then((value) {
+
+      DocumentReference documentReference =FirebaseFirestore.instance.collection("ImagesWithCodes").doc( (trProduct.Item).contains("/") ? trProduct.Item.replaceAll(new RegExp(r'[^\w\s]+'),''): trProduct.Item);
+      documentReference.set({"imageUrl":trProduct.path}).then((value) {
         getbrands().then((value) {
           emit(brandupdated());
         });

@@ -29,7 +29,7 @@ class Clintess extends StatelessWidget {
               }
             },
             builder: (context, state) {
-              ClientsCubit v =ClientsCubit.get(context);
+              ClientsCubit clientsCubit =ClientsCubit.get(context);
               return Column(
                 children: [
                   Expanded(
@@ -40,7 +40,7 @@ class Clintess extends StatelessWidget {
                           return LayoutBuilder(
                             builder: (context, constraints) => InkWell(
                               onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateClientPage(v.clients[index],),));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateClientPage(clientsCubit.clients[index],),));
                               },
                               child: Container(
                                 decoration: BoxDecoration(
@@ -59,7 +59,7 @@ class Clintess extends StatelessWidget {
                                       width: constraints.maxWidth,
                                       child: FittedBox(
                                         child: AutoSizeText(
-                                          v.clients[index].clientname,style: TextStyle(
+                                          clientsCubit.clients[index].clientname,style: TextStyle(
                                             fontSize: 22
                                         ),maxLines: 1,
                                         ),
@@ -73,7 +73,7 @@ class Clintess extends StatelessWidget {
                                             margin: EdgeInsets.only(right: 15),
                                             // width: (constraints.maxWidth-20)*0.2,
                                             child: Text(
-                                              v.clients[index].clientcode,style: TextStyle(
+                                              clientsCubit.clients[index].clientcode,style: TextStyle(
                                                 fontSize: 22
                                             ),),),
                                           Spacer(),
@@ -88,7 +88,7 @@ class Clintess extends StatelessWidget {
                                                   actions: [
                                                     TextButton(onPressed: (){
                                                       Navigator.pop(context);
-                                                      v.deleteclient(v.clients[index]);
+                                                      clientsCubit.deleteclient(clientsCubit.clients[index]);
                                                     }, child: Text("نعم")),
                                                     TextButton(onPressed: () => Navigator.pop(context), child: Text("لا")),
                                                   ],
@@ -101,12 +101,11 @@ class Clintess extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                // child: Text("ddd"),
                               ),
                             ),
                           );
                         },
-                        itemCount: v.clients.length,
+                        itemCount: clientsCubit.clients.length,
                       ),
                     ),
                   ),
@@ -119,8 +118,8 @@ class Clintess extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
+          ClientsCubit.get(context).resetImagesToNull();
           Get.to(AddnewClientPage());
-          //Navigator.push(context, MaterialPageRoute(builder: (context) => AddnewClientPage(),));
         },
       ),
     );

@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:steponedemo/Helpers/Shared.dart';
 import 'package:steponedemo/MainCubit/AppCubit.dart';
 import 'package:steponedemo/Models/AdminData.dart';
 import 'package:steponedemo/Models/Representative.dart';
@@ -56,6 +56,11 @@ class RepresentaterCubit extends Cubit<RepresentatersState> {
       });
     });
   }
+
+  Future<void>setsharedprefrences(String id)async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString("id",id);
+  }
   Future<void> addRepresentative(
       AppCubit appCubit,
       Representative representative,
@@ -80,7 +85,6 @@ class RepresentaterCubit extends Cubit<RepresentatersState> {
     }
     else {
       emit(loaddatafromfirebase());
-      FirebaseStorage storage = FirebaseStorage.instance;
       if(currentuser.usertype=="user"){
         representative.path = currentadmindata.logopath;
       }
@@ -89,13 +93,7 @@ class RepresentaterCubit extends Cubit<RepresentatersState> {
           representative.path = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
         }
         else {
-          Reference ref = storage.ref().child("image1" + DateTime.now().toString());
-          UploadTask uploadTask = ref.putFile(_image);
-          await uploadTask.then((res) async {
-            await res.ref.getDownloadURL().then((value) {
-              representative.path = value;
-            });
-          });
+          representative.path=await getUrlofImage(image);
         }
       }
       representative.id = id;
@@ -103,34 +101,22 @@ class RepresentaterCubit extends Cubit<RepresentatersState> {
         userscollection.where(
           "id",
           isEqualTo: representative.id,
-        ).get().then((value) async {
+        ).get().then((value) {
           userscollection.doc(value.docs.first.id).update({"isfirsttime": "false"});
           appCubit.SetCurrentRepresentative(representative);
           currentrepresentative=representative;
-          await setsharedprefrences(currentuser.location);
           emit(representativeaddedsuccefulltstate(representative));
         });
       }).catchError((error) => print("Failed to add representative: $error"));
     }
   }
-  Future<void>setsharedprefrences(String id)async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString("id",id);
-  }
   Future<void> updaterepresentaive(AppCubit appCubit,Representative newrepresentaive,user currentuser) async {
     emit(updatestatuesloading());
-    FirebaseStorage storage = FirebaseStorage.instance;
     if (image == null) {
       newrepresentaive.path = currentrepresentative.path;
     }
     else {
-      Reference ref = storage.ref().child("image1" + DateTime.now().toString());
-      UploadTask uploadTask = ref.putFile(image);
-      await uploadTask.then((res) {
-        res.ref.getDownloadURL().then((value) {
-          newrepresentaive.path = value;
-        });
-      });
+      newrepresentaive.path=await getUrlofImage(image);
     }
     currentrepresentative=newrepresentaive;
     appCubit.SetCurrentRepresentative(currentrepresentative);

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -187,6 +188,16 @@ void showbootomsheeat(BuildContext context,dynamic v, {String imagetype}){
     },
   );
 }
+Future<String> getUrlofImage(File file)async{
+  FirebaseStorage storage = FirebaseStorage.instance;
+  Reference ref = storage.ref().child("image1" + DateTime.now().toString());
+  UploadTask uploadTask = ref.putFile(file);
+  TaskSnapshot taskSnapshot = await uploadTask;
+  String path = await taskSnapshot.ref.getDownloadURL();
+
+  return path;
+}
+
 Future<File> uploaddocument() async {
 
   FilePickerResult result = await FilePicker.platform.pickFiles();
