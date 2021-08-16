@@ -44,7 +44,7 @@ class EditNew extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        NewsCubit v =NewsCubit.get(context);
+        NewsCubit newsCubit =NewsCubit.get(context);
         if(state is newisuploading){
           return Scaffold(body: Container(child: Center(child: CircularProgressIndicator(),),));
         }
@@ -64,12 +64,12 @@ class EditNew extends StatelessWidget {
                     color: Colors.grey,
                     width: MediaQuery.of(context).size.width - 20,
                     height: MediaQuery.of(context).size.height * 0.3,
-                    child: v.NewImage == null ?
-                    (v.pdfFile!=null)?
+                    child: newsCubit.NewImage == null ?
+                    (newsCubit.pdfFile!=null)?
 
                     InkWell(
                       onTap: () {
-                        showbootomsheeat(context,v);
+                        showbootomsheeat(context,newsCubit);
                       },
                       child: Container(
                         width: MediaQuery.of(context).size.width - 20,
@@ -83,7 +83,7 @@ class EditNew extends StatelessWidget {
                             //     fontSize: 20,fontWeight: FontWeight.bold
                             // ),)
                             SizedBox(height:  (MediaQuery.of(context).size.height * 0.2)*0.1,),
-                            (lookupMimeType("${p.basename(v.pdfFile.path)}"+".${p.extension(v.pdfFile.path).split('.')[1]}").split("/")[0])=="application"?Image.asset('assets/document.png',height: (MediaQuery.of(context).size.height * 0.2)*0.5,):
+                            (lookupMimeType("${p.basename(newsCubit.pdfFile.path)}"+".${p.extension(newsCubit.pdfFile.path).split('.')[1]}").split("/")[0])=="application"?Image.asset('assets/document.png',height: (MediaQuery.of(context).size.height * 0.2)*0.5,):
                             Image.network('https://www.clipartmax.com/png/full/225-2253433_music-video-play-function-comments-video-gallery-icon-png.png',height: (MediaQuery.of(context).size.height * 0.2)*0.5,),
                           ],
                         ),
@@ -91,7 +91,7 @@ class EditNew extends StatelessWidget {
                     ):
                     InkWell(
                       onTap: () {
-                        showbootomsheeat(context,v);
+                        showbootomsheeat(context,newsCubit);
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -105,9 +105,9 @@ class EditNew extends StatelessWidget {
                     )
                         : InkWell(
                         onTap: () {
-                          showbootomsheeat(context,v);
+                          showbootomsheeat(context,newsCubit);
                         },
-                        child: Image.file(v.NewImage)),
+                        child: Image.file(newsCubit.NewImage)),
                   ),
                   Row(
                     children: [
@@ -121,7 +121,7 @@ class EditNew extends StatelessWidget {
             floatingActionButton: FloatingActionButton(
               onPressed: () async {
                 currentnew.title=title.text;
-                v.editNew(currentnew,title);
+                newsCubit.editNew(currentnew,title);
               },
               child: Icon(Icons.save),
               backgroundColor: Colors.blueAccent,

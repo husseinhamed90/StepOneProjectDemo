@@ -42,7 +42,7 @@ class EditCatalog extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        CatalogCubit v =CatalogCubit.get(context);
+        CatalogCubit catalogCubit =CatalogCubit.get(context);
         if(state is fileisuploading || state is Catalogisuploading){
           return Scaffold(body: Container(child: Center(child: CircularProgressIndicator(),),));
         }
@@ -57,18 +57,18 @@ class EditCatalog extends StatelessWidget {
           body: Container(
             child: ListView(
               children: [
-                returnphotoConatiner("edit","تعديل الصورة",context,v,v.mainimage,path: catalog.mainimagepath,imagetype: "mainimage"),
+                returnphotoConatiner("edit","تعديل الصورة",context,catalogCubit,catalogCubit.mainimage,path: catalog.mainimagepath,imagetype: "mainimage"),
                 Container(
                   margin: EdgeInsets.all(10),
                   color: Colors.grey,
                   width: MediaQuery.of(context).size.width - 20,
                   height: MediaQuery.of(context).size.height * 0.2,
-                  child: v.CatalogImage == null ?
-                  (v.pdfFile!=null)?
+                  child: catalogCubit.CatalogImage == null ?
+                  (catalogCubit.pdfFile!=null)?
 
                   InkWell(
                     onTap: () {
-                      showbootomsheeat(context,v);
+                      showbootomsheeat(context,catalogCubit);
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width - 20,
@@ -81,7 +81,7 @@ class EditCatalog extends StatelessWidget {
                           Container(
                             height: (MediaQuery.of(context).size.height * 0.2)*0.3,
                             alignment: Alignment.bottomCenter,
-                            child: Text(v.pdfFile.path.substring(49,v.pdfFile.path.length),style: TextStyle(
+                            child: Text(catalogCubit.pdfFile.path.substring(49,catalogCubit.pdfFile.path.length),style: TextStyle(
                                 fontSize: 20,fontWeight: FontWeight.bold
                             ),),
                           )
@@ -91,7 +91,7 @@ class EditCatalog extends StatelessWidget {
                   ):
                   InkWell(
                     onTap: () {
-                      showbootomsheeat(context,v);
+                      showbootomsheeat(context,catalogCubit);
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -105,9 +105,9 @@ class EditCatalog extends StatelessWidget {
                   )
                       : InkWell(
                       onTap: () {
-                        showbootomsheeat(context,v);
+                        showbootomsheeat(context,catalogCubit);
                       },
-                      child: Image.file(v.CatalogImage)),
+                      child: Image.file(catalogCubit.CatalogImage)),
                 ),
                 Row(
                   children: [
@@ -121,7 +121,7 @@ class EditCatalog extends StatelessWidget {
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
               catalog.title=title.text;
-              v.editCatalog(catalog,title);
+              catalogCubit.editCatalog(catalog,title);
             },
             child: Icon(Icons.save),
             backgroundColor: Colors.blueAccent,

@@ -1,24 +1,20 @@
 // @dart=2.9
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:steponedemo/AddsScreens/newrepresentativepage.dart';
 import 'package:steponedemo/MainCubit/AppCubit.dart';
 import 'package:steponedemo/MainCubit/MainCubitStates.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:steponedemo/CatalogCubit/CatalogCubit.dart';
 import 'package:steponedemo/ClientsCubit/ClientsCubit.dart';
-import 'package:steponedemo/MainCubit/AppCubit.dart';
 import 'package:steponedemo/OrdersCubit/ordersCubit.dart';
 import 'package:steponedemo/UserOrdersCubit/UserOrdersCubit.dart';
 import 'package:steponedemo/VisitsCubit/VisitsCubit.dart';
 import 'MainScreens/Login.dart';
-import 'package:steponedemo/Models/AdminData.dart';
 import 'package:steponedemo/Models/Representative.dart';
 import 'package:steponedemo/Models/User.dart';
 import 'MainScreens/NewHome.dart';
@@ -43,13 +39,15 @@ void main()async {
     user currentuser = await GetUserInfo(userId);
     if(currentuser!=null){
       await changeStateOfUser(currentuser);
+      Representative representative =await getReprestatvieInfo(currentuser);
+      runApp( MyApp(userId,currentuser,representative));
     }
-    Representative representative =await getReprestatvieInfo(currentuser);
-    runApp( MyApp(userId,currentuser,representative));
+    else{
+      runApp(MyApp(""));
+    }
   }
 }
 class MyApp extends StatefulWidget {
-
   user userr;
   Representative representative;
   String id;
@@ -80,7 +78,6 @@ class _MyAppState extends State<MyApp> {
                 BlocProvider(create: (_) => NewsCubit()..getnews(),)
               ],
               child: BlocConsumer<AppCubit,MainCubitState>(
-
                 listener: (context, state) {},
                 builder:(context, state) => ScreenUtilInit(
                   designSize: Size(1080,2280),
@@ -103,7 +100,6 @@ class _MyAppState extends State<MyApp> {
               ),
             );
           }
-
         }
     );
   }
@@ -113,10 +109,12 @@ Future<user>GetUserInfo(String id)async{
   user currentuser =user.fromJson(documentReference.data());
   return currentuser;
 }
+
 Future<QuerySnapshot>getRepresentative()async{
   CollectionReference representatives = FirebaseFirestore.instance.collection('Representatives');
   return await representatives.get();
 }
+
 Future<Representative>getReprestatvieInfo(user currentuser)async{
   Representative representative;
   QuerySnapshot snapshot =await getRepresentative();
@@ -127,9 +125,11 @@ Future<Representative>getReprestatvieInfo(user currentuser)async{
   });
   return representative;
 }
+
 Future<void>changeStateOfUser(user currentuser)async{
   return await FirebaseFirestore.instance.collection('Users').doc(currentuser.location).update({'isonline': "true"});
 }
+
 Future<Database> CreateDataBase()async{
   return await openDatabase(
     "Order.db"

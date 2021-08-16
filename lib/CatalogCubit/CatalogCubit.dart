@@ -86,7 +86,6 @@ class CatalogCubit extends Cubit<CatalogStates>{
     }
     else{
       if(pdfFile==null&&mainimage==null&&CatalogImage==null){
-        //catalog.defauktphoto = "https://icons.iconarchive.com/icons/custom-icon-design/mono-general-2/256/document-icon.png";
         catalog.defauktphoto="https://img.icons8.com/pastel-glyph/2x/no-document.png";
         catalog.path = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
         catalog.mainimagepath="https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";

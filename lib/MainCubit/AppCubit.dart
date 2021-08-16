@@ -74,16 +74,12 @@ class AppCubit extends Cubit<MainCubitState> {
 
   Future<UserCredential>GetUserCredentialFromFireBase(String username,String password) async{
     try{
-     // emit(loginsistart());
       return await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: '${username.replaceAll(' ', '')}@stepone.com',
           password: password + "steponeapp"
       ).catchError((error) {
-        print("fdsf");
         emit(invaliduser());
       });
-      //userCredential=userCredentiall;
-     // return userCredentiall;
     }catch (e) {
       emit(invaliduser());
     }
@@ -94,7 +90,6 @@ class AppCubit extends Cubit<MainCubitState> {
       querySnapshot.docs.forEach((doc) {
         if (user.fromJson(doc.data()).id == userCredential.user.uid) {
           GetCurrentUser(user.fromJson(doc.data()));
-          //emit(currentuserdata());
         }
       });
     });
@@ -108,7 +103,7 @@ class AppCubit extends Cubit<MainCubitState> {
 
     await UpdateStatus("true",currentuser.id);
     await getusers();
-
+    await setsharedprefrences(currentuser.location);
     bool validrepresentative = false;
     representatives.get().then((querySnapshot)  {
       querySnapshot.docs.forEach((doc) {
@@ -151,9 +146,7 @@ class AppCubit extends Cubit<MainCubitState> {
   }
 
    void UpdateRepresentativeData(QueryDocumentSnapshot documentSnapshot){
-   // appprovider.updaterepresentative();
     currentrepresentative=Representative.fromJson(documentSnapshot.data());
-    //isloging=false;
     emit(userisnormaluserstatebutnotfirsttime());
   }
 
@@ -164,7 +157,6 @@ class AppCubit extends Cubit<MainCubitState> {
       emit(emptyfeildsstate());
     }
     else {
-        //emit(validateiuser());
         UserCredential userCredential =await GetUserCredentialFromFireBase(username,password);
         if(userCredential!=null){
           await isValidUser(userCredential);
@@ -239,8 +231,6 @@ class AppCubit extends Cubit<MainCubitState> {
 
       AuthCredential credentials = EmailAuthProvider.credential(email: user.email, password: password + "steponeapp");
         await user.reauthenticateWithCredential(credentials).then((value) async {
-          print("ffffffffffffffffff");
-          print(value.user.email);
          await value.user.updateEmail('${newusername.text.replaceAll(' ', '')}@stepone.com').then((valueeee) {
           value.user.updatePassword("${newpassword.text}steponeapp").then((value) {
             getusers().then((value) {
@@ -277,7 +267,6 @@ class AppCubit extends Cubit<MainCubitState> {
         UpdateUserfromauth(newuser.password,username,password)
             .then((value) {
               users[index]=newuser;
-           //emit(goback());
         });
       });
     });
@@ -285,7 +274,7 @@ class AppCubit extends Cubit<MainCubitState> {
 
   Future<void> getusers() async {
     users = [];
-    //emit(loaddatafromfirebase());
+
     await userscollection.get().then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
         users.add(user.fromJson(doc.data()));

@@ -21,14 +21,26 @@ class UserOrdersCubit extends Cubit<UserOrdersCubitStates>{
         emit(UserOrdersState());
       }
       else{
+
         value.docs.forEach((element) {
-          FirebaseFirestore.instance.collection("Clients").doc(element['OrderOwner']).get().then((value) {
+          if(element['OrderOwner']==""){
             UserOrder userOrder =UserOrder.fromJson(element.data());
-            userOrder.OrderOwner=Client.fromJson(value.data());
+            userOrder.OrderOwner=Client.noClient();
             myorders.add(userOrder);
-          }).then((value) {
-            emit(UserOrdersState());
-          });
+          }
+          else{
+            FirebaseFirestore.instance.collection("Clients").doc(element['OrderOwner']).get().then((value) {
+
+              UserOrder userOrder =UserOrder.fromJson(element.data());
+              userOrder.OrderOwner=Client.fromJson(value.data());
+              myorders.add(userOrder);
+            }).then((value) {
+              emit(UserOrdersState());
+            }).catchError((error){
+              emit(UserOrdersState());
+            });
+          }
+
         });
       }
     }).catchError((error){

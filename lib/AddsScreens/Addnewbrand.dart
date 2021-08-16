@@ -97,10 +97,66 @@ class AddnewBrand extends StatelessWidget {
                     color: Colors.grey,
                     width: MediaQuery.of(context).size.width - 20,
                     height: MediaQuery.of(context).size.height * 0.2,
+                    child: v.orderedFile == null ?
+                    InkWell(
+                      onTap: () {
+                        showbootomsheeatWithDocumentOnly(context,v,"orderedFile");
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: Image.asset(
+                              "assets/addimage.png",
+                              height: (MediaQuery.of(context).size.height * 0.2)*0.5,
+                            ),
+                          ),
+                          Container(
+                            height: (MediaQuery.of(context).size.height * 0.2)*0.5,
+                            child: Center(
+                              child: AutoSizeText(
+                                "اضافة ملف الاكواد".tr,
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),maxLines: 1,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ):
+                    InkWell(
+                      onTap: () {
+                        showbootomsheeatWithDocumentOnly(context,v,"orderedFile");
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width - 20,
+                        height: MediaQuery.of(context).size.height * 0.2,
+                        child: Column(
+                          children: [
+                            SizedBox(height:  (MediaQuery.of(context).size.height * 0.2)*0.1,),
+                            Image.asset('assets/document.png',height: (MediaQuery.of(context).size.height * 0.2)*0.6,),
+                            Spacer(),
+                            Container(
+                              height: (MediaQuery.of(context).size.height * 0.2)*0.3,
+                              alignment: Alignment.bottomCenter,
+                              child: Text(v.orderedFile.path.substring(49,v.orderedFile.path.length),style: TextStyle(
+                                  fontSize: 20,fontWeight: FontWeight.bold
+                              ),),
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+                ),
+                Container(
+                    margin: EdgeInsets.all(10),
+                    color: Colors.grey,
+                    width: MediaQuery.of(context).size.width - 20,
+                    height: MediaQuery.of(context).size.height * 0.2,
                     child: v.pdfFile == null ?
                     InkWell(
                       onTap: () {
-                        showbootomsheeatWithDocumentOnly(context,v);
+                        showbootomsheeatWithDocumentOnly(context,v,"mainFile");
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -126,7 +182,7 @@ class AddnewBrand extends StatelessWidget {
                     ):
                     InkWell(
                       onTap: () {
-                        showbootomsheeatWithDocumentOnly(context,v);
+                        showbootomsheeatWithDocumentOnly(context,v,"mainFile");
                       },
                       child: Container(
                         width: MediaQuery.of(context).size.width - 20,

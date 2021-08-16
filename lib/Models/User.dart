@@ -1,5 +1,3 @@
-
-
 class user{
   String name;
   String password;
@@ -8,8 +6,6 @@ class user{
   String isfirsttime;
   String isonline;
   String location;
-
-
 
 
   user(this.name, this.password, this.usertype,this.id,[this.isfirsttime="true",this.isonline="false"]);

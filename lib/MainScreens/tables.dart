@@ -26,6 +26,16 @@ Future<String> networkImageToBase64(String mediaUrlString) async {
   final bytes = response?.bodyBytes;
   return (bytes != null ? base64Encode(bytes) : null);
 }
+List chunk(List<TableRow> list, int chunkSize) {
+
+  List<List<TableRow>>chunks=[];
+  int len = list.length;
+  for (var i = 0; i < len; i += chunkSize) {
+    int size = i+chunkSize;
+    chunks.add(list.sublist(i, size > len ? len : size));
+  }
+  return chunks;
+}
 Future savetableotoPdf(ClientsCubit appprovider,Representative currentrepresentative) async {
 
   final Document pdf = Document();
@@ -64,7 +74,7 @@ Future savetableotoPdf(ClientsCubit appprovider,Representative currentrepresenta
       ]
   ));
   ArabicNumbers arabicNumber = ArabicNumbers();
-
+  List<List<TableRow>>pages=[];
 
   for(int i=0;i<appprovider.clients.length;i++){
     rows.add(TableRow(
@@ -97,9 +107,8 @@ Future savetableotoPdf(ClientsCubit appprovider,Representative currentrepresenta
         ]
     ));
   }
-  String gg="";
-  await networkImageToBase64(currentrepresentative.path).then((value) {
-    gg=value;
+  pages=chunk(rows,20);
+  for(int i=0;i<pages.length;i++){
     pdf.addPage(Page(
         theme: ThemeData.withFont(
           base: ttf,
@@ -107,7 +116,6 @@ Future savetableotoPdf(ClientsCubit appprovider,Representative currentrepresenta
         pageFormat: PdfPageFormat.a4,
         orientation: PageOrientation.landscape,
         build: (Context context) {
-          Uint8List bytes = base64Decode(gg);
           return Container(
               alignment: Alignment.topRight,
               child:Column (
@@ -119,12 +127,13 @@ Future savetableotoPdf(ClientsCubit appprovider,Representative currentrepresenta
                     SizedBox(height: 20),
                     Table(
                         border: TableBorder.all(),
-                        children: rows
+                        children: pages[i]
                     ),
                   ]
               ));
         }));
-  });
+  }
+
   saveAndLaunchFile(await pdf.save(),'بيانات العملاء.pdf');
 }
 
@@ -134,7 +143,7 @@ Future DisplayOrders(UserOrder userOrder,Representative representative) async {
 
   final fontData = await rootBundle.load("assetsfont/fonts/arial.ttf");
   final ttf = Font.ttf(fontData.buffer.asByteData());
-
+  List<List<TableRow>>pages=[];
   List<TableRow>rows=[];
   rows.add(TableRow(
       children: [
@@ -201,72 +210,80 @@ Future DisplayOrders(UserOrder userOrder,Representative representative) async {
         ]
     ));
   }
-  pdf.addPage(Page(
-      theme: ThemeData.withFont(
-        base: ttf,
-      ),
-      pageFormat: PdfPageFormat.a4,
-      orientation: PageOrientation.portrait,
-      build: (Context context) {
-       // Uint8List bytes = base64Decode(gg);
-        return Container(
-            alignment: Alignment.topLeft,
-            child:Column (
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Row(
+  pages=chunk(rows,34);
+  for(int i=0;i<pages.length;i++){
+    pdf.addPage(Page(
+        theme: ThemeData.withFont(
+          base: ttf,
+        ),
+        pageFormat: PdfPageFormat.a4,
+        orientation: PageOrientation.portrait,
+        build: (Context context) {
+          // Uint8List bytes = base64Decode(gg);
+          return Container(
+              alignment: Alignment.topLeft,
+              child:Column (
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+
+                    (i==0)?Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text("${userOrder.OrderOwner.clientcode}",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
-                          Text("الكود : ",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Row(
+                                    children: [
+                                      Text("${userOrder.OrderOwner.clientcode}",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
+                                      Text("الكود : ",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
+                                    ]
+                                ),
+                                Row(
+                                    children: [
+                                      Text("${userOrder.OrderOwner.clinttype}",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
+                                      Text("نوع التعامل : ",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
+                                    ]
+                                ),
+                                Row(
+                                    children: [
+                                      Text("${userOrder.OrderOwner.clientname}",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
+                                      Text("اسم العميل : ",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
+                                    ]
+                                ),
+                              ]
+                          ),
+                          SizedBox(height: 20),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+
+
+                                Row(
+                                    children: [
+                                      Text("${representative.represtativename}",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
+                                      Text("اسم المندوب : ",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
+                                    ]
+                                ),
+                                Row(
+                                    children: [
+                                      Text("${userOrder.OrderOwner.area}",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
+                                      Text("المنطقة : ",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
+                                    ]
+                                ),
+
+                              ]
+                          ),
                         ]
-                      ),
-                      Row(
-                          children: [
-                            Text("${userOrder.OrderOwner.clinttype}",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
-                            Text("نوع التعامل : ",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
-                          ]
-                      ),
-                      Row(
-                          children: [
-                            Text("${userOrder.OrderOwner.clientname}",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
-                            Text("اسم العميل : ",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
-                          ]
-                      ),
-                    ]
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-
-
-                        Row(
-                            children: [
-                              Text("${representative.represtativename}",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
-                              Text("اسم المندوب : ",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
-                            ]
-                        ),
-                        Row(
-                            children: [
-                              Text("${userOrder.OrderOwner.area}",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
-                              Text("المنطقة : ",style:  TextStyle(font: ttf, fontSize: 15),textDirection: TextDirection.rtl),
-                            ]
-                        ),
-
-                      ]
-                  ),
-
-                  SizedBox(height: 20),
-                  Table(
-                      border: TableBorder.all(),
-                      children: rows
-                  ),
-                ]
-            ));
-      }));
+                    ):Container(),
+                    SizedBox(height: 20),
+                    Table(
+                        border: TableBorder.all(),
+                        children: pages[i]
+                    ),
+                  ]
+              ));
+        }));
+  }
   saveAndLaunchFile(await pdf.save(),'بيانات الاوردر.pdf');
 }
 
@@ -381,27 +398,27 @@ Future DisplayVisits(Representative representative,String choosendate,String day
                   SizedBox(height: 20),
                   Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 300,
-                        decoration: BoxDecoration(
-                          border: Border.all(color:PdfColors.black),
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 300,
+                          decoration: BoxDecoration(
+                            border: Border.all(color:PdfColors.black),
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
 
-                        ),
-                        alignment: Alignment.center,
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text("زيارات ",style:  TextStyle(font: ttf, fontSize: 20),textDirection: TextDirection.rtl),
-                              Text(visits.length.toString(),style:  TextStyle(font: ttf, fontSize: 20),textDirection: TextDirection.rtl),
-                              Text("عدد الزيارات  :  ",style:  TextStyle(font: ttf, fontSize: 20),textDirection: TextDirection.rtl),
-                            ]
-                        ),
+                          ),
+                          alignment: Alignment.center,
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text("زيارات ",style:  TextStyle(font: ttf, fontSize: 20),textDirection: TextDirection.rtl),
+                                Text(visits.length.toString(),style:  TextStyle(font: ttf, fontSize: 20),textDirection: TextDirection.rtl),
+                                Text("عدد الزيارات  :  ",style:  TextStyle(font: ttf, fontSize: 20),textDirection: TextDirection.rtl),
+                              ]
+                          ),
 
-                      )
-                    ]
+                        )
+                      ]
                   )
                 ]
             ));

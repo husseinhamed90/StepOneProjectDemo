@@ -9,10 +9,8 @@ class _InfoCartState extends State<InfoCart> with WidgetsBindingObserver{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: Center(
         child: ListView(
-         // mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Container(
               margin: EdgeInsets.only(top: 100),

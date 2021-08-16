@@ -37,7 +37,6 @@ class _LoginState extends State<Reports> {
         currentDate = pickedDate;
         List<String> DateInyMEd = [];
         DateInyMEd = DateFormat.yMEd().add_jms().format(currentDate).split(' ');
-        //getnameofdayinarabic(DateInyMEd[0]);
         String last = DateInyMEd[1].split('/')[1] +
             "/" +
             DateInyMEd[1].split('/')[0] +
@@ -85,27 +84,18 @@ class _LoginState extends State<Reports> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          TextButton(onPressed: ()async{
+                          CustomTextButtom(()async{
                             savePdf(AppCubit.get(context).currentrepresentative);
-                          }, child: Text("بيانات المندوب",style: TextStyle(
-                              fontSize: 40
-                          ),)),
-                          TextButton(onPressed: ()async{
-                            savetableotoPdf(ClientsCubit.get(context),AppCubit.get(context).currentrepresentative);
-                          }, child: Text("بيانات العملاء",style: TextStyle(
-                              fontSize: 40
-                          ),)),
-                          TextButton(onPressed: (){
+                          },"بيانات المندوب"),
+                          CustomTextButtom(()async{
+                           await savetableotoPdf(ClientsCubit.get(context),AppCubit.get(context).currentrepresentative);
+                          },"بيانات العملاء"),
+                          CustomTextButtom((){
                             Navigator.push(context, MaterialPageRoute(builder: (context) => ClientOrdersList(),));
-                          }, child: Text("اوردراتي",style: TextStyle(
-                              fontSize: 40
-                          ),)),
-                          TextButton(onPressed: ()async{
-                            selectDate(context);
-                          }, child: Text("زياراتي",style: TextStyle(
-                              fontSize: 40
-                          ),))
-
+                          },"اوردراتي"),
+                          CustomTextButtom(()async{
+                            await selectDate(context);
+                          },"زياراتي")
                         ],
                       ),
                     ),

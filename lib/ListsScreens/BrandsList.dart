@@ -57,6 +57,7 @@ class _BrandsListState extends State<BrandsList> {
       },
       builder: (context, state) {
         BrandsCubit brandsCubit=BrandsCubit.get(context);
+        print(state);
         if (state is loadingbrangforupdate || state is branddeleted||state is addingproducttocardinprogress) {
           return Scaffold(
             body: Container(
@@ -187,7 +188,7 @@ class _BrandsListState extends State<BrandsList> {
                       ? Container(
                     height: 55,
                         child: FloatingActionButton(
-                    key: Key("key1"),
+                    key: Key("key1hhhhhhhhhh"),
                     child: Icon(Icons.add),
                     onPressed: () async {
                         Navigator.push(

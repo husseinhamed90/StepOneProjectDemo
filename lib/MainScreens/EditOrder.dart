@@ -1,19 +1,12 @@
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:get/get.dart';
 import 'package:steponedemo/Models/Order.dart';
 import 'package:steponedemo/OrdersCubit/ordersCubit.dart';
 import 'package:steponedemo/OrdersCubit/ordersStates.dart';
-// import 'package:stepone/SellingPolicyCubit/PolicyCubit.dart';
-// import 'package:stepone/SellingPolicyCubit/PolicyCubitState.dart';
-import 'package:steponedemo/Widgets/CircularProgressIndicatorForDownload.dart';
 import 'package:steponedemo/Widgets/CircularProgressParForUpload.dart';
 import 'package:steponedemo/Widgets/CustomAppBar.dart';
 import '../Helpers/Shared.dart';
-import '../Helpers/Utilites.dart';
 import 'package:toast/toast.dart';
 
 

@@ -44,7 +44,6 @@ class VisitsCubit extends Cubit<VisitsCubitStates>{
 
   Future<void>Deletevisit(visit deletedvisit,String date)async{
     await VisitsServicesAPIs.DeleteVisitFromFireBase(deletedvisit.Visitid,date);
-    print("done 2");
     GetVisitsOfUser(deletedvisit.reprsenatativrID,date);
   }
 
@@ -67,8 +66,6 @@ class VisitsCubit extends Cubit<VisitsCubitStates>{
       newvisit = setdataofNewVisit(newvisit);
       visit nextvisit = generateNextVisit(newvisit);
       DocumentReference visitid =await VisitsServicesAPIs.AddNewVisitInFireBase(newvisit);
-      print("adding done");
-      print(visitid.id);
       await VisitsServicesAPIs.UpdateVisitId(visitid.id);
       DocumentReference nextvisitid =await VisitsServicesAPIs.AddNewVisitInFireBase(nextvisit);
       await VisitsServicesAPIs.UpdateVisitId(nextvisitid.id);

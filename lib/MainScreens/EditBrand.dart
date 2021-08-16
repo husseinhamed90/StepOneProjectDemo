@@ -46,7 +46,7 @@ class EditBrand extends StatelessWidget {
 
       builder: (context, state) {
         print(state);
-        BrandsCubit v =BrandsCubit.get(context);
+        BrandsCubit brandsCubit =BrandsCubit.get(context);
         if(state is loadingbrangforupdate){
           return Scaffold(body: Container(child: Center(child: CircularProgressIndicator(),),));
         }
@@ -95,10 +95,10 @@ class EditBrand extends StatelessWidget {
                   color: Colors.grey,
                   width: MediaQuery.of(context).size.width - 20,
                   height: MediaQuery.of(context).size.height * 0.2,
-                  child: v.image == null ?
+                  child: brandsCubit.image == null ?
                   InkWell(
                     onTap: () {
-                      showbootomsheeat(context,v,imagetype: "brand");
+                      showbootomsheeat(context,brandsCubit,imagetype: "brand");
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -114,19 +114,19 @@ class EditBrand extends StatelessWidget {
                   ) :
                   InkWell(
                       onTap: () {
-                        showbootomsheeat(context,v,imagetype: "brand");
+                        showbootomsheeat(context,brandsCubit,imagetype: "brand");
                       },
-                      child: Image.file(v.image)),
+                      child: Image.file(brandsCubit.image)),
                 ),
                 Container(
                     margin: EdgeInsets.all(10),
                     color: Colors.grey,
                     width: MediaQuery.of(context).size.width - 20,
                     height: MediaQuery.of(context).size.height * 0.2,
-                    child: v.pdfFile == null ?
+                    child: brandsCubit.orderedFile == null ?
                     InkWell(
                       onTap: () {
-                        showbootomsheeatWithDocumentOnly(context,v);
+                        showbootomsheeatWithDocumentOnly(context,brandsCubit,"orderedFile");
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -142,7 +142,7 @@ class EditBrand extends StatelessWidget {
                     ):
                     InkWell(
                       onTap: () {
-                        showbootomsheeatWithDocumentOnly(context,v);
+                       showbootomsheeatWithDocumentOnly(context,brandsCubit,"orderedFile");
                       },
                       child: Container(
                         width: MediaQuery.of(context).size.width - 20,
@@ -155,7 +155,53 @@ class EditBrand extends StatelessWidget {
                             Container(
                               height: (MediaQuery.of(context).size.height * 0.2)*0.3,
                               alignment: Alignment.bottomCenter,
-                              child: Text(v.pdfFile.path.substring(49,v.pdfFile.path.length),style: TextStyle(
+                              child: Text(brandsCubit.orderedFile.path.substring(49,brandsCubit.orderedFile.path.length),style: TextStyle(
+                                  fontSize: 20,fontWeight: FontWeight.bold
+                              ),),
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+                ),
+                Container(
+                    margin: EdgeInsets.all(10),
+                    color: Colors.grey,
+                    width: MediaQuery.of(context).size.width - 20,
+                    height: MediaQuery.of(context).size.height * 0.2,
+                    child: brandsCubit.pdfFile == null ?
+                    InkWell(
+                      onTap: () {
+                        showbootomsheeatWithDocumentOnly(context,brandsCubit,"mainFile");
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: Image.network(
+                              "https://icons.iconarchive.com/icons/custom-icon-design/mono-general-2/256/document-icon.png",
+                              height: (MediaQuery.of(context).size.height * 0.2-30),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ):
+                    InkWell(
+                      onTap: () {
+                         showbootomsheeatWithDocumentOnly(context,brandsCubit,"mainFile");
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width - 20,
+                        height: MediaQuery.of(context).size.height * 0.2,
+                        child: Column(
+                          children: [
+                            SizedBox(height:  (MediaQuery.of(context).size.height * 0.2)*0.1,),
+                            Image.asset('assets/document.png',height: (MediaQuery.of(context).size.height * 0.2)*0.6,),
+                            Spacer(),
+                            Container(
+                              height: (MediaQuery.of(context).size.height * 0.2)*0.3,
+                              alignment: Alignment.bottomCenter,
+                              child: Text(brandsCubit.pdfFile.path.substring(49,brandsCubit.pdfFile.path.length),style: TextStyle(
                                   fontSize: 20,fontWeight: FontWeight.bold
                               ),),
                             )
@@ -181,7 +227,7 @@ class EditBrand extends StatelessWidget {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
-              v.EditBrand(title, code,currentbrand);
+              brandsCubit.EditBrand(title, code,currentbrand);
             },
             child: Icon(Icons.save),
             backgroundColor: Colors.blueAccent,

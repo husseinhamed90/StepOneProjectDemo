@@ -114,11 +114,9 @@ class PolicyCubit extends Cubit<PolicyCubitState> {
       }
       else{
         if(PolicyDocumentFile!=null){
-          print("PolicyDocumentFile");
           UploadFileToServer("Insert",PolicyDocumentFile,this,newsellingpolicy,collection,polices,typeoflist: "policy",mainimage: null);
         }
         else if(PolicyImage!=null){
-          print("PolicyImage");
           UploadFileToServer("Insert",PolicyImage,this,newsellingpolicy,collection,polices,typeoflist: "policy",mainimage: null);
         }
       }

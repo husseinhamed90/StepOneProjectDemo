@@ -9,9 +9,6 @@ import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:ext_storage/ext_storage.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -19,7 +16,6 @@ import 'package:steponedemo/BrandsCubit/BrandsCubit.dart';
 import 'package:steponedemo/CatalogCubit/CatalogCubit.dart';
 import 'package:steponedemo/Models/TRProdct.dart';
 import 'package:steponedemo/Models/Visit.dart';
-import 'package:steponedemo/Models/brand.dart';
 import 'package:steponedemo/NewsCubit/NewsCubit.dart';
 import 'package:steponedemo/OrdersCubit/ordersCubit.dart';
 import 'package:steponedemo/SellingPolicyCubit/PolicyCubit.dart';
@@ -74,10 +70,14 @@ String getDate(List<String>ss){
   return ff[0];
 }
 
-Future<List<TrProduct>> readExcelFile(String fileName,BrandsCubit brandsCubit)async {
+Future<List<TrProduct>> readExcelFile(String fileName,BrandsCubit brandsCubit,String typeofFile)async {
+
+
+
   File file = File(fileName);
   var bytes = file.readAsBytesSync();
   var excel = Excel.decodeBytes(bytes);
+
   List<TrProduct> products = [];
   List<String>columns=[];
   for (int k = 0; k < excel.tables["List"].rows[0].length; k++) {
@@ -89,7 +89,7 @@ Future<List<TrProduct>> readExcelFile(String fileName,BrandsCubit brandsCubit)as
     }
   }
   int count =0;
-  for (int i = 2; i < excel.tables["List"].rows.length; i++) {
+  for (int i = (typeofFile=="orderedFile")?1:2; i < excel.tables["List"].rows.length; i++) {
     List<dynamic> item = [];
     Map<String,dynamic>map={};
     for (int k = 0; k < excel.tables["List"].rows[i].length; k++) {
@@ -97,15 +97,19 @@ Future<List<TrProduct>> readExcelFile(String fileName,BrandsCubit brandsCubit)as
         Formula d = excel.tables["List"].rows[i][k];
         item.add(d.value);
       } else {
-
         item.add(excel.tables["List"].rows[i][k]);
       }
     }
     for (int k = 0; k < excel.tables["List"].rows[0].length; k++) {
       map[columns[k]]=item[k];
     }
+
     if( map['Item']!="End"){
-      await FirebaseFirestore.instance.collection("ImagesWithCodes").doc( map['Item'].replaceAll(new RegExp(r'[^\w\s]+'),'')).get().then((value){
+
+      if(map['Item'].contains("/")){
+        map['Item'].replaceAll(new RegExp(r'[^\w\s]+'));
+      }
+      await FirebaseFirestore.instance.collection("ImagesWithCodes").doc(map['Item']).get().then((value){
         map["path"]=value.data()['imageUrl'];
         products.add(TrProduct.fromJson(map));
       }).catchError((error, stackTrace) {
@@ -137,7 +141,6 @@ String getTime() {
 }
 
 Future<void> deletItem(file sellingpolicy,CollectionReference collectionReference,dynamic cubit){
-  //emit(loaddatafromfirebase());
   cubit.ReturnLoadingState();
   collectionReference
       .where("id", isEqualTo: sellingpolicy.id)
@@ -160,7 +163,6 @@ String getDateWithoutTime() {
       "/" +
       dateInYMDFormat[1].split('/')[2];
   List<String> dateInYMDFormatAfterSplitting = last.split('-');
-  //Extract DATE ONLY
   return dateInYMDFormatAfterSplitting[0];
 }
 
@@ -304,10 +306,7 @@ Future<void> launchURL(String url, String extention, String title,dynamic cubit)
 
   try {
     await Permission.storage.request();
-
-    OpenFile.open("/storage/emulated/0/Download/$title.$extention")
-        .then((value) async {
-print(value.type);
+    OpenFile.open("/storage/emulated/0/Download/$title.$extention").then((value) async {
       if (value.type.index == 1) {
         String path = await ExtStorage.getExternalStoragePublicDirectory(
             ExtStorage.DIRECTORY_DOWNLOADS);

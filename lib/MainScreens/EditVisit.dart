@@ -31,9 +31,6 @@ class _EditVisitState extends State<EditVisit> {
 
   bool v =false;
 
-
-
-
   String dayname=DateFormat.yMEd().add_jms().format(DateTime.now()).split(' ')[0];
 
 

@@ -42,6 +42,7 @@ class newhomepage extends StatelessWidget {
     try {
       await channel.invokeMethod('opencalc');
     } on PlatformException catch (ex) {
+
     }
   }
   @override

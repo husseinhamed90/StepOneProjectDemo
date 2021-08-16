@@ -1,7 +1,6 @@
 import 'file.dart';
 
 class News implements file{
-  //String path,title,date,id,extention,defauktphoto;
   DateTime dataTime;
 
   News( this.title);

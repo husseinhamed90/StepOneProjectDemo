@@ -48,7 +48,7 @@ class EditPolicy extends StatelessWidget {
       },
       builder: (context, state) {
         print(state);
-        PolicyCubit v =PolicyCubit.get(context);
+        PolicyCubit policyCubit =PolicyCubit.get(context);
         if(state is Policyisuploading){
           return Scaffold(body: Container(child: Center(child: CircularProgressIndicator(),),));
         }
@@ -69,11 +69,11 @@ class EditPolicy extends StatelessWidget {
                   width: MediaQuery.of(context).size.width - 20,
                   height: MediaQuery.of(context).size.height * 0.2,
                   child:
-                  v.PolicyImage == null ?
-                  (v.PolicyDocumentFile!=null)?
+                  policyCubit.PolicyImage == null ?
+                  (policyCubit.PolicyDocumentFile!=null)?
                   InkWell(
                     onTap: () {
-                      showbootomsheeat(context,v);
+                      showbootomsheeat(context,policyCubit);
                     },
                     child: Container(
                       width: MediaQuery.of(context).size.width - 20,
@@ -86,7 +86,7 @@ class EditPolicy extends StatelessWidget {
                           Container(
                             alignment: Alignment.bottomCenter,
                             height: (MediaQuery.of(context).size.height * 0.2)*0.4,
-                            child: Text(v.PolicyDocumentFile.path.substring(49,v.PolicyDocumentFile.path.length),style: TextStyle(
+                            child: Text(policyCubit.PolicyDocumentFile.path.substring(49,policyCubit.PolicyDocumentFile.path.length),style: TextStyle(
                                 fontSize: 20,fontWeight: FontWeight.bold
                             ),),
                           )
@@ -96,7 +96,7 @@ class EditPolicy extends StatelessWidget {
                   ):
                   InkWell(
                     onTap: () {
-                      showbootomsheeat(context,v);
+                      showbootomsheeat(context,policyCubit);
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -118,9 +118,9 @@ class EditPolicy extends StatelessWidget {
                   ) :
                   InkWell(
                       onTap: () {
-                        showbootomsheeat(context,v);
+                        showbootomsheeat(context,policyCubit);
                       },
-                      child: Image.file(v.PolicyImage)),
+                      child: Image.file(policyCubit.PolicyImage)),
                 ),
                 Row(
                   children: [
@@ -134,7 +134,7 @@ class EditPolicy extends StatelessWidget {
           floatingActionButton:FloatingActionButton(
             onPressed: () async {
               sellingpolicy.title=title.text;
-              v.editOrder(sellingpolicy,title);
+              policyCubit.editOrder(sellingpolicy,title);
             },
             child: Icon(Icons.save),
             backgroundColor: Colors.blueAccent,

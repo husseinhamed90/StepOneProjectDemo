@@ -20,12 +20,12 @@ Widget getsnackbar(BuildContext context,String message){
     action: SnackBarAction(
       label: 'تراجع',
       onPressed: () {
-        // Some code to undo the change.
       },
     ),
   );
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
+
 Widget buildRow(double width,double height,VisitsCubit brandsCubit,int index ,String text,String label,BuildContext context,String date){
   return Container(
     width: double.infinity,
@@ -68,6 +68,7 @@ Widget buildRow(double width,double height,VisitsCubit brandsCubit,int index ,St
     ),
   );
 }
+
 Container gettextfeild(double width, String lable, double margin,TextEditingController controller) {
   return Container(
     width: width,
@@ -85,14 +86,9 @@ Container gettextfeild(double width, String lable, double margin,TextEditingCont
                 style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold,),maxLines: 1,),
             )),
         TextFormField(
-
           controller: controller,
           maxLines: 1,
-
           decoration: InputDecoration(
-            //contentPadding: EdgeInsets.fromLTRB(0,0,0,0),
-            //labelText: lable,
-            //hintText: lable,
             hintMaxLines: 1,
             labelStyle: TextStyle(fontSize: 17,fontWeight: FontWeight.bold,),
             hintStyle: TextStyle(fontSize: 17,fontWeight: FontWeight.bold,),
@@ -102,17 +98,25 @@ Container gettextfeild(double width, String lable, double margin,TextEditingCont
     ),
   );
 }
-final picker = ImagePicker();
+
+Widget CustomTextButtom(Function function,String label){
+  return TextButton(onPressed:function,
+      child: Text(label,style: TextStyle(
+          fontSize: 40
+      ),));
+}
+
+
 Future<File> getImagefromSourse(ImageSource source) async {
+  final picker = ImagePicker();
   final pickedFile = await picker.getImage(
       source: source, preferredCameraDevice: CameraDevice.rear);
   if (pickedFile != null) {
     return File(pickedFile.path);
   }
 }
+
 Container returnphotoConatiner(String typeofoperation,String text,BuildContext context,dynamic v,File file,{String path,String imagetype}){
-  print("cccccccccccccccc");
-  print(file);
   return  Container(
       margin: EdgeInsets.all(10),
       color: Colors.grey,
@@ -142,6 +146,7 @@ Container returnphotoConatiner(String typeofoperation,String text,BuildContext c
 
   );
 }
+
 void showbootomsheeat(BuildContext context,dynamic v, {String imagetype}){
   showModalBottomSheet(
     context: context,
@@ -188,6 +193,7 @@ void showbootomsheeat(BuildContext context,dynamic v, {String imagetype}){
     },
   );
 }
+
 Future<String> getUrlofImage(File file)async{
   FirebaseStorage storage = FirebaseStorage.instance;
   Reference ref = storage.ref().child("image1" + DateTime.now().toString());
@@ -207,17 +213,17 @@ Future<File> uploaddocument() async {
   } else {
   }
 }
-void showbootomsheeatWithDocumentOnly(BuildContext context,BrandsCubit v){
+
+void showbootomsheeatWithDocumentOnly(BuildContext context,BrandsCubit v,String typeOfFile){
   showModalBottomSheet(
     context: context,
     builder: (context) {
       return Container(
-        // color: Colors.red,
         height: MediaQuery.of(context).size.height * 0.15,
         child: Center(
           child: InkWell(
               onTap: () async{
-                await v.uploadExcelFile();
+                await v.uploadExcelFile(typeOfFile);
               },
               child: Image.asset(
                 "assets/document.png", height: MediaQuery.of(context).size.height * 0.1,
@@ -228,8 +234,6 @@ void showbootomsheeatWithDocumentOnly(BuildContext context,BrandsCubit v){
     },
   );
 }
-
-
 
 Widget BuildRaw(BuildContext context,String label,TextEditingController controller){
   return Container(
@@ -256,6 +260,7 @@ Widget buildPercentageLable(String text,double width){
     ),maxLines: 1,),
   ),alignment: Alignment.center,);
 }
+
 void showdialogForExit(BuildContext context){
   showDialog(context: context, builder: (context) {
     return AlertDialog(
@@ -295,11 +300,11 @@ void ShowDialogbox(BuildContext context,onPressed){
     },
   );
 }
-List<user>users=[];
-CollectionReference userscollection = FirebaseFirestore.instance.collection('Users');
+
 
 Future<void> updateuserstatus(String newstatus,BuildContext context) async {
-  users=[];
+  List<user>users=[];
+  CollectionReference userscollection = FirebaseFirestore.instance.collection('Users');
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.setString('id',"");
   userscollection.where("id",isEqualTo:ClientsCubit.get(context).userid).get().then((value) {

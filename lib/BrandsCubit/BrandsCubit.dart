@@ -23,10 +23,11 @@ class BrandsCubit extends Cubit<BrandsStates> {
   static BrandsCubit get(BuildContext context) => BlocProvider.of(context);
   File image;
   File pdfFile;
+  File orderedFile;
   final picker = ImagePicker();
   bool foucesstate = false;
   List<Client> suggestionresult = [];
-  Client choosenclient;
+  Client choosenclient =Client.noClient();
   File productimage;
   CollectionReference Brands = FirebaseFirestore.instance.collection('Brands');
   List<brand> brands = [];
@@ -121,35 +122,29 @@ class BrandsCubit extends Cubit<BrandsStates> {
   }
 
   void InsertOrderIntoFireBase(String representaiveID) {
-    if(choosenclient!=null){
-
-      if(choosenclient.orderitems.length>0){
-        emit(addingproducttocardinprogress());
-        List<Map<String, dynamic>> gg = [];
-        choosenclient.orderitems.forEach((element) {
-          gg.add(element.toJson());
-        });
-        FirebaseFirestore.instance.collection('ClientOrders').add({
-          "OrderOwner": choosenclient.ClientID,
-          "OrderItems": gg,
-          "date": getDateWithoutTime(),
-          "representativeID":representaiveID
-        }).then((value) {
-          FirebaseFirestore.instance.collection('ClientOrders').doc(value.id).update({"location": value.id}).then((value) {
-            DeleteOrderFromDatabase().then((value) {
-              print("OrderSavedState");
-              emit(OrderSavedState());
-            });
+    if(choosenclient.orderitems.length>0){
+      emit(addingproducttocardinprogress());
+      List<Map<String, dynamic>> gg = [];
+      choosenclient.orderitems.forEach((element) {
+        gg.add(element.toJson());
+      });
+      FirebaseFirestore.instance.collection('ClientOrders').add({
+        "OrderOwner": choosenclient.ClientID,
+        "OrderItems": gg,
+        "date": getDateWithoutTime(),
+        "representativeID":representaiveID
+      }).then((value) {
+        FirebaseFirestore.instance.collection('ClientOrders').doc(value.id).update({"location": value.id}).then((value) {
+          DeleteOrderFromDatabase().then((value) {
+            print("OrderSavedState");
+            emit(OrderSavedState());
           });
-
         });
-      }
-      else{
-        emit(noItemsInCart());
-      }
+
+      });
     }
     else{
-      emit(nochoosenclientforOrder());
+      emit(noItemsInCart());
     }
   }
 
@@ -258,7 +253,10 @@ class BrandsCubit extends Cubit<BrandsStates> {
       prevbrand.products[index] = trProduct;
       Brands.doc(value.docs.first.id).update({"products": prevbrand.toJson()["products"]});
 
-      DocumentReference documentReference =FirebaseFirestore.instance.collection("ImagesWithCodes").doc( (trProduct.Item).contains("/") ? trProduct.Item.replaceAll(new RegExp(r'[^\w\s]+'),''): trProduct.Item);
+      if(trProduct.Item.contains("/")){
+        trProduct.Item.replaceAll(new RegExp(r'[^\w\s]+'));
+      }
+      DocumentReference documentReference =FirebaseFirestore.instance.collection("ImagesWithCodes").doc(trProduct.Item);
       documentReference.set({"imageUrl":trProduct.path}).then((value) {
         getbrands().then((value) {
           emit(brandupdated());
@@ -277,30 +275,44 @@ class BrandsCubit extends Cubit<BrandsStates> {
       emit(loadingbrangforupdate());
       if (image != null) {
         Reference ref =
-            storage.ref().child("image1" + DateTime.now().toString());
+        storage.ref().child("image1" + DateTime.now().toString());
         UploadTask uploadTask = ref.putFile(image);
         TaskSnapshot taskSnapshot = await uploadTask;
         String path = await taskSnapshot.ref.getDownloadURL();
         newbrand.path = path;
-      } else {
+      }
+      else {
         newbrand.path = currentbrand.path;
       }
-      if (pdfFile != null) {
-        LoadDatafromExcelFile(currentbrand, "update", updatedbrand: newbrand);
-      } else {
-        newbrand.excelfilepath = currentbrand.excelfilepath;
-        newbrand.products = currentbrand.products;
-        setUpdatedBrand(currentbrand, newbrand);
+
+      if(pdfFile==null&&orderedFile==null){
+        newbrand.orderedFile=currentbrand.orderedFile;
+        newbrand.orderedProducts=currentbrand.orderedProducts;
+        newbrand.excelfilepath=currentbrand.excelfilepath;
+        newbrand.products=currentbrand.products;
       }
-     DocumentSnapshot documentSnapshot =await FirebaseFirestore.instance.collection("OrderedBrands").doc(currentbrand.prandcode).get();
-      await FirebaseFirestore.instance.collection("OrderedBrands").doc(currentbrand.prandcode).delete();
-      await FirebaseFirestore.instance.collection("OrderedBrands").doc(newbrand.prandcode).set(documentSnapshot.data());
+      else if(pdfFile!=null&&orderedFile!=null){
+        newbrand = await LoadDatafromExcelFile(orderedFile,currentbrand, "orderedFile",updatedBrand: newbrand);
+        newbrand = await LoadDatafromExcelFile(pdfFile,currentbrand, "mainFile",updatedBrand: newbrand);
+      }
+      else{
+        if(orderedFile!=null){
+          newbrand.excelfilepath=currentbrand.excelfilepath;
+          newbrand.products=currentbrand.products;
+          newbrand = await LoadDatafromExcelFile(orderedFile,currentbrand, "orderedFile",updatedBrand: newbrand);
+        }
+        else if(pdfFile!=null){
+          newbrand.orderedFile=currentbrand.orderedFile;
+          newbrand.orderedProducts=currentbrand.orderedProducts;
+          newbrand = await LoadDatafromExcelFile(pdfFile,currentbrand, "mainFile",updatedBrand: newbrand);
+        }
+      }
+      setUpdatedBrand(currentbrand.id, newbrand);
     }
   }
 
-  void setUpdatedBrand(brand prevBrand, brand NewBrand) {
-    print(NewBrand.products.length);
-    Brands.doc(prevBrand.id).update(NewBrand.toJson()).then((value) {
+  void setUpdatedBrand(String id, brand NewBrand) {
+    Brands.doc(id).update(NewBrand.toJson()).then((value) {
       emit(brandupdated());
       getbrands();
     });
@@ -310,137 +322,124 @@ class BrandsCubit extends Cubit<BrandsStates> {
     emit(branddeleted());
     Brands.where("brandcode", isEqualTo: brandss.prandcode).get().then((value) {
       Brands.doc(value.docs.first.id).delete();
-      FirebaseFirestore.instance.collection("OrderedBrands").doc(brandss.prandcode).delete();
       getbrands();
       emit(branddeletedsuccfully());
     });
   }
+  Future<List<TrProduct>> orderproducts(List<TrProduct>products,List<TrProduct>orderedProducts)async{
 
-  Future<List<TrProduct>> orderproducts(brand currentbrand,List<TrProduct>products)async{
-    await FirebaseFirestore.instance.collection("OrderedBrands").doc(currentbrand.prandcode).get().then((value) async {
-      int count=1;
-      if(value.exists==false){
-        Map<String,dynamic>orderedBrand={};
-        for(int i=0;i<products.length;i++){
-          orderedBrand["${products[i].Item}"]=i;
-        }
-        FirebaseFirestore.instance.collection("OrderedBrands").doc(currentbrand.prandcode).set(orderedBrand);
+    Map<String,dynamic>orderedBrand={};
+    for(int i=0;i<orderedProducts.length;i++){
+      orderedBrand["${orderedProducts[i].Item}"]=i;
+    }
+    Map<String,dynamic>orderNumbers={};
+    Map<String,TrProduct>foundItems={};
+    List<TrProduct> newList =[];
+    for(int i=0;i<products.length;i++){
+      if(orderedBrand.containsKey(products[i].Item)){
+        foundItems[products[i].Item]=products[i];
+        orderNumbers[products[i].Item]=orderedBrand[products[i].Item];
       }
       else{
-        Map<String,dynamic>orderNumbers={};
-        Map<String,dynamic>newItems={};
-        Map<String,TrProduct>foundItems={};
-        Map<String,TrProduct>notfoundItems={};
-        List<TrProduct> newList =[];
-        for(int i=0;i<products.length;i++){
-          if(value.data().containsKey(products[i].Item)){
-            foundItems[products[i].Item]=products[i];
-            orderNumbers[products[i].Item]=value.data()[products[i].Item];
-          }
-          else{
-            notfoundItems[products[i].Item]=products[i];
-            newItems[products[i].Item]=value.data().length+count;
-            count++;
-          }
-        }
-        if(newItems.keys.isEmpty==false){
-          await FirebaseFirestore.instance.collection("OrderedBrands").doc(currentbrand.prandcode).get().then((value) async {
-            Map<String,dynamic> newmap ={};
-            newmap.addAll(value.data());
-            newmap.addAll(newItems);
-            await FirebaseFirestore.instance.collection("OrderedBrands").doc(currentbrand.prandcode).set( newmap);
-          });
-        }
-        var sortedKeys = orderNumbers.keys.toList(growable:false)..sort((k1, k2) => orderNumbers[k1].compareTo(orderNumbers[k2]));
-        LinkedHashMap sortedMap = new LinkedHashMap.fromIterable(sortedKeys, key: (k) => k, value: (k) => orderNumbers[k]);
-        sortedMap.forEach((key, value) {
-          newList.add(foundItems[key]);
-        });
-        notfoundItems.forEach((key, value) {
-          newList.add(value);
-        });
-        products=newList;
+        products[i].Price="0";
+        products[i].Retail="0";
+        products[i].Q="0";
+        foundItems[products[i].Item]=products[i];
+        orderNumbers[products[i].Item]=orderedBrand.length+1;
       }
-
+    }
+    var sortedKeys = orderNumbers.keys.toList(growable:false)..sort((k1, k2) => orderNumbers[k1].compareTo(orderNumbers[k2]));
+    LinkedHashMap sortedMap = new LinkedHashMap.fromIterable(sortedKeys, key: (k) => k, value: (k) => orderNumbers[k]);
+    sortedMap.forEach((key, value) {
+      newList.add(foundItems[key]);
     });
+    products=newList;
     return products;
   }
+
   void emitnumberofloadedfilesfromexel(double numberofFiles){
     emit(numberoffilestillNow(numberofFiles));
   }
-  void LoadDatafromExcelFile(brand currentbrand, String transactiontype, {brand updatedbrand}) async{
+  Future<brand> LoadDatafromExcelFile(File file,brand currentbrand,String typeOfFile, {brand updatedBrand,File secondFile}) async{
     try {
-      if(pdfFile!=null){
-        emit(loadingbrangforupdate());
-        String extention = p.extension(pdfFile.path).split('.')[1];
-        String filename = p.basename(pdfFile.path);
-        Reference ref =
-        FirebaseStorage.instance.ref().child('${extention}s/$filename');
-        UploadTask uploadedfileProgress = ref.putFile(
-            pdfFile, SettableMetadata(contentType: 'application/$extention'));
-        uploadedfileProgress.snapshotEvents.listen((snapshot) {
-          double percentage = getRemainingPercentage(snapshot);
-          emit(fileisuploadingprogress(percentage));
-          //cubit.ReturnPercentageState(percentage);
-        }, onError: (Object e) {});
-        uploadedfileProgress.then((value) {
-          value.ref.getDownloadURL().then((valuee) async {
-            if (transactiontype == "Insert") {
-              currentbrand.excelfilepath = valuee;
-              emit(readingexcelFileInProgess());
-              List<TrProduct>products=await readExcelFile(pdfFile.path,this);
-              emit(orderproductsInProgress());
-              products =await orderproducts(currentbrand, products);
-              currentbrand.products=products;
-              Brands.add(currentbrand.toJson()).then((value) {
-                Brands.doc(value.id).update({"id": value.id});
-                emit(brandadded());
-                getbrands();
-              });
-            } else if (transactiontype == "update") {
-              updatedbrand.excelfilepath = valuee;
-              emit(readingexcelFileInProgess());
-              List<TrProduct>products=await readExcelFile(pdfFile.path,this);
-              emit(orderproductsInProgress());
-              products = await orderproducts(currentbrand, products);
-              updatedbrand.products=products;
-              setUpdatedBrand(currentbrand, updatedbrand);
+      emit(loadingbrangforupdate());
+      String path;
+      String extention = p.extension(file.path).split('.')[1];
+      String filename = p.basename(file.path);
+      Reference ref = FirebaseStorage.instance.ref().child('${extention}s/$filename');
+      UploadTask uploadedfileProgress = ref.putFile(file, SettableMetadata(contentType: 'application/$extention'));
+      uploadedfileProgress.snapshotEvents.listen((snapshot) {
+        double percentage = getRemainingPercentage(snapshot);
+        emit(fileisuploadingprogress(percentage));
+      }, onError: (Object e) {});
+      await uploadedfileProgress.then((value) async {
+        await value.ref.getDownloadURL().then((valuee) async {
+          path=valuee;
+          emit(readingexcelFileInProgess());
+          List<TrProduct>products=await readExcelFile(file.path,this,typeOfFile);
+          if(updatedBrand!=null){
+            if(typeOfFile=="orderedFile"){
+              updatedBrand.orderedFile =path;
+              updatedBrand.orderedProducts=products;
+              updatedBrand.products=await orderproducts(currentbrand.products,updatedBrand.orderedProducts);
             }
-          });
+            else{
+              emit(orderproductsInProgress());
+              updatedBrand.excelfilepath=path;
+              if(updatedBrand.orderedProducts==[]||updatedBrand.orderedProducts==null){
+                updatedBrand.products=products;
+              }
+              else{
+                products =await orderproducts( products,updatedBrand.orderedProducts);
+                updatedBrand.products=products;
+              }
+            }
+          }
+          else{
+            if(typeOfFile=="orderedFile"){
+              currentbrand.orderedFile =path;
+              currentbrand.orderedProducts=products;
+            }
+            else{
+              emit(orderproductsInProgress());
+              currentbrand.excelfilepath=path;
+              if(currentbrand.orderedProducts==[]||currentbrand.orderedProducts==null){
+                currentbrand.products=products;
+              }
+              else{
+                products =await orderproducts(products,currentbrand.orderedProducts);
+                currentbrand.products=products;
+              }
+            }
+          }
+
         });
+
+      });
+
+      if(updatedBrand!=null){
+        return updatedBrand;
       }
       else{
-        if (transactiontype == "Insert") {
-          currentbrand.excelfilepath = "https://icons.iconarchive.com/icons/custom-icon-design/mono-general-2/512/document-icon.png";
-          currentbrand.products =  [];
-          Brands.add(currentbrand.toJson()).then((value) {
-            Brands.doc(value.id).update({"id": value.id});
-            emit(brandadded());
-            getbrands();
-          });
-        } else if (transactiontype == "update") {
-          updatedbrand.excelfilepath = currentbrand.excelfilepath;
-          updatedbrand.products = currentbrand.products;
-          setUpdatedBrand(currentbrand, updatedbrand);
-        }
+        return currentbrand;
       }
-
     } catch (e) {}
   }
-
-  Future<void> getbrands() async {
-    brands = [];
-    image = null;
-    pdfFile = null;
-    await FirebaseFirestore.instance
-        .collection('Brands')
-        .get()
-        .then((QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
-        brands.add(brand.fromJson(doc.data()));
+  Future<String> getpathOfDownloadedFile(File file) async{
+    String extention = p.extension(file.path).split('.')[1];
+    String filename = p.basename(file.path);
+    Reference ref =
+    FirebaseStorage.instance.ref().child('${extention}s/$filename');
+    UploadTask uploadedfileProgress = ref.putFile(
+        file, SettableMetadata(contentType: 'application/$extention'));
+    uploadedfileProgress.snapshotEvents.listen((snapshot) {
+      double percentage = getRemainingPercentage(snapshot);
+      emit(fileisuploadingprogress(percentage));
+    }, onError: (Object e) {});
+    await uploadedfileProgress.then((value) {
+      value.ref.getDownloadURL().then((valuee) async {
+       return valuee;
       });
-      emit(getbrandsstate());
-    }).catchError((error) {
     });
   }
 
@@ -449,32 +448,64 @@ class BrandsCubit extends Cubit<BrandsStates> {
       emit(emptystringfound());
     } else {
       brand newbrand = brand(brandname.text, brandecode.text);
-      FirebaseStorage storage = FirebaseStorage.instance;
       emit(loadingbrangforupdate());
       if (image == null) {
         newbrand.path =
         "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
       } else {
-        Reference ref =
-        storage.ref().child("image1" + DateTime.now().toString());
-        UploadTask uploadTask = ref.putFile(image);
-        TaskSnapshot taskSnapshot = await uploadTask;
-        String path = await taskSnapshot.ref.getDownloadURL();
+        String path= await getUrlofImage(image);
         newbrand.path = path;
       }
-      LoadDatafromExcelFile(newbrand, "Insert");
+
+      if(orderedFile!=null){
+        newbrand  = await LoadDatafromExcelFile(orderedFile,newbrand,"orderedFile");
+      }
+      else{
+        newbrand.orderedFile = "https://icons.iconarchive.com/icons/custom-icon-design/mono-general-2/512/document-icon.png";
+        newbrand.orderedProducts =  [];
+      }
+      if(pdfFile!=null){
+        newbrand =  await LoadDatafromExcelFile(pdfFile,newbrand,"mainFile");
+      }
+      else{
+        newbrand.excelfilepath = "https://icons.iconarchive.com/icons/custom-icon-design/mono-general-2/512/document-icon.png";
+        newbrand.products =  [];
+      }
+     // getbrands();
+      Brands.add(newbrand.toJson()).then((value){
+        Brands.doc(value.id).update({"id": value.id});
+        emit(brandadded());
+        getbrands();
+      });
     }
   }
 
-  Future<File> uploadExcelFile() async {
+  Future<void> getbrands() async {
+    brands = [];
+    orderedFile=null;
+    image = null;
+    pdfFile = null;
+     FirebaseFirestore.instance.collection('Brands').get().then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        brands.add(brand.fromJson(doc.data()));
+      });
+      emit(getbrandsstate());
+    }).catchError((error) {
+    });
+  }
+
+  Future<File> uploadExcelFile(String typeOfFile) async {
     FilePickerResult result = await FilePicker.platform.pickFiles();
     if (result != null) {
       File file = File(result.files.single.path);
-      pdfFile = file;
+
+      if(typeOfFile=="orderedFile"){
+        orderedFile=file;
+      }
+      else
+        pdfFile = file;
       emit(excelfileloaded());
       return file;
-    } else {
-      //return pdfFile;
     }
   }
 }

@@ -1,11 +1,20 @@
 class Client{
-  String path,clientname,phone,id,address,area,clinttype,ClientID,path2;
+  String path="";
+  String clientname="غير معروف";
+  String phone="";
+  String id="";
+  String address="";
+  String area="";
+  String clinttype="";
+  String ClientID="";
+  String path2="";
   String clientcode ="-";
   List<dynamic>orderitems=[];
 
   Client(this.clientname, this.clientcode,
       this.phone, this.address,
       this.area,[this.clinttype="غير محدد"]);
+  Client.noClient();
 
   Client.fromJson(Map<String, dynamic> json) {
     clientname = json['clientname'];
