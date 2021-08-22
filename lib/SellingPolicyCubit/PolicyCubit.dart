@@ -36,13 +36,12 @@ class PolicyCubit extends Cubit<PolicyCubitState> {
 
   Future getImagefromSourse(ImageSource source,File file) async {
     PolicyDocumentFile=null;
-    final pickedFile = await picker.getImage(
-        source: source, preferredCameraDevice: CameraDevice.rear);
+    final pickedFile = await picker.getImage(source: source, preferredCameraDevice: CameraDevice.rear);
     if (pickedFile != null) {
       file = File(pickedFile.path);
       PolicyImage=file;
       emit(imageiscome());
-    } else {}
+    }
   }
   void ReturnUpdateProcessEnded(){
     emit(Policyloaded());
@@ -51,10 +50,10 @@ class PolicyCubit extends Cubit<PolicyCubitState> {
 
   Future<void>editOrder(Sellingpolicy order,TextEditingController title)async{
     if(PolicyImage!=null){
-      UploadImage("Update",PolicyImage, order, collection, this);
+      UploadFile("Update",PolicyImage, order, collection, this);
     }
     else if(PolicyDocumentFile!=null){
-      UploadImage("Update",PolicyDocumentFile, order, collection, this);
+      UploadFile("Update",PolicyDocumentFile, order, collection, this);
     }
     else{
       emit(Policyisuploading());
@@ -80,10 +79,7 @@ class PolicyCubit extends Cubit<PolicyCubitState> {
   }
 
   Future<void>getpolices()async {
-    polices = [];
-    PolicyDocumentFile = null;
-    mainimage=null;
-    PolicyImage=null;
+    resetPolicyFiles();
     emit(loaddatafromfirebase());
     collection.get().then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
@@ -93,34 +89,47 @@ class PolicyCubit extends Cubit<PolicyCubitState> {
     });
   }
 
+  void resetPolicyFiles() {
+    polices = [];
+    PolicyDocumentFile = null;
+    mainimage=null;
+    PolicyImage=null;
+  }
+
   Future<void> addnewsellingpolicy(Sellingpolicy newsellingpolicy, TextEditingController title,) async {
 
     if (newsellingpolicy.title == "") {
       emit(emptystringfoundinpolicydata());
     }
     else {
-      if(PolicyImage==null&&PolicyDocumentFile==null){
-        emit(Policyisuploading());
-        newsellingpolicy.date = getDateWithoutTime();
-        newsellingpolicy.extention="png";
-        newsellingpolicy.defauktphoto="https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
-        newsellingpolicy.path = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
-        collection.add(newsellingpolicy.toJson()).then((value) {
-          newsellingpolicy.id = value.id;
-          collection.doc(value.id).update({'id': value.id});
-          title.text = "";
-          getpolices();
-        }).catchError((error) => print("Failed to add new: $error"));
-      }
-      else{
-        if(PolicyDocumentFile!=null){
-          UploadFileToServer("Insert",PolicyDocumentFile,this,newsellingpolicy,collection,polices,typeoflist: "policy",mainimage: null);
-        }
-        else if(PolicyImage!=null){
-          UploadFileToServer("Insert",PolicyImage,this,newsellingpolicy,collection,polices,typeoflist: "policy",mainimage: null);
-        }
-      }
+      insertNewSellingPolicy(newsellingpolicy, title);
     }
+  }
+
+  void insertNewSellingPolicy(Sellingpolicy newsellingpolicy, TextEditingController title) {
+     emit(Policyisuploading());
+    if(PolicyImage==null&&PolicyDocumentFile==null){
+      SellingPolicyWithoutFiles(newsellingpolicy, title);
+    }
+    else if(PolicyDocumentFile!=null){
+      UploadFileToServer("Insert",PolicyDocumentFile,this,newsellingpolicy,collection,polices,typeoflist: "policy",mainimage: null);
+    }
+    else if(PolicyImage!=null){
+      UploadFileToServer("Insert",PolicyImage,this,newsellingpolicy,collection,polices,typeoflist: "policy",mainimage: null);
+    }
+  }
+
+  void SellingPolicyWithoutFiles(Sellingpolicy newsellingpolicy, TextEditingController title) {
+    newsellingpolicy.date = getDateWithoutTime();
+    newsellingpolicy.extention="png";
+    newsellingpolicy.defauktphoto="https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
+    newsellingpolicy.path = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
+    collection.add(newsellingpolicy.toJson()).then((value) {
+      newsellingpolicy.id = value.id;
+      collection.doc(value.id).update({'id': value.id});
+      title.text = "";
+      getpolices();
+    }).catchError((error) => print("Failed to add new: $error"));
   }
 
   void ReturnPercentageState(double percentage){

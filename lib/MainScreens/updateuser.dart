@@ -119,7 +119,7 @@ class _updateuserState extends State<updateuser> with WidgetsBindingObserver{
                                     TextButton(onPressed: (){
                                       //user newuser =user(username.text,password.text,widget.olduser.usertype,widget.olduser.id,widget.olduser.isfirsttime);
                                       Navigator.pop(context);
-                                      v.updateeuser(widget.olduser,username,password,widget.index);
+                                      v.updateUser(widget.olduser,username,password,widget.index);
                                     }, child: Text("نعم")),
                                     TextButton(onPressed: () => Navigator.pop(context), child: Text("لا")),
                                   ],

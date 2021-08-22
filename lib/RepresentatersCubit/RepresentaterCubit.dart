@@ -120,32 +120,46 @@ class RepresentaterCubit extends Cubit<RepresentatersState> {
     }
     currentrepresentative=newrepresentaive;
     appCubit.SetCurrentRepresentative(currentrepresentative);
-    representatives
-        .where("id", isEqualTo: currentrepresentative.id)
-        .get()
-        .then((value) {
-      representatives
-          .doc(value.docs.first.id)
-          .update(newrepresentaive.toJson());
-    });
+    updateCurrentRepresentstiveInFireBase(newrepresentaive);
+    updateAdminDataIfCurrentRepresentativeIsAdminUser(currentuser, newrepresentaive);
+  }
+
+  void updateAdminDataIfCurrentRepresentativeIsAdminUser(user currentuser, Representative newrepresentaive) {
     if(currentuser.usertype=="admin"){
-      representatives.get().then((value) {
-        value.docs.forEach((element) {
-          representatives
-              .doc(element.id)
-              .update({"companyaddress":newrepresentaive.companyaddress,
-            "companyname":newrepresentaive.companyname,
-            "companyphone":newrepresentaive.companyphone,
-            "path":newrepresentaive.path
-          }).then((value) {
-            emit(representativeupdatedstate());
-          });
-        });
-      });
+      updateOtherRepresentativeData(newrepresentaive);
     }
     else{
       emit(representativeupdatedstate());
     }
+  }
+
+  void updateOtherRepresentativeData(Representative newrepresentaive) {
+    representatives.get().then((value) {
+      value.docs.forEach((element) {
+        updateEachRepresentativeData(element, newrepresentaive);
+      });
+    });
+  }
+
+  void updateEachRepresentativeData(QueryDocumentSnapshot element, Representative newrepresentaive) {
+    representatives.doc(element.id).update(
+        ExtractMapOfAdminData(newrepresentaive)).then((value) {
+      emit(representativeupdatedstate());
+    });
+  }
+
+  Map<String, dynamic> ExtractMapOfAdminData(Representative newrepresentaive) {
+    return {"companyaddress":newrepresentaive.companyaddress,
+    "companyname":newrepresentaive.companyname,
+    "companyphone":newrepresentaive.companyphone,
+    "path":newrepresentaive.path
+    };
+  }
+
+  void updateCurrentRepresentstiveInFireBase(Representative newrepresentaive) {
+    representatives.where("id", isEqualTo: currentrepresentative.id).get().then((value) {
+      representatives.doc(value.docs.first.id).update(newrepresentaive.toJson());
+    });
   }
 
 }

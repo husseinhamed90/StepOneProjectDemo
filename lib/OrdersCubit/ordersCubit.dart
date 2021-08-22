@@ -84,10 +84,10 @@ class ordersCubit extends Cubit<ordersStates> {
 
   Future<void>editOrder(Order order,TextEditingController title)async{
     if(OrderImage!=null){
-      UploadImage("Update",OrderImage, order, collection, this);
+      UploadFile("Update",OrderImage, order, collection, this);
     }
     else if(OrderDocumentFile!=null){
-      UploadImage("Update",OrderDocumentFile, order, collection, this);
+      UploadFile("Update",OrderDocumentFile, order, collection, this);
     }
     else{
       UpdateItem(order,collection,this);
@@ -100,21 +100,14 @@ class ordersCubit extends Cubit<ordersStates> {
   }
 
 
-  Future<void> addnewOrders(Order order, TextEditingController title,) async {
+  Future<void> addNewOrders(Order order, TextEditingController title,) async {
     if (order.title == "") {
       emit(emptystringfoundinpolicydata());
     }
     else {
+      emit(Policyisuploading());
       if(OrderImage==null&&OrderDocumentFile==null){
-        emit(Policyisuploading());
-        order.date = getDateWithoutTime();
-        order.extention="png";
-        order.mainimagepath="https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
-        order.defauktphoto="https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
-        order.path = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
-        await OrderServicesAPIs.AddOrderToFireBase(order);
-        title.text = "";
-        await getOrders();
+        await orderWithoutFiles(order, title);
       }
       else{
         if(OrderDocumentFile!=null){
@@ -125,6 +118,18 @@ class ordersCubit extends Cubit<ordersStates> {
         }
       }
     }
+  }
+
+  Future<void> orderWithoutFiles(Order order, TextEditingController title) async {
+     emit(Policyisuploading());
+    order.date = getDateWithoutTime();
+    order.extention="png";
+    order.mainimagepath="https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
+    order.defauktphoto="https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
+    order.path = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
+    await OrderServicesAPIs.AddOrderToFireBase(order);
+    title.text = "";
+    await getOrders();
   }
 
   Future<void>getOrders()async {

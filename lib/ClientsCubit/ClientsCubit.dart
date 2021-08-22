@@ -18,8 +18,7 @@ class ClientsCubit extends Cubit<ClientsCubitState> {
   File pdfFile;
   String userid;
   final picker = ImagePicker();
-  CollectionReference ClintsCollection =
-      FirebaseFirestore.instance.collection('Clients');
+  CollectionReference ClintsCollection = FirebaseFirestore.instance.collection('Clients');
   List<Client> clients = [];
   Future<void> deleteclient(Client client) {
     ClintsCollection.doc(client.ClientID).delete();
@@ -32,7 +31,6 @@ class ClientsCubit extends Cubit<ClientsCubitState> {
         source: source, preferredCameraDevice: CameraDevice.rear);
     if (pickedFile != null) {
       return File(pickedFile.path);
-      emit(imageiscome());
     } else {}
   }
 
@@ -58,7 +56,6 @@ class ClientsCubit extends Cubit<ClientsCubitState> {
 
   Future<void> getClintess() async {
     clients = [];
-
     emit(loaddatafromfirebase());
     if (userid != null) {
       await ClintsCollection.where("id", isEqualTo: userid).get().then((QuerySnapshot querySnapshot) {
@@ -88,6 +85,7 @@ class ClientsCubit extends Cubit<ClientsCubitState> {
     image=null;
     image2=null;
   }
+
   Future<void> updateClient(Client client, Client oldclient) async {
     emit(updatestatuesloading());
     if (image == null) {
@@ -102,6 +100,10 @@ class ClientsCubit extends Cubit<ClientsCubitState> {
     else{
       client.path2= await getUrlofImage(image2);
     }
+    await updateClientInFireBase(client, oldclient);
+  }
+
+  Future<void> updateClientInFireBase(Client client, Client oldclient) async {
     client.id = userid;
     client.ClientID=oldclient.ClientID;
     ClintsCollection.doc(oldclient.ClientID).update(client.toJson()).then((value) async {
@@ -109,6 +111,7 @@ class ClientsCubit extends Cubit<ClientsCubitState> {
       emit(clientupdatedstate());
     });
   }
+
   Future<void> addClient(
       Client client,
       TextEditingController Clientname,
@@ -119,9 +122,11 @@ class ClientsCubit extends Cubit<ClientsCubitState> {
       File _image, File _image2,
       String id,
       ) async {
+    client.id = id;
     if (Clientname.text == "") {
       emit(validclientstate());
-    } else {
+    }
+    else {
       emit(loaddatafromfirebase());
       if (image==null) {
         client.path = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
@@ -135,19 +140,21 @@ class ClientsCubit extends Cubit<ClientsCubitState> {
       else{
         client.path2=await getUrlofImage(image2);
       }
-      client.id = id;
-      ClintsCollection.add(client.toJson()).then((value) {
-        ClintsCollection.doc(value.id).update({"ClientID":value.id});
-        Clientname.text = "";
-        Clientcode.text = "";
-        Clientphone.text = "";
-        Clientaddress.text = "";
-        Clientarea.text = "";
-
-        getClintess();
-        emit(Clientaddedsuccefulltstate());
-      }).catchError((error) => print("Failed to add client: $error"));
+      insertClientInFireBase(client, Clientname, Clientcode, Clientphone, Clientaddress, Clientarea);
     }
   }
+  void insertClientInFireBase(Client client, TextEditingController Clientname, TextEditingController Clientcode, TextEditingController Clientphone, TextEditingController Clientaddress, TextEditingController Clientarea) {
 
+    ClintsCollection.add(client.toJson()).then((value) {
+    ClintsCollection.doc(value.id).update({"ClientID":value.id});
+    Clientname.text = "";
+    Clientcode.text = "";
+    Clientphone.text = "";
+    Clientaddress.text = "";
+    Clientarea.text = "";
+
+    getClintess();
+    emit(Clientaddedsuccefulltstate());
+          }).catchError((error) => print("Failed to add client: $error"));
+  }
 }

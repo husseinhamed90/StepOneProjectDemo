@@ -15,14 +15,12 @@ class Userslist extends StatelessWidget {
         preferredSize: Size.fromHeight(70),
       ),
       body:  BlocConsumer<AppCubit,MainCubitState>(
-          listener: (context, state) {
-
-          },
+          listener: (context, state) {},
           builder: (context, state) {
             AppCubit appCubit =AppCubit.get(context);
             if(state is ! userupdateload){
               return RefreshIndicator(
-                onRefresh: () => appCubit.getusers(),
+                onRefresh: () => appCubit.getUsers(),
                 child: ListView.builder(
                   itemBuilder: (context, index) {
                     return BuildUserItem(appCubit.users[index], appCubit, index);

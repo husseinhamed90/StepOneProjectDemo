@@ -58,28 +58,75 @@ String getnameofdayinarabic(String name){
   }
 }
 
-String getDate(List<String>ss){
-  String last = ss[1].split('/')[1] +
+String getDate(List<String>date){
+  String last = date[1].split('/')[1] +
       "/" +
-      ss[1].split('/')[0] +
+      date[1].split('/')[0] +
       "/" +
-      ss[1].split('/')[2] +
+      date[1].split('/')[2] +
       " - " +
-      ss[2];
+      date[2];
   List<String> ff = last.split('-');
   return ff[0];
 }
 
 Future<List<TrProduct>> readExcelFile(String fileName,BrandsCubit brandsCubit,String typeofFile)async {
 
-
-
   File file = File(fileName);
   var bytes = file.readAsBytesSync();
   var excel = Excel.decodeBytes(bytes);
-
   List<TrProduct> products = [];
   List<String>columns=[];
+  columns = extractMapOfColumsNames(excel, columns);
+  int numberOfLoadedRowsTillNow =0;
+  for (int i = (typeofFile=="orderedFile")?1:2; i < excel.tables["List"].rows.length; i++) {
+    List<dynamic> item = extractValuesFromRow(excel, i);
+    Map<String,dynamic>map = extractMapBetweenColumnsNamesWithValues(excel,columns,item);
+    if( map['Item']!="End"){
+      await setImageToItemIfExistOneInServer(map, products);
+    }
+    numberOfLoadedRowsTillNow++;
+    brandsCubit.emitnumberofloadedfilesfromexel(numberOfLoadedRowsTillNow/(excel.tables["List"].rows.length));
+  }
+  return products;
+}
+
+Map<String, dynamic> extractMapBetweenColumnsNamesWithValues(Excel excel,List<String> columns, List<dynamic> item) {
+  Map<String, dynamic> map={};
+  for (int k = 0; k < excel.tables["List"].rows[0].length; k++) {
+    map[columns[k]]=item[k];
+  }
+  return map;
+}
+
+List<dynamic> extractValuesFromRow(Excel excel, int i) {
+  List<dynamic> item = [];
+  for (int k = 0; k < excel.tables["List"].rows[i].length; k++) {
+    if (excel.tables["List"].rows[i][k].runtimeType == Formula) {
+      Formula d = excel.tables["List"].rows[i][k];
+      item.add(d.value);
+    }
+    else {
+      item.add(excel.tables["List"].rows[i][k]);
+    }
+  }
+  return item;
+}
+
+Future<void> setImageToItemIfExistOneInServer(Map<String, dynamic> map, List<TrProduct> products) async {
+  if(map['Item'].contains("/")){
+    map['Item'].replaceAll(new RegExp(r'[^\w\s]+'));
+  }
+  await FirebaseFirestore.instance.collection("ImagesWithCodes").doc(map['Item']).get().then((value){
+    map["path"]=value.data()['imageUrl'];
+    products.add(TrProduct.fromJson(map));
+  }).catchError((error, stackTrace) {
+    map["path"]="https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
+    products.add(TrProduct.fromJson(map));
+  });
+}
+
+List<String> extractMapOfColumsNames(Excel excel, List<String> columns) {
   for (int k = 0; k < excel.tables["List"].rows[0].length; k++) {
     if(excel.tables["List"].rows[0][k].contains("Retail")){
       columns.add("Retail المستهلك");
@@ -88,39 +135,7 @@ Future<List<TrProduct>> readExcelFile(String fileName,BrandsCubit brandsCubit,St
       columns.add(excel.tables["List"].rows[0][k]);
     }
   }
-  int count =0;
-  for (int i = (typeofFile=="orderedFile")?1:2; i < excel.tables["List"].rows.length; i++) {
-    List<dynamic> item = [];
-    Map<String,dynamic>map={};
-    for (int k = 0; k < excel.tables["List"].rows[i].length; k++) {
-      if (excel.tables["List"].rows[i][k].runtimeType == Formula) {
-        Formula d = excel.tables["List"].rows[i][k];
-        item.add(d.value);
-      } else {
-        item.add(excel.tables["List"].rows[i][k]);
-      }
-    }
-    for (int k = 0; k < excel.tables["List"].rows[0].length; k++) {
-      map[columns[k]]=item[k];
-    }
-
-    if( map['Item']!="End"){
-
-      if(map['Item'].contains("/")){
-        map['Item'].replaceAll(new RegExp(r'[^\w\s]+'));
-      }
-      await FirebaseFirestore.instance.collection("ImagesWithCodes").doc(map['Item']).get().then((value){
-        map["path"]=value.data()['imageUrl'];
-        products.add(TrProduct.fromJson(map));
-      }).catchError((error, stackTrace) {
-        map["path"]="https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
-        products.add(TrProduct.fromJson(map));
-      });
-    }
-    count++;
-    brandsCubit.emitnumberofloadedfilesfromexel(count/(excel.tables["List"].rows.length));
-  }
-  return products;
+  return columns;
 }
 
 String getTime() {
@@ -153,92 +168,107 @@ Future<void> deletItem(file sellingpolicy,CollectionReference collectionReferenc
 
 String getDateWithoutTime() {
   List<String> dateInYMDFormat = [];
-
-  dateInYMDFormat =
-      DateFormat.yMEd().add_jms().format(DateTime.now()).split(' ');
-
-  String last = dateInYMDFormat[1].split('/')[1] +
-      "/" +
-      dateInYMDFormat[1].split('/')[0] +
-      "/" +
-      dateInYMDFormat[1].split('/')[2];
+  dateInYMDFormat = DateFormat.yMEd().add_jms().format(DateTime.now()).split(' ');
+  String last = dateInYMDFormat[1].split('/')[1] + "/" + dateInYMDFormat[1].split('/')[0] + "/" + dateInYMDFormat[1].split('/')[2];
   List<String> dateInYMDFormatAfterSplitting = last.split('-');
   return dateInYMDFormatAfterSplitting[0];
 }
 
-Future<UploadTask> UploadFileToServer (String typeofTransaction,File pdfFile,dynamic cubit,file newsellingpolicy,CollectionReference collection,List<file>dynamiclist,{String typeoflist,File mainimage,bool isthereMainImageInItem=false}) async{
-
+Future<UploadTask> UploadFileToServer (
+    String typeofTransaction,
+    File pdfFile,dynamic cubit,
+    file newsellingpolicy,
+    CollectionReference collection,
+    List<file>dynamiclist,
+    {String typeoflist,
+      File mainimage,
+      bool isthereMainImageInItem=false
+    })
+  async{
   FirebaseStorage storage = FirebaseStorage.instance;
-
     if(isthereMainImageInItem){
-
-      if(mainimage==null){
-        newsellingpolicy.mainimagepath = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
-        newsellingpolicy.defauktphoto = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
-      }
-      if(mainimage!=null){
-        Reference ref = storage.ref().child("image1" + DateTime.now().toString());
-        UploadTask uploadedfileProgress =ref.putFile(mainimage);
-        uploadedfileProgress.snapshotEvents.listen((snapshot){
-          double percentage =getRemainingPercentage(snapshot);
-          cubit.ReturnPercentageState(percentage);
-        }, onError: (Object e) {},
-        );
-        uploadedfileProgress.then((TaskSnapshot value){
-          value.ref.getDownloadURL().then((valuee) {
-            newsellingpolicy.mainimagepath=valuee;
-            UploadDocument(typeofTransaction,pdfFile, cubit, newsellingpolicy, collection, typeoflist);
-          });
-        });
-      }
-      else{
-        UploadDocument(typeofTransaction,pdfFile, cubit, newsellingpolicy, collection, typeoflist);
-      }
+      itemHaveMainImage(mainimage, newsellingpolicy, storage, cubit, typeofTransaction, pdfFile, collection, typeoflist);
     }
     else{
       UploadDocument(typeofTransaction,pdfFile, cubit, newsellingpolicy, collection, typeoflist);
     }
 }
 
-Future<void>UploadImage(String typeOfTransaction,File pdfFile,file newsellingpolicy,CollectionReference collection,dynamic cubit)async{
-  String  extention =p.extension(pdfFile.path).split('.')[1];
-  String filename =p.basename(pdfFile.path);
-  newsellingpolicy.date = getDateWithoutTime();
-  newsellingpolicy.extention=extention;
-  Reference ref = FirebaseStorage.instance.ref().child('${extention}s/$filename');
-  UploadTask uploadedfileProgress =ref.putFile(pdfFile, SettableMetadata(contentType: 'application/$extention'));
-  uploadedfileProgress.snapshotEvents.listen((snapshot) {
-    double percentage = getRemainingPercentage(snapshot);
-    cubit.ReturnPercentageState(percentage);
-  }, onError: (Object e) {});
-  uploadedfileProgress.then((TaskSnapshot value) {
-    value.ref.getDownloadURL().then((valuee) {
-      newsellingpolicy.path = valuee;
+void itemHaveMainImage(File mainimage, file newFile, FirebaseStorage storage, cubit, String typeofTransaction, File pdfFile, CollectionReference collection, String typeoflist) {
 
-      PutCorrectPathsOfImages(lookupMimeType("$filename"+".$extention").split("/")[0],newsellingpolicy,valuee);
-      if(typeOfTransaction=="Update"){
-        UpdateItem(newsellingpolicy, collection, cubit);
-      }
-      else{
-        InsertItemToFireStore(collection, newsellingpolicy, cubit);
-      }
+  if(mainimage==null){
+    putMainImageWithDefaultValue(newFile);
+  }
+  if(mainimage!=null){
+    print("gfgfd 3");
+    uploadItemToFireBaseWithMainImage(storage, mainimage, cubit, newFile, typeofTransaction, pdfFile, collection, typeoflist);
+  }
+  else{
+    UploadDocument(typeofTransaction,pdfFile, cubit, newFile, collection, typeoflist);
+  }
+}
+UploadTask SaveFileIntoFireBaseStorage(File file) {
+  String extention = p.extension(file.path).split('.')[1];
+  String filename = p.basename(file.path);
+  Reference ref = FirebaseStorage.instance.ref().child('${extention}s/$filename');
+  UploadTask uploadedfileProgress = ref.putFile(file, SettableMetadata(contentType: 'application/$extention'));
+  return uploadedfileProgress;
+}
+
+void uploadItemToFireBaseWithMainImage(FirebaseStorage storage, File mainImage, cubit, file newFile, String typeofTransaction, File pdfFile, CollectionReference collection, String typeoflist) {
+  UploadTask uploadedFileProgress = SaveFileIntoFireBaseStorage(mainImage);
+  uploadedFileProgress.then((TaskSnapshot value){
+    value.ref.getDownloadURL().then((url) {
+      newFile.mainimagepath=url;
+      UploadDocument(typeofTransaction,pdfFile, cubit, newFile, collection, typeoflist);
     });
   });
 }
 
+
+String getFileName(File file) {
+  String extention = p.extension(file.path).split('.')[1];
+  String filename = p.basename(file.path);
+  return "$filename"+".$extention";
+}
+void putMainImageWithDefaultValue(file newsellingpolicy) {
+   newsellingpolicy.mainimagepath = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
+  newsellingpolicy.defauktphoto = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
+}
+
+Future<void>UploadFile(String typeOfTransaction,File pdfFile,file newsellingpolicy,CollectionReference collection,dynamic cubit)async{
+  UploadTask uploadedFileProgress = SaveFileIntoFireBaseStorage(pdfFile);
+  uploadedFileProgress.then((TaskSnapshot value) {
+    value.ref.getDownloadURL().then((url) {
+      newsellingpolicy.date = getDateWithoutTime();
+      newsellingpolicy.path=url;
+      newsellingpolicy.extention=p.extension(pdfFile.path).split('.')[1];
+      uploadItemToFireBase(pdfFile, newsellingpolicy, url,typeOfTransaction, collection, cubit);
+    });
+  });
+}
+
+void uploadItemToFireBase(File pdfFile, file newsellingpolicy, String valuee, String typeOfTransaction, CollectionReference collection, cubit) {
+  newsellingpolicy =PutCorrectPathsOfImages(lookupMimeType(getFileName(pdfFile)).split("/")[0],newsellingpolicy,valuee);
+  if(typeOfTransaction=="Update"){
+    UpdateItem(newsellingpolicy, collection, cubit);
+  }
+  else{
+    InsertItemToFireStore(collection, newsellingpolicy, cubit);
+  }
+}
+
 Future<void>UpdateItem(dynamic order,CollectionReference collection,dynamic cubit)async{
-  await collection
-      .doc(order.id)
-      .update(order.toJson())
-      .then((value) {
+  await collection.doc(order.id).update(order.toJson()).then((value) {
       UpdateList(cubit);
-   cubit.ReturnUpdateProcessEnded();
-  }).catchError((error) => print("Failed to update order: $error"));
+      cubit.ReturnUpdateProcessEnded();
+  }).catchError((error) => print("Failed to update item: $error"));
 }
 
 Future UploadDocument(String typeofTransaction,File pdfFile,dynamic cubit,file newsellingpolicy,CollectionReference collection,String typeoflist){
     if(pdfFile!=null){
-      UploadImage(typeofTransaction,pdfFile, newsellingpolicy, collection, cubit);
+      newsellingpolicy.date = getDateWithoutTime();
+      UploadFile(typeofTransaction,pdfFile, newsellingpolicy, collection, cubit);
     }
     else{
       newsellingpolicy.date = getDateWithoutTime();
@@ -264,7 +294,7 @@ Future<void> InsertItemToFireStore(CollectionReference collection,file newsellin
   }).catchError((error) => print("Failed to add item: $error"));
 }
 
-void PutCorrectPathsOfImages(String type, file newsellingpolicy,String path) {
+file PutCorrectPathsOfImages(String type, file newsellingpolicy,String path) {
   if(type=="image"){
     if(newsellingpolicy.mainimagepath==null){
       newsellingpolicy.mainimagepath=path;
@@ -284,6 +314,27 @@ void PutCorrectPathsOfImages(String type, file newsellingpolicy,String path) {
     }
     newsellingpolicy.defauktphoto = "https://icons.iconarchive.com/icons/custom-icon-design/mono-general-2/256/document-icon.png";
   }
+  return newsellingpolicy;
+}
+
+List<TrProduct> sortProducts(Map<String,dynamic>orderNumbers,Map<String,TrProduct>foundItems){
+  List<TrProduct> newList =[];
+  var sortedKeys = orderNumbers.keys.toList(growable:false)..sort((k1, k2) => orderNumbers[k1].compareTo(orderNumbers[k2]));
+  LinkedHashMap sortedMap = new LinkedHashMap.fromIterable(sortedKeys, key: (k) => k, value: (k) => orderNumbers[k]);
+  sortedMap.forEach((key, value) {
+    newList.add(foundItems[key]);
+  });
+  return newList;
+}
+
+Future<String> getUrlofImage(File file)async{
+  FirebaseStorage storage = FirebaseStorage.instance;
+  Reference ref = storage.ref().child("image1" + DateTime.now().toString());
+  UploadTask uploadTask = ref.putFile(file);
+  TaskSnapshot taskSnapshot = await uploadTask;
+  String path = await taskSnapshot.ref.getDownloadURL();
+
+  return path;
 }
 
 void UpdateList(dynamic cubit){
@@ -303,7 +354,6 @@ void UpdateList(dynamic cubit){
 
 Future<void> launchURL(String url, String extention, String title,dynamic cubit) async {
   Dio dio = new Dio();
-
   try {
     await Permission.storage.request();
     OpenFile.open("/storage/emulated/0/Download/$title.$extention").then((value) async {

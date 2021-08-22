@@ -105,14 +105,6 @@ class EditPolicy extends StatelessWidget {
                           sellingpolicy.defauktphoto,
                           height: MediaQuery.of(context).size.height*0.2-30,
                         ),
-                        // SizedBox(
-                        //   height: 5,
-                        // ),
-                        // Text(
-                        //   "اضافة صورة او ملف او فيديو".tr,
-                        //   style: TextStyle(
-                        //       fontSize: 20, fontWeight: FontWeight.bold),
-                        // )
                       ],
                     ),
                   ) :
@@ -122,12 +114,8 @@ class EditPolicy extends StatelessWidget {
                       },
                       child: Image.file(policyCubit.PolicyImage)),
                 ),
-                Row(
-                  children: [
-                    gettextfeild((MediaQuery.of(context).size.width - 50),
-                        "العنوان", 10, title),
-                  ],
-                ),
+                gettextfeild((MediaQuery.of(context).size.width - 50),
+                    "العنوان", 10, title),
               ],
             ),
           ),

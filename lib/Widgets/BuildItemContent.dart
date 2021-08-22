@@ -58,7 +58,7 @@ class BuildItemContent extends StatelessWidget {
           ),
           Container(
             width: (constraints.maxWidth - 14) * 0.15,
-            child: (AppCubit.get(context).currentuser.usertype == "admin")
+            child: (AppCubit.get(context).currentUser.usertype == "admin")
                 ? Container(
               // width: ((constraints.maxWidth-20)*0.3)*0.3,
               child: Column(

@@ -10,13 +10,13 @@ import 'package:steponedemo/Models/TRProdct.dart';
 import 'package:steponedemo/Widgets/CustomAppBar.dart';
 class ShoppingCartPage extends StatelessWidget {
   TrProduct trProduct;
-  Client productowner;
-  ShoppingCartPage(this.trProduct,this.productowner);
+  Client productOwner;
+  ShoppingCartPage(this.trProduct,this.productOwner);
    TextEditingController quantity=TextEditingController();
    TextEditingController bounce=TextEditingController();
-   TextEditingController discountReplacmentToBounce=TextEditingController();
-   TextEditingController Addeddiscount=TextEditingController();
-   TextEditingController SpecialDiscount=TextEditingController();
+   TextEditingController discountReplacementToBounce=TextEditingController();
+   TextEditingController addDiscount=TextEditingController();
+   TextEditingController specialDiscount=TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -77,9 +77,9 @@ class ShoppingCartPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  BuildRaw(context, "خصم بدل بونص",discountReplacmentToBounce),
-                  BuildRaw(context, "خصم اضافي",Addeddiscount),
-                  BuildRaw(context,"خصم خاص",SpecialDiscount)
+                  BuildRaw(context, "خصم بدل بونص",discountReplacementToBounce),
+                  BuildRaw(context, "خصم اضافي",addDiscount),
+                  BuildRaw(context,"خصم خاص",specialDiscount)
                 ],
               ),
             ),
@@ -90,11 +90,12 @@ class ShoppingCartPage extends StatelessWidget {
               ShippedItem shippedItem=ShippedItem(trProduct,
                   (quantity.text!="")?int.parse(quantity.text):0,
                   (bounce.text!="")?int.parse(bounce.text):0,
-                  (discountReplacmentToBounce.text!="")?double.parse(discountReplacmentToBounce.text):0,
-                  (Addeddiscount.text!="")?double.parse(Addeddiscount.text):0,
-                  (SpecialDiscount.text!="")?double.parse(SpecialDiscount.text):0
+                  (discountReplacementToBounce.text!="")?double.parse(discountReplacementToBounce.text):0,
+                  (addDiscount.text!="")?double.parse(addDiscount.text):0,
+                  (specialDiscount.text!="")?double.parse(specialDiscount.text):0
               );
-              BrandsCubit.get(context).AddProductToCart(shippedItem,productowner,quantity,bounce,discountReplacmentToBounce,Addeddiscount,SpecialDiscount);
+              BrandsCubit.get(context).AddProductToCart(shippedItem,productOwner);
+              BrandsCubit.get(context).resetTextFeilds(quantity, bounce, discountReplacementToBounce, addDiscount, specialDiscount);
             },
           ),
         );

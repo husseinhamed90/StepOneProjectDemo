@@ -51,7 +51,7 @@ class CatalogsList  extends StatelessWidget {
                 ),
               ),
             ),
-            floatingActionButton: (AppCubit.get(context).currentuser.usertype=="admin")? FloatingActionButton(
+            floatingActionButton: (AppCubit.get(context).currentUser.usertype=="admin")? FloatingActionButton(
               heroTag: "btn1",
               child: Icon(Icons.add),
               onPressed: () async{

@@ -1,10 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:get/get.dart';
 import 'package:mime/mime.dart';
 import 'package:steponedemo/Helpers/Shared.dart';
 import 'package:steponedemo/Models/News.dart';
@@ -12,17 +8,16 @@ import 'package:steponedemo/NewsCubit/NewsCubit.dart';
 import 'package:steponedemo/NewsCubit/NewsCubitState.dart';
 import 'package:steponedemo/Widgets/CircularProgressParForUpload.dart';
 import 'package:steponedemo/Widgets/CustomAppBar.dart';
-import '../Helpers/Utilites.dart';
 import 'package:path/path.dart' as p;
 import 'package:toast/toast.dart';
 
 class EditNew extends StatelessWidget {
-  News currentnew;
-  EditNew(this.currentnew);
+  News currentNew;
+  EditNew(this.currentNew);
   TextEditingController title = new TextEditingController();
   @override
   Widget build(BuildContext context) {
-    title.text=currentnew.title;
+    title.text=currentNew.title;
     return BlocConsumer<NewsCubit,NewsCubitState>(
       listener: (context, state) {
         if(state is emptystringfoundinNewdata){
@@ -49,6 +44,7 @@ class EditNew extends StatelessWidget {
           return Scaffold(body: Container(child: Center(child: CircularProgressIndicator(),),));
         }
         else if(state is fileisuploadingprogress){
+
           return CircularProgressParForUpload(state.percentage);
         }
         return  Scaffold(
@@ -66,7 +62,6 @@ class EditNew extends StatelessWidget {
                     height: MediaQuery.of(context).size.height * 0.3,
                     child: newsCubit.NewImage == null ?
                     (newsCubit.pdfFile!=null)?
-
                     InkWell(
                       onTap: () {
                         showbootomsheeat(context,newsCubit);
@@ -76,12 +71,6 @@ class EditNew extends StatelessWidget {
                         height: MediaQuery.of(context).size.height * 0.3,
                         child: Column(
                           children: [
-
-                            // Image.asset('assets/document.png',height: MediaQuery.of(context).size.height * 0.25,),
-                            // Spacer(),
-                            // Text(v.pdfFile.path.substring(49,v.pdfFile.path.length),style: TextStyle(
-                            //     fontSize: 20,fontWeight: FontWeight.bold
-                            // ),)
                             SizedBox(height:  (MediaQuery.of(context).size.height * 0.2)*0.1,),
                             (lookupMimeType("${p.basename(newsCubit.pdfFile.path)}"+".${p.extension(newsCubit.pdfFile.path).split('.')[1]}").split("/")[0])=="application"?Image.asset('assets/document.png',height: (MediaQuery.of(context).size.height * 0.2)*0.5,):
                             Image.network('https://www.clipartmax.com/png/full/225-2253433_music-video-play-function-comments-video-gallery-icon-png.png',height: (MediaQuery.of(context).size.height * 0.2)*0.5,),
@@ -97,90 +86,29 @@ class EditNew extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image.network(
-                            currentnew.defauktphoto,
+                            currentNew.defauktphoto,
                             height: MediaQuery.of(context).size.height*0.2-30,
                           ),
                         ],
                       ),
-                    )
-                        : InkWell(
+                    ) : InkWell(
                         onTap: () {
                           showbootomsheeat(context,newsCubit);
                         },
                         child: Image.file(newsCubit.NewImage)),
                   ),
-                  Row(
-                    children: [
-                      gettextfeild((MediaQuery.of(context).size.width - 50),
-                          "العنوان", 10, title),
-                    ],
-                  ),
+                  gettextfeild((MediaQuery.of(context).size.width - 50), "العنوان", 10, title),
                 ],
               ),
             ),
             floatingActionButton: FloatingActionButton(
               onPressed: () async {
-                currentnew.title=title.text;
-                newsCubit.editNew(currentnew,title);
+                currentNew.title=title.text;
+                newsCubit.editNew(currentNew,title);
               },
               child: Icon(Icons.save),
               backgroundColor: Colors.blueAccent,
             )
-        );
-      },
-    );
-  }
-  Container gettextfeild(double width, String lable, double mergin, TextEditingController controller) {
-    return Container(
-      width: width,
-      margin: EdgeInsets.all(mergin),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-            labelText: lable,
-            hintText: lable,
-            labelStyle: TextStyle(fontSize: 20),
-            hintStyle: TextStyle(fontSize: 17, fontWeight: FontWeight.normal)),
-      ),
-    );
-  }
-  void showbootomsheeat(BuildContext context,NewsCubit v){
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.2,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              InkWell(
-                  onTap: () =>
-                      v.getImagefromSourse(ImageSource.gallery,v.NewImage),
-                  child: Image.asset(
-                    "assets/gallery.png",
-                    height: 70,
-                  )),
-              SizedBox(
-                width: 20,
-              ),
-              InkWell(
-                  onTap: () => v.getImagefromSourse(ImageSource.camera,v.NewImage),
-                  child: Image.asset(
-                    "assets/camera.png",
-                    height: 80,
-                  )),
-              InkWell(
-                  onTap: () async{
-                    File file =await uploaddocument();
-                    v.updateimagestate(file);
-                  },
-                  child: Image.asset(
-                    "assets/document.png",
-                    height: 80,
-                  )),
-            ],
-          ),
         );
       },
     );

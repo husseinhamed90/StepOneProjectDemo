@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:steponedemo/AddsScreens/newrepresentativepage.dart';
+import 'package:steponedemo/Auth.dart';
 import 'package:steponedemo/MainCubit/AppCubit.dart';
 import 'package:steponedemo/MainCubit/MainCubitStates.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,18 +30,17 @@ void main()async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var userId = prefs.getString('id')??"";
   if(userId==""){
     runApp(MyApp(userId));
   }
   else{
-    user currentuser = await GetUserInfo(userId);
-    if(currentuser!=null){
-      await changeStateOfUser(currentuser);
-      Representative representative =await getReprestatvieInfo(currentuser);
-      runApp( MyApp(userId,currentuser,representative));
+    user currentUser = await Auth.GetUserInfo(userId);
+    if(currentUser!=null){
+      await Auth.changeStateOfUser(currentUser);
+      Representative representative =await Auth.getReprestatvieInfo(currentUser);
+      runApp( MyApp(userId,currentUser,representative));
     }
     else{
       runApp(MyApp(""));
@@ -48,10 +48,10 @@ void main()async {
   }
 }
 class MyApp extends StatefulWidget {
-  user userr;
+  user currentUser;
   Representative representative;
   String id;
-  MyApp([this.id,this.userr,this.representative]);
+  MyApp([this.id,this.currentUser,this.representative]);
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -66,12 +66,12 @@ class _MyAppState extends State<MyApp> {
           if(snapshot.hasData){
             return MultiProvider(
               providers: [
-                BlocProvider(create: (_) => AppCubit()..SetCurrentRepresentative(widget.representative)..GetCurrentUser(widget.userr)..getusers(),),
+                BlocProvider(create: (_) => AppCubit()..SetCurrentRepresentative(widget.representative)..GetCurrentUser(widget.currentUser)..getUsers(),),
                 BlocProvider(create: (_) => PolicyCubit()..getpolices()),
                 BlocProvider(create: (_) => ordersCubit()),
                 BlocProvider(create: (_) => UserOrdersCubit(),),
                 BlocProvider(create: (_) => VisitsCubit(),),
-                (widget.userr!=null)? BlocProvider(create: (_) => ClientsCubit()..GetCurrentUser(widget.userr.id)..getClintess()) :BlocProvider(create: (_) => ClientsCubit()),
+                (widget.currentUser!=null)? BlocProvider(create: (_) => ClientsCubit()..GetCurrentUser(widget.currentUser.id)..getClintess()) :BlocProvider(create: (_) => ClientsCubit()),
                 BlocProvider(create: (_) => CatalogCubit(),),
                 BlocProvider(create: (_) => BrandsCubit(snapshot.data)..getbrands(),),
                 (widget.representative!=null)? BlocProvider(create: (_) => RepresentaterCubit()..SetRepresentatvie(widget.representative)):BlocProvider(create: (_) => RepresentaterCubit()),
@@ -82,7 +82,7 @@ class _MyAppState extends State<MyApp> {
                 builder:(context, state) => ScreenUtilInit(
                   designSize: Size(1080,2280),
                   builder: () => GetMaterialApp(
-                    home:(widget.id=="")?Login():(widget.representative!=null)?newhomepage.constructorWithrepresentative(widget.userr,widget.representative,widget.userr.usertype):Newrepresentativepage(widget.userr.name,widget.id),
+                    home:(widget.id=="")?Login():(widget.representative!=null)?newhomepage.constructorWithrepresentative(widget.currentUser,widget.representative,widget.currentUser.usertype):Newrepresentativepage(widget.currentUser.name,widget.id),
                     translations: translation(),
                     debugShowCheckedModeBanner: false,
                     locale: Locale("ar"),
@@ -103,31 +103,6 @@ class _MyAppState extends State<MyApp> {
         }
     );
   }
-}
-Future<user>GetUserInfo(String id)async{
-  DocumentSnapshot documentReference = await FirebaseFirestore.instance.collection('Users').doc(id).get();
-  user currentuser =user.fromJson(documentReference.data());
-  return currentuser;
-}
-
-Future<QuerySnapshot>getRepresentative()async{
-  CollectionReference representatives = FirebaseFirestore.instance.collection('Representatives');
-  return await representatives.get();
-}
-
-Future<Representative>getReprestatvieInfo(user currentuser)async{
-  Representative representative;
-  QuerySnapshot snapshot =await getRepresentative();
-  snapshot.docs.forEach((doc)  {
-    if (Representative.fromJson(doc.data()).id == currentuser.id) {
-      representative= Representative.fromJson(doc.data());
-    }
-  });
-  return representative;
-}
-
-Future<void>changeStateOfUser(user currentuser)async{
-  return await FirebaseFirestore.instance.collection('Users').doc(currentuser.location).update({'isonline': "true"});
 }
 
 Future<Database> CreateDataBase()async{

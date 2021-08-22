@@ -98,7 +98,7 @@ class _BuildBtandItemState extends State<BuildBtandItem> {
                             height: 100,
                             alignment: Alignment.topLeft,
                             child: ((AppCubit.get(context)
-                                .currentuser
+                                .currentUser
                                 .usertype ==
                                 "admin")
                                 ? Column(

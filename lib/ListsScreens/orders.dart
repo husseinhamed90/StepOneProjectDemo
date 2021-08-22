@@ -56,10 +56,9 @@ class Orderspage  extends StatelessWidget {
                     color: Color(0xffe6e6e6),
                     alignment: Alignment.centerLeft,
                     padding: EdgeInsets.only(bottom: 10,left: 20),
-                    child: (AppCubit.get(context).currentuser.usertype=="admin")? FloatingActionButton(
+                    child: (AppCubit.get(context).currentUser.usertype=="admin")? FloatingActionButton(
                       key: Key("orderskey"),
                       child: Icon(Icons.add),
-
                       onPressed: () async{
                         Navigator.push(context, MaterialPageRoute(builder: (context) => AddnewOrder(),));
                       },

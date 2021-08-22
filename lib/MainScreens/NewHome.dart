@@ -70,7 +70,7 @@ class newhomepage extends StatelessWidget {
         Get.to(NewsListpage());
       },
       () {
-        if (AppCubit.get(context).currentuser.usertype == "admin") { Get.to(Register());}
+        if (AppCubit.get(context).currentUser.usertype == "admin") { Get.to(Register());}
         else {CustomDialog(context);}
       }
     ];

@@ -81,10 +81,8 @@ Container gettextfeild(double width, String lable, double margin,TextEditingCont
         Container(width: width,
             height: 25,
             alignment: Alignment.centerRight,
-            child: FittedBox(
-              child: AutoSizeText(lable,
-                style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold,),maxLines: 1,),
-            )),
+            child: AutoSizeText(lable,
+              style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold,),maxLines: 1,)),
         TextFormField(
           controller: controller,
           maxLines: 1,
@@ -148,6 +146,7 @@ Container returnphotoConatiner(String typeofoperation,String text,BuildContext c
 }
 
 void showbootomsheeat(BuildContext context,dynamic v, {String imagetype}){
+  print(imagetype);
   showModalBottomSheet(
     context: context,
     builder: (context) {

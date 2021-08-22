@@ -44,7 +44,7 @@ Widget BuildProductItem(TrProduct trProduct,
         ),
         InkWell(
           onTap: () {
-            if(AppCubit.get(context).currentuser.usertype=="admin"){
+            if(AppCubit.get(context).currentUser.usertype=="admin"){
               // showbootomsheeatWithoutDocument(
               //     context, brandsCubit, "product",
               //     currentbrand: Currentbrand,
@@ -89,7 +89,7 @@ Widget BuildProductItem(TrProduct trProduct,
           alignment: Alignment.topLeft,
           child:  Column(
             children: [
-              (AppCubit.get(context).currentuser.usertype == "admin") ?
+              (AppCubit.get(context).currentUser.usertype == "admin") ?
               IconButton(
                 icon: Icon(Icons.delete,
                     color: Colors.red, size: 30),
@@ -111,7 +111,7 @@ Widget BuildProductItem(TrProduct trProduct,
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              ShoppingCartPage(trProduct,BrandsCubit.get(context).choosenclient),
+                              ShoppingCartPage(trProduct,BrandsCubit.get(context).chosenClient),
                         ));
                     //brandsCubit.getCachedData();
                   },
@@ -153,9 +153,9 @@ Widget BuildText(double height,String text,double width,{Color color=Colors.blac
   bool isitembelongtoclint(TrProduct trProduct,BrandsCubit brandsCubit){
 
 
-  if(brandsCubit.choosenclient!=null){
-    for(int i=0;i<brandsCubit.choosenclient.orderitems.length;i++){
-      if(brandsCubit.choosenclient.orderitems[i].trProduct.Item==trProduct.Item){
+  if(brandsCubit.chosenClient!=null){
+    for(int i=0;i<brandsCubit.chosenClient.orderitems.length;i++){
+      if(brandsCubit.chosenClient.orderitems[i].trProduct.Item==trProduct.Item){
         return true;
       }
     }

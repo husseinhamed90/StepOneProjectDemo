@@ -210,18 +210,10 @@ class EditBrand extends StatelessWidget {
                       ),
                     )
                 ),
-                Row(
-                  children: [
-                    gettextfeild((MediaQuery.of(context).size.width - 50),
-                        "اسم البراند", 10, title),
-                  ],
-                ),
-                Row(
-                  children: [
-                    gettextfeild((MediaQuery.of(context).size.width - 50),
-                        "كود البراند", 10, code),
-                  ],
-                ),
+                gettextfeild((MediaQuery.of(context).size.width - 50),
+                    "اسم البراند", 10, title),
+                gettextfeild((MediaQuery.of(context).size.width - 50),
+                    "كود البراند", 10, code),
               ],
             ),
           ),

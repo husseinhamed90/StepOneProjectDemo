@@ -24,13 +24,13 @@ class AppCubit extends Cubit<MainCubitState> {
 
   List<user> users = [];
 
-  bool isloging=false;
-  user currentuser;
+  bool isLogging=false;
+  user currentUser;
   Representative currentrepresentative;
   AdminData currentadmindata;
 
   void GetCurrentUser(user user){
-    currentuser=user;
+    currentUser=user;
     emit(GetUserIDSate());
   }
   void SetCurrentRepresentative(Representative representative){
@@ -101,19 +101,13 @@ class AppCubit extends Cubit<MainCubitState> {
 
   Future<void>GetDataofUserFromRepresentatorsCollection(UserCredential userCredential,RepresentaterCubit representaterCubit)async{
 
-    await UpdateStatus("true",currentuser.id);
-    await getusers();
-    await setsharedprefrences(currentuser.location);
-    bool validrepresentative = false;
+    await UpdateStatus("true",currentUser.id);
+    await getUsers();
+    await setsharedprefrences(currentUser.location);
+    bool validRepresentative = false;
     representatives.get().then((querySnapshot)  {
-      querySnapshot.docs.forEach((doc) {
-        if (Representative.fromJson(doc.data()).id == userCredential.user.uid) {
-          validrepresentative = true;
-          representaterCubit.SetRepresentatvie(Representative.fromJson(doc.data()));
-           UpdateRepresentativeData(doc);
-        }
-      });
-      if (!validrepresentative) {
+      validRepresentative = isValidRepresentative(querySnapshot, userCredential, representaterCubit);
+      if (!validRepresentative) {
         getdataofadmin().then((value) {
           emit(admindataiscame());
         });
@@ -121,19 +115,23 @@ class AppCubit extends Cubit<MainCubitState> {
     });
   }
 
+  bool isValidRepresentative(QuerySnapshot querySnapshot, UserCredential userCredential, RepresentaterCubit representaterCubit) {
+      querySnapshot.docs.forEach((doc) {
+      if (Representative.fromJson(doc.data()).id == userCredential.user.uid) {
+        representaterCubit.SetRepresentatvie(Representative.fromJson(doc.data()));
+        UpdateRepresentativeData(doc);
+        return true;
+      }
+    });
+      return false;
+  }
+
   Future<AdminData> getdataofadmin()async{
     await userscollection.where("usertype",isEqualTo: "admin").get().then((valuee) async {
-
       await representatives.where('id',isEqualTo: valuee.docs[0].data()['id']).get().then((value) {
-        AdminData adminData = AdminData(
-            Representative.fromJson(value.docs[0].data()).companyname,
-            Representative.fromJson(value.docs[0].data()).companyaddress,
-            Representative.fromJson(value.docs[0].data()).companyphone,
-            Representative.fromJson(value.docs[0].data()).path
-        );
-        currentadmindata=adminData;
+        currentadmindata=constructAdminData(value);
         emit(admindataiscame());
-        return adminData;
+        return currentadmindata;
       }).onError((error, stackTrace) {
         print("no admin data found");
         return null;
@@ -145,6 +143,16 @@ class AppCubit extends Cubit<MainCubitState> {
     });
   }
 
+  AdminData constructAdminData(QuerySnapshot value) {
+    AdminData adminData = AdminData(
+        Representative.fromJson(value.docs[0].data()).companyname,
+        Representative.fromJson(value.docs[0].data()).companyaddress,
+        Representative.fromJson(value.docs[0].data()).companyphone,
+        Representative.fromJson(value.docs[0].data()).path
+    );
+    return adminData;
+  }
+
    void UpdateRepresentativeData(QueryDocumentSnapshot documentSnapshot){
     currentrepresentative=Representative.fromJson(documentSnapshot.data());
     emit(userisnormaluserstatebutnotfirsttime());
@@ -152,7 +160,7 @@ class AppCubit extends Cubit<MainCubitState> {
 
   Future<void> loginwithusernameandpassword(String username, String password,RepresentaterCubit representaterCubit,ClientsCubit clientsCubit) async {
     emit(loginsistart());
-    isloging=true;
+    isLogging=true;
     if (!checkvalidatyofinputs(username,password)) {
       emit(emptyfeildsstate());
     }
@@ -160,13 +168,13 @@ class AppCubit extends Cubit<MainCubitState> {
         UserCredential userCredential =await GetUserCredentialFromFireBase(username,password);
         if(userCredential!=null){
           await isValidUser(userCredential);
-          clientsCubit.setuserid(currentuser.id);
+          clientsCubit.setuserid(currentUser.id);
           await clientsCubit.getClintess();
           await GetDataofUserFromRepresentatorsCollection(userCredential,representaterCubit);
-          isloging=false;
+          isLogging=false;
         }
         else{
-          isloging=false;
+          isLogging=false;
         }
 
     }
@@ -233,7 +241,7 @@ class AppCubit extends Cubit<MainCubitState> {
         await user.reauthenticateWithCredential(credentials).then((value) async {
          await value.user.updateEmail('${newusername.text.replaceAll(' ', '')}@stepone.com').then((valueeee) {
           value.user.updatePassword("${newpassword.text}steponeapp").then((value) {
-            getusers().then((value) {
+            getUsers().then((value) {
               emit(userupdatedsuccfully());
             });
           }).onError((error, stackTrace) {
@@ -243,7 +251,7 @@ class AppCubit extends Cubit<MainCubitState> {
     } catch (e) {}
   }
 
-  void deleteuser(user newuser) async {
+  void deleteUser(user newuser) async {
     emit(userdeletedload());
 
     userscollection.where("id", isEqualTo: newuser.id).get().then((value) {
@@ -251,7 +259,7 @@ class AppCubit extends Cubit<MainCubitState> {
         deleteUserfromauth('${newuser.name.replaceAll(' ', '')}@stepone.com',
             '${newuser.password}steponeapp')
             .then((value) {
-          getusers().then((value) {
+          getUsers().then((value) {
             emit(userdeletedsuccfully());
           });
         });
@@ -259,7 +267,7 @@ class AppCubit extends Cubit<MainCubitState> {
     });
   }
 
-  void updateeuser(user newuser,TextEditingController username,TextEditingController password,int index) async {
+  void updateUser(user newuser,TextEditingController username,TextEditingController password,int index) async {
     emit(userupdateload());
     userscollection.where("id", isEqualTo: newuser.id).get().then((value) {
       userscollection.doc(value.docs.first.id).update({"name":username.text,"password":password.text})
@@ -272,9 +280,8 @@ class AppCubit extends Cubit<MainCubitState> {
     });
   }
 
-  Future<void> getusers() async {
+  Future<void> getUsers() async {
     users = [];
-
     await userscollection.get().then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
         users.add(user.fromJson(doc.data()));

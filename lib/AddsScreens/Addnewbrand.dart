@@ -46,7 +46,7 @@ class AddnewBrand extends StatelessWidget {
           }
         },
       builder: (context, state) {
-        BrandsCubit v =BrandsCubit.get(context);
+        BrandsCubit brandsCubit =BrandsCubit.get(context);
         if(state is loadingbrangforupdate){
             return Scaffold(body: Container(child: Center(child: CircularProgressIndicator(),),));
         }
@@ -91,16 +91,16 @@ class AddnewBrand extends StatelessWidget {
           body: Container(
             child: ListView(
               children: [
-                returnphotoConatiner("insert","اضافة صورة",context,v,v.image,imagetype: "brand"),
+                returnphotoConatiner("insert","اضافة صورة",context,brandsCubit,brandsCubit.image,imagetype: "brand"),
                 Container(
                     margin: EdgeInsets.all(10),
                     color: Colors.grey,
                     width: MediaQuery.of(context).size.width - 20,
                     height: MediaQuery.of(context).size.height * 0.2,
-                    child: v.orderedFile == null ?
+                    child: brandsCubit.orderedFile == null ?
                     InkWell(
                       onTap: () {
-                        showbootomsheeatWithDocumentOnly(context,v,"orderedFile");
+                        showbootomsheeatWithDocumentOnly(context,brandsCubit,"orderedFile");
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -126,7 +126,7 @@ class AddnewBrand extends StatelessWidget {
                     ):
                     InkWell(
                       onTap: () {
-                        showbootomsheeatWithDocumentOnly(context,v,"orderedFile");
+                        showbootomsheeatWithDocumentOnly(context,brandsCubit,"orderedFile");
                       },
                       child: Container(
                         width: MediaQuery.of(context).size.width - 20,
@@ -139,7 +139,7 @@ class AddnewBrand extends StatelessWidget {
                             Container(
                               height: (MediaQuery.of(context).size.height * 0.2)*0.3,
                               alignment: Alignment.bottomCenter,
-                              child: Text(v.orderedFile.path.substring(49,v.orderedFile.path.length),style: TextStyle(
+                              child: Text(brandsCubit.orderedFile.path.substring(49,brandsCubit.orderedFile.path.length),style: TextStyle(
                                   fontSize: 20,fontWeight: FontWeight.bold
                               ),),
                             )
@@ -153,10 +153,10 @@ class AddnewBrand extends StatelessWidget {
                     color: Colors.grey,
                     width: MediaQuery.of(context).size.width - 20,
                     height: MediaQuery.of(context).size.height * 0.2,
-                    child: v.pdfFile == null ?
+                    child: brandsCubit.pdfFile == null ?
                     InkWell(
                       onTap: () {
-                        showbootomsheeatWithDocumentOnly(context,v,"mainFile");
+                        showbootomsheeatWithDocumentOnly(context,brandsCubit,"mainFile");
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -182,7 +182,7 @@ class AddnewBrand extends StatelessWidget {
                     ):
                     InkWell(
                       onTap: () {
-                        showbootomsheeatWithDocumentOnly(context,v,"mainFile");
+                        showbootomsheeatWithDocumentOnly(context,brandsCubit,"mainFile");
                       },
                       child: Container(
                         width: MediaQuery.of(context).size.width - 20,
@@ -195,7 +195,7 @@ class AddnewBrand extends StatelessWidget {
                             Container(
                               height: (MediaQuery.of(context).size.height * 0.2)*0.3,
                               alignment: Alignment.bottomCenter,
-                              child: Text(v.pdfFile.path.substring(49,v.pdfFile.path.length),style: TextStyle(
+                              child: Text(brandsCubit.pdfFile.path.substring(49,brandsCubit.pdfFile.path.length),style: TextStyle(
                                   fontSize: 20,fontWeight: FontWeight.bold
                               ),),
                             )
@@ -204,26 +204,16 @@ class AddnewBrand extends StatelessWidget {
                       ),
                     )
                 ),
-                Row(
-                  children: [
-                    gettextfeild((MediaQuery.of(context).size.width - 50),
-                        "اسم البراند", 10, title),
-                  ],
-                ),
-                Row(
-                  children: [
-                    gettextfeild((MediaQuery.of(context).size.width - 50),
-                        "كود البراند", 10, code),
-                  ],
-                ),
+                gettextfeild((MediaQuery.of(context).size.width - 50),
+                    "اسم البراند", 10, title),
+                gettextfeild((MediaQuery.of(context).size.width - 50),
+                    "كود البراند", 10, code),
               ],
             ),
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
-             // brand newbrand = brand(title.text,code.text);
-              v.addnewbrand(title, code);
-             // v.LoadDatafromExcelFile(newbrand);
+              brandsCubit.addnewbrand(title, code);
             },
             child: Icon(Icons.save),
             backgroundColor: Colors.blueAccent,

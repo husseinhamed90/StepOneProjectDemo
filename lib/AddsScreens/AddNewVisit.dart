@@ -322,7 +322,7 @@ class _AddnewVisitState extends State<AddnewVisit> {
                           builder: (context, constraints) => InkWell(
                             onTap: () async{
 
-                              brandsCubit.setChoosenClientForVisit(brandsCubit.suggestionresultForVisit[index]);
+                              brandsCubit.setChosenClientForVisit(brandsCubit.suggestionresultForVisit[index]);
                               //await brandsCubit.getCachedData();
                               searchbar.text=brandsCubit.suggestionresultForVisit[index].clientname;
                               brandsCubit.resetClintForVisit();

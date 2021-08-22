@@ -63,18 +63,18 @@ class _LoginState extends State<Login> with WidgetsBindingObserver{
            listener: (context, state) async {
              if(state is admindataiscame){
                OpenService();
-               Navigator.push(context, MaterialPageRoute(builder: (context) => Newrepresentativepage(AppCubit.get(context).currentuser.id),));
+               Navigator.push(context, MaterialPageRoute(builder: (context) => Newrepresentativepage(AppCubit.get(context).currentUser.id),));
              }
              else if(state is noadmindatafound){
                getsnackbar(context,"لا توجد بيانات للادمن حتي الان");
              }
              else if(state is adminuser){
-               Navigator.push(context, MaterialPageRoute(builder: (context) => AddNewrepresentative(AppCubit.get(context).currentuser.id),));
+               Navigator.push(context, MaterialPageRoute(builder: (context) => AddNewrepresentative(AppCubit.get(context).currentUser.id),));
 
              }
              else if(state is userisnormaluserstatebutnotfirsttime){
                OpenService();
-               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => newhomepage.constructorWithrepresentative(AppCubit.get(context).currentuser,AppCubit.get(context).currentrepresentative,AppCubit.get(context).currentuser.usertype),));
+               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => newhomepage.constructorWithrepresentative(AppCubit.get(context).currentUser,AppCubit.get(context).currentrepresentative,AppCubit.get(context).currentUser.usertype),));
              }
              else if(state is invaliduser){
                getsnackbar(context,"كلمة المرور او اسم المستخدم غير صحيح");
@@ -85,7 +85,7 @@ class _LoginState extends State<Login> with WidgetsBindingObserver{
            },
            builder: (context, state) {
              AppCubit v =AppCubit.get(context);
-             if(v.isloging){
+             if(v.isLogging){
                return Container(
                  color: Colors.white,
                  child: Center(

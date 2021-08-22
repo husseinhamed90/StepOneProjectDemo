@@ -17,7 +17,7 @@ class _BuildUserItemState extends State<BuildUserItem> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) => (widget.currentuser.id!=AppCubit.get(context).currentuser.id)?InkWell(
+      builder: (context, constraints) => (widget.currentuser.id!=AppCubit.get(context).currentUser.id)?InkWell(
         onTap: () {
          // Navigator.push(context, MaterialPageRoute(builder: (context) => TestStream(widget.currentuser.id,widget.currentuser.name),));
         },
@@ -68,7 +68,7 @@ class _BuildUserItemState extends State<BuildUserItem> {
                                 actions: [
                                   TextButton(onPressed: (){
                                     Navigator.pop(context);
-                                    widget.appCubit.deleteuser(widget.currentuser);
+                                    widget.appCubit.deleteUser(widget.currentuser);
                                   }, child: Text("نعم")),
                                   TextButton(onPressed: () => Navigator.pop(context), child: Text("لا")),
                                 ],

@@ -135,23 +135,12 @@ class _AddNewrepresentativeState extends State<AddnewClientPage> {
                               onChanged: (value) {
                                 setState(() {
                                   typepneclint=value;
-                                  // if(typepneclint=="اخري"){
-                                  //   setState(() {
-                                  //     isvisible=true;
-                                  //   });
-                                  // }
-                                  // else{
-                                  //   isvisible=false;
-                                  // }
-                                  //listoftypees[0]=
                                 });
                               },
                             ),
                           ),
                         ],
                       )),
-
-
                   gettextfeild( ((MediaQuery.of(context).size.width-50)),"رقم التليفون",10,Clientphone),
                   gettextfeild( ((MediaQuery.of(context).size.width-50)),"العنوان",10,ClientAddress),
                   gettextfeild( ((MediaQuery.of(context).size.width-50)),"المنطقة",10,ClientArea),

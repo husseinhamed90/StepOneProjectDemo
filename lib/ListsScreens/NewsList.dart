@@ -20,7 +20,6 @@ class NewsListpage extends StatelessWidget {
       },
       builder: (context, state) {
         NewsCubit newsCubit =NewsCubit.get(context);
-        print(state);
         if(state is loaddatafromfirebase){
           return Scaffold(
             body: Container(
@@ -58,7 +57,7 @@ class NewsListpage extends StatelessWidget {
                 ],
               ),
             ),
-            floatingActionButton:(AppCubit.get(context).currentuser.usertype=="admin")? FloatingActionButton(
+            floatingActionButton:(AppCubit.get(context).currentUser.usertype=="admin")? FloatingActionButton(
               child: Icon(Icons.add),
               onPressed: () async{
                 Navigator.push(context, MaterialPageRoute(builder: (context) => AddnewNews(),));

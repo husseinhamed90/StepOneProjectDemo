@@ -122,7 +122,7 @@ class AddNewrepresentative  extends StatelessWidget {
                           width: MediaQuery.of(context).size.width-20,
                           height: MediaQuery.of(context).size.height*0.25,
                           child:
-                          (AppCubit.get(context).currentuser.usertype=="admin")?
+                          (AppCubit.get(context).currentUser.usertype=="admin")?
                           v.image == null
                               ? GestureDetector(onTap: () {
                             v.getImagefromSourse(ImageSource.camera,v.image);
@@ -220,7 +220,6 @@ class AddNewrepresentative  extends StatelessWidget {
                               ],
                             ),
                           ),
-
                         ],
                       ),
                     ),
@@ -245,7 +244,6 @@ class AddNewrepresentative  extends StatelessWidget {
                       TextButton(onPressed: (){
                         Navigator.pop(context);
                         if(AppCubit.get(context).currentrepresentative!=null){
-                          print("hellooo");
                           Representative reprentative  = Representative(
                             companyname.text,
                             companyaddress.text,
@@ -262,29 +260,8 @@ class AddNewrepresentative  extends StatelessWidget {
                             represtativearea4.text,
                             AppCubit.get(context).currentrepresentative.id,
                           );
-                          v.updaterepresentaive(AppCubit.get(context),reprentative,AppCubit.get(context).currentuser);
+                          v.updaterepresentaive(AppCubit.get(context),reprentative,AppCubit.get(context).currentUser);
                         }
-                        // else{
-                        //   Representative reprentative  = Representative(
-                        //     companyname.text,
-                        //     companyaddress.text,
-                        //     companyphone.text,
-                        //     represtativename.text,
-                        //     represtativecode.text,
-                        //     represtativenphone.text,
-                        //     represtativetarget.text,
-                        //     represtativesupervisor.text,
-                        //     represtativemanager.text,
-                        //     represtativearea1.text,
-                        //     represtativearea2.text,
-                        //     represtativearea3.text,
-                        //     represtativearea4.text,
-                        //   );
-                        //   v.addRepresentative(AppCubit.get(context),reprentative, represtativename, represtativecode, represtativenphone,
-                        //       represtativetarget,represtativearea1,represtativearea2,represtativearea3,represtativearea4
-                        //       ,represtativesupervisor,represtativemanager,v.image,AppCubit.get(context).currentuser.id,AppCubit.get(context).currentuser,AppCubit.get(context).currentadmindata);
-                        // }
-
                       }, child: Text("نعم")),
                       TextButton(onPressed: () => Navigator.pop(context), child: Text("لا")),
                     ],
@@ -306,7 +283,7 @@ class AddNewrepresentative  extends StatelessWidget {
       child:  TextFormField(
         maxLines: 1,
         controller: controller,
-        enabled: (AppCubit.get(context).currentuser.usertype=="user"&&(controller==companyname||controller==companyaddress||controller==companyphone)?false:true),
+        enabled: (AppCubit.get(context).currentUser.usertype=="user"&&(controller==companyname||controller==companyaddress||controller==companyphone)?false:true),
         decoration: InputDecoration(
             labelText: lable,
 

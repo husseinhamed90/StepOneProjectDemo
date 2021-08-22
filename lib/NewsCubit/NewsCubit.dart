@@ -52,10 +52,10 @@ class NewsCubit extends Cubit<NewsCubitState> {
 
   Future<void>editNew(News order,TextEditingController title)async{
     if(NewImage!=null){
-      UploadImage("Update",NewImage, order, collection, this);
+      UploadFile("Update",NewImage, order, collection, this);
     }
     else if(pdfFile!=null){
-      UploadImage("Update",pdfFile, order, collection, this);
+      UploadFile("Update",pdfFile, order, collection, this);
     }
     else{
       emit(newisuploading());
@@ -105,18 +105,9 @@ class NewsCubit extends Cubit<NewsCubitState> {
       emit(emptystringfoundinNewdata());
     }
     else {
+      emit(newisuploading());
       if (pdfFile == null&&NewImage==null) {
-          emit(newisuploading());
-          newNews.date = getDateWithoutTime();
-          newNews.extention="png";
-          newNews.defauktphoto="https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
-          newNews.path = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
-          collection.add(newNews.toJson()).then((value) {
-            newNews.id = value.id;
-            collection.doc(value.id).update({'id': value.id});
-            title.text = "";
-            getnews();
-          }).catchError((error) => print("Failed to add new: $error"));
+          newsWithoutFiles(newNews, title);
       }
       else {
         if(pdfFile!=null){
@@ -127,6 +118,23 @@ class NewsCubit extends Cubit<NewsCubitState> {
         }
       }
     }
+  }
+
+  void newsWithoutFiles(News newNews, TextEditingController title) {
+    newNews.date = getDateWithoutTime();
+    newNews.extention="png";
+    newNews.defauktphoto="https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
+    newNews.path = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
+    addNewInFireBase(newNews, title);
+  }
+
+  void addNewInFireBase(News newNews, TextEditingController title) {
+    collection.add(newNews.toJson()).then((value) {
+      newNews.id = value.id;
+      collection.doc(value.id).update({'id': value.id});
+      title.text = "";
+      getnews();
+    }).catchError((error) => print("Failed to add new: $error"));
   }
   Future<void> deletNews(News sellingpolicy) {
     emit(loaddatafromfirebase());

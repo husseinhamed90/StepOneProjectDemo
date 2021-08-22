@@ -70,7 +70,7 @@ class _BuildCatalogItemState extends State<BuildCatalogItem> {
                             width: widget.constraints.maxWidth*0.15,
                             height: 100,
                             alignment: Alignment.topLeft,
-                            child: ( (AppCubit.get(context).currentuser.usertype=="admin")?
+                            child: ( (AppCubit.get(context).currentUser.usertype=="admin")?
                             Column(
                               children: [
                                 IconButton(icon: Icon(Icons.delete,color: Colors.red,size: 30), onPressed: (){

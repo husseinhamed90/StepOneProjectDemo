@@ -71,14 +71,12 @@ class Clintess extends StatelessWidget {
                                         children: [
                                           Container(
                                             margin: EdgeInsets.only(right: 15),
-                                            // width: (constraints.maxWidth-20)*0.2,
                                             child: Text(
                                               clientsCubit.clients[index].clientcode,style: TextStyle(
                                                 fontSize: 22
                                             ),),),
                                           Spacer(),
                                           Container(
-                                            // width: ((constraints.maxWidth-20)*0.3)*0.3,
                                             child: IconButton(icon: Icon(Icons.delete,color: Colors.red,size: 30), onPressed: (){
                                               showDialog(context: context, builder: (context) {
                                                 return AlertDialog(

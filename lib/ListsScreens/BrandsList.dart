@@ -26,23 +26,25 @@ class BrandsList extends StatefulWidget {
 
 class _BrandsListState extends State<BrandsList> {
 
-  TextEditingController searchbar=TextEditingController();
+  TextEditingController searchBar=TextEditingController();
   FocusNode myFocusNode=FocusNode();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    if(BrandsCubit.get(context).choosenclient!=null){
-
-      searchbar.text=BrandsCubit.get(context).choosenclient.clientname;
+    if(BrandsCubit.get(context).chosenClient!=null){
+      searchBar.text=BrandsCubit.get(context).chosenClient.clientname;
     }
-    //BrandsCubit.get(context).getCachedData();
+  }
+  @override
+  void dispose() {
+    searchBar.clear();
+    // TODO: implement dispose
+    super.dispose();
   }
   @override
   Widget build(BuildContext context) {
-
     return BlocConsumer<BrandsCubit, BrandsStates>(
       listener: (context, state) {
         if(state is OrderSavedState){
@@ -97,10 +99,10 @@ class _BrandsListState extends State<BrandsList> {
                                 brandsCubit.textfroemfoucesstate(value);
                               },
                               child: TextFormField(
-                                controller: searchbar,
+                                controller: searchBar,
                                 onChanged: (value) {
 
-                                  brandsCubit.changesuggestionresultList(searchbar.text, ClientsCubit.get(context).clients);
+                                  brandsCubit.changesuggestionresultList(searchBar.text, ClientsCubit.get(context).clients);
                                 },
                                 decoration: InputDecoration(
                                     border: InputBorder.none,
@@ -129,7 +131,7 @@ class _BrandsListState extends State<BrandsList> {
                     ),
                     SizedBox(height: 10,),
                     Expanded(
-                      child: (!brandsCubit.foucesstate)?
+                      child: (!brandsCubit.focusState)?
                       ListView.builder(
                         itemBuilder: (context, index) {
                           return LayoutBuilder(
@@ -146,18 +148,18 @@ class _BrandsListState extends State<BrandsList> {
                           return LayoutBuilder(
                               builder: (context, constraints) => InkWell(
                                 onTap: () async{
-                                  brandsCubit.setChoosenClient(brandsCubit.suggestionresult[index]);
+                                  brandsCubit.setChoosenClient(brandsCubit.suggestionResult[index]);
                                   await brandsCubit.getCachedData();
-                                  searchbar.text=brandsCubit.suggestionresult[index].clientname;
+                                  searchBar.text=brandsCubit.suggestionResult[index].clientname;
                                   brandsCubit.resetsearchbar();
                                 },
                                 child: Container(
                                     padding: EdgeInsets.all(10),
-                                    child: Text(brandsCubit.suggestionresult[index].clientname)
+                                    child: Text(brandsCubit.suggestionResult[index].clientname)
                                 ),
                               ));
                         },
-                        itemCount: brandsCubit.suggestionresult.length,
+                        itemCount: brandsCubit.suggestionResult.length,
                       ),
                     ),
                     Container(height: 80,)
@@ -184,7 +186,7 @@ class _BrandsListState extends State<BrandsList> {
                       } , child: Text("حفظ الاوردر")),
                     ),
                   ),
-                  Expanded(flex: 1,child: (AppCubit.get(context).currentuser.usertype == "admin")
+                  Expanded(flex: 1,child: (AppCubit.get(context).currentUser.usertype == "admin")
                       ? Container(
                     height: 55,
                         child: FloatingActionButton(

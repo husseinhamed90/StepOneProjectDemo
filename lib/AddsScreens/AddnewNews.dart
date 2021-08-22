@@ -115,12 +115,8 @@ class AddnewNews extends StatelessWidget {
                         },
                         child: Image.file(v.NewImage)),
                   ),
-                  Row(
-                    children: [
-                      gettextfeild((MediaQuery.of(context).size.width - 50),
-                          "العنوان", 10, title),
-                    ],
-                  ),
+                  gettextfeild((MediaQuery.of(context).size.width - 50),
+                      "العنوان", 10, title),
                 ],
               ),
             ),
@@ -134,20 +130,6 @@ class AddnewNews extends StatelessWidget {
             )
         );
       },
-    );
-  }
-  Container gettextfeild(double width, String lable, double mergin, TextEditingController controller) {
-    return Container(
-      width: width,
-      margin: EdgeInsets.all(mergin),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-            labelText: lable,
-            hintText: lable,
-            labelStyle: TextStyle(fontSize: 20),
-            hintStyle: TextStyle(fontSize: 17, fontWeight: FontWeight.normal)),
-      ),
     );
   }
 }

@@ -1,20 +1,13 @@
-import 'dart:io';
-
-import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 import 'package:mime/mime.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:steponedemo/Helpers/Shared.dart';
 import 'package:steponedemo/SellingPolicyCubit/PolicyCubit.dart';
 import 'package:steponedemo/SellingPolicyCubit/PolicyCubitState.dart';
-import 'package:steponedemo/Widgets/CircularProgressIndicatorForDownload.dart';
 import 'package:steponedemo/Widgets/CircularProgressParForUpload.dart';
 import 'package:steponedemo/Widgets/CustomAppBar.dart';
-import '../Helpers/Utilites.dart';
 import 'package:path/path.dart' as p;
 import 'package:steponedemo/Models/Sellingpolicy.dart';
 import 'package:toast/toast.dart';
@@ -39,22 +32,12 @@ class AddnewSellingPolicyss extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
         else if(state is policesloaded){
-          //showToast();
           Toast.show("تم الحفظ بنجاح", context, duration: 2, gravity: Toast.BOTTOM);
           Navigator.pop(context);
         }
       },
       builder: (context, state) {
-        PolicyCubit v =PolicyCubit.get(context);
-        if(v.PolicyDocumentFile!=null){
-          String  extention =p.extension(v.PolicyDocumentFile.path).split('.')[1];
-          String filename =p.basename(v.PolicyDocumentFile.path);
-
-          print("ffffffffffffffffffff");
-          print(extention);
-          print(filename);
-          print(lookupMimeType("${p.basename(v.PolicyDocumentFile.path)}"+".${p.extension(v.PolicyDocumentFile.path).split('.')[1]}").split("/")[0]);
-        }
+        PolicyCubit sellingPolicyCubit =PolicyCubit.get(context);
         if(state is Policyisuploading){
           return Scaffold(body: Container(child: Center(child: CircularProgressIndicator(),),));
         }
@@ -75,12 +58,12 @@ class AddnewSellingPolicyss extends StatelessWidget {
                   color: Colors.grey,
                   width: MediaQuery.of(context).size.width - 20,
                   height: MediaQuery.of(context).size.height * 0.2,
-                  child: v.PolicyImage == null ?
-                    (v.PolicyDocumentFile!=null)?
+                  child: sellingPolicyCubit.PolicyImage == null ?
+                    (sellingPolicyCubit.PolicyDocumentFile!=null)?
 
                       InkWell(
                         onTap: () {
-                          showbootomsheeat(context,v);
+                          showbootomsheeat(context,sellingPolicyCubit);
                         },
                         child: Container(
                           width: MediaQuery.of(context).size.width - 20,
@@ -88,13 +71,13 @@ class AddnewSellingPolicyss extends StatelessWidget {
                           child: Column(
                             children: [
                               SizedBox(height:  (MediaQuery.of(context).size.height * 0.2)*0.1,),
-                              (lookupMimeType("${p.basename(v.PolicyDocumentFile.path)}"+".${p.extension(v.PolicyDocumentFile.path).split('.')[1]}").split("/")[0])=="application"?Image.asset('assets/document.png',height: (MediaQuery.of(context).size.height * 0.2)*0.5,):
+                              (lookupMimeType("${p.basename(sellingPolicyCubit.PolicyDocumentFile.path)}"+".${p.extension(sellingPolicyCubit.PolicyDocumentFile.path).split('.')[1]}").split("/")[0])=="application"?Image.asset('assets/document.png',height: (MediaQuery.of(context).size.height * 0.2)*0.5,):
                               Image.network('https://www.clipartmax.com/png/full/225-2253433_music-video-play-function-comments-video-gallery-icon-png.png',height: (MediaQuery.of(context).size.height * 0.2)*0.5,),
                               Spacer(),
                               Container(
                                 alignment: Alignment.bottomCenter,
                                   height: (MediaQuery.of(context).size.height * 0.2)*0.4,
-                                child: Text(v.PolicyDocumentFile.path.substring(49,v.PolicyDocumentFile.path.length),style: TextStyle(
+                                child: Text(sellingPolicyCubit.PolicyDocumentFile.path.substring(49,sellingPolicyCubit.PolicyDocumentFile.path.length),style: TextStyle(
                                   fontSize: 20,fontWeight: FontWeight.bold
                                 ),),
                               )
@@ -104,7 +87,7 @@ class AddnewSellingPolicyss extends StatelessWidget {
                       ):
                   InkWell(
                     onTap: () {
-                      showbootomsheeat(context,v);
+                      showbootomsheeat(context,sellingPolicyCubit);
                     },
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -126,23 +109,19 @@ class AddnewSellingPolicyss extends StatelessWidget {
                   )
                   : InkWell(
                       onTap: () {
-                        showbootomsheeat(context,v);
+                        showbootomsheeat(context,sellingPolicyCubit);
                       },
-                      child: Image.file(v.PolicyImage)),
+                      child: Image.file(sellingPolicyCubit.PolicyImage)),
                 ),
-                Row(
-                  children: [
-                    gettextfeild((MediaQuery.of(context).size.width - 50),
-                        "العنوان", 10, title),
-                  ],
-                ),
+                gettextfeild((MediaQuery.of(context).size.width - 50),
+                    "العنوان", 10, title),
               ],
             ),
           ),
           floatingActionButton:FloatingActionButton(
             onPressed: () async {
               Sellingpolicy newpolicy=new Sellingpolicy(title.text);
-              v.addnewsellingpolicy(newpolicy,title);
+              sellingPolicyCubit.addnewsellingpolicy(newpolicy,title);
             },
             child: Icon(Icons.save),
             backgroundColor: Colors.blueAccent,

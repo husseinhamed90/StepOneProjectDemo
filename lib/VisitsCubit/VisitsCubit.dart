@@ -18,7 +18,7 @@ class VisitsCubit extends Cubit<VisitsCubitStates>{
   static VisitsCubit get(BuildContext context) => BlocProvider.of(context);
 
 
-  void setChoosenClientForVisit(Client client) {
+  void setChosenClientForVisit(Client client) {
     choosenclientForVisit = client;
     emit(choosenclientState());
   }
@@ -53,8 +53,7 @@ class VisitsCubit extends Cubit<VisitsCubitStates>{
     return newvisit;
   }
   visit generateNextVisit(visit newvisit){
-    visit nextvisit =visit(newvisit.reasonforvisit,"غير محددة", "غير محددة",
-        newvisit.dateofnextvisit, newvisit.dayofnextvisit, "غير محدد", "غير محدد", "غير محدد", newvisit.reprsenatativrID);
+    visit nextvisit =visit(newvisit.reasonforvisit,"غير محددة", "غير محددة", newvisit.dateofnextvisit, newvisit.dayofnextvisit, "غير محدد", "غير محدد", "غير محدد", newvisit.reprsenatativrID);
     nextvisit.clintID=choosenclientForVisit.ClientID;
     nextvisit.visitOwner=choosenclientForVisit;
     return nextvisit;

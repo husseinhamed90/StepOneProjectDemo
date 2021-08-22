@@ -49,7 +49,7 @@ class Sellingpolicypage  extends StatelessWidget {
                 ),
               ),
             ),
-            floatingActionButton:(AppCubit.get(context).currentuser.usertype=="admin")? FloatingActionButton(
+            floatingActionButton:(AppCubit.get(context).currentUser.usertype=="admin")? FloatingActionButton(
               child: Icon(Icons.add),
               onPressed: () async{
                 Navigator.push(context, MaterialPageRoute(builder: (context) => AddnewSellingPolicyss(),));

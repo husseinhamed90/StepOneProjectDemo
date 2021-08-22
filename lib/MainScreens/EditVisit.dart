@@ -344,7 +344,7 @@ class _EditVisitState extends State<EditVisit> {
                           builder: (context, constraints) => InkWell(
                             onTap: () async{
 
-                              visitsCubit.setChoosenClientForVisit(visitsCubit.suggestionresultForVisit[index]);
+                              visitsCubit.setChosenClientForVisit(visitsCubit.suggestionresultForVisit[index]);
                               //await brandsCubit.getCachedData();
                               searchbar.text=visitsCubit.suggestionresultForVisit[index].clientname;
 

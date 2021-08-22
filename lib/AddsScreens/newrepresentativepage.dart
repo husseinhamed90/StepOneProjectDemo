@@ -97,7 +97,7 @@ class Newrepresentativepage  extends StatelessWidget {
                         color: Colors.grey,
                         width: MediaQuery.of(context).size.width-20,
                         height: MediaQuery.of(context).size.height*0.25,
-                        child:(AppCubit.get(context).currentuser.usertype=="admin")?
+                        child:(AppCubit.get(context).currentUser.usertype=="admin")?
                         v.image == null ? InkWell(
                           onTap: () {
                             showModalBottomSheet(
@@ -304,7 +304,7 @@ class Newrepresentativepage  extends StatelessWidget {
                           );
                           v.addRepresentative(AppCubit.get(context),reprentative, represtativename, represtativecode, represtativenphone,
                               represtativetarget,represtativearea1,represtativearea2,represtativearea3,represtativearea4
-                              ,represtativesupervisor,represtativemanager,v.image,AppCubit.get(context).currentuser.id,AppCubit.get(context).currentuser,AppCubit.get(context).currentadmindata);
+                              ,represtativesupervisor,represtativemanager,v.image,AppCubit.get(context).currentUser.id,AppCubit.get(context).currentUser,AppCubit.get(context).currentadmindata);
                         }, child: Text("نعم")),
                         TextButton(onPressed: () => Navigator.pop(context), child: Text("لا")),
                       ],
@@ -325,7 +325,7 @@ class Newrepresentativepage  extends StatelessWidget {
         margin: EdgeInsets.all(mergin),
         child: TextFormField(
           controller: controller,
-          enabled: (AppCubit.get(context).currentuser.usertype=="user"&&(controller==companyname||controller==companyaddress||controller==companyphone)?false:true),
+          enabled: (AppCubit.get(context).currentUser.usertype=="user"&&(controller==companyname||controller==companyaddress||controller==companyphone)?false:true),
           decoration: InputDecoration(
               labelText: lable,
               hintText: lable,

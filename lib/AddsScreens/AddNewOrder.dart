@@ -117,19 +117,15 @@ class AddnewOrder extends StatelessWidget {
                       },
                       child: Image.file(v.OrderImage)),
                 ),
-                Row(
-                  children: [
-                    gettextfeild((MediaQuery.of(context).size.width - 50),
-                        "العنوان", 10, title),
-                  ],
-                ),
+                gettextfeild((MediaQuery.of(context).size.width - 50),
+                    "العنوان", 10, title),
               ],
             ),
           ),
           floatingActionButton:FloatingActionButton(
             onPressed: () async {
               Order neworder=new Order(title.text);
-              v.addnewOrders(neworder,title);
+              v.addNewOrders(neworder,title);
             },
             child: Icon(Icons.save),
             backgroundColor: Colors.blueAccent,

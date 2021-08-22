@@ -27,7 +27,7 @@ class ClientOrdersList extends StatelessWidget {
 
             },
             builder: (context, state) {
-              UserOrdersCubit v =UserOrdersCubit.get(context);
+              UserOrdersCubit userOrdersCubit =UserOrdersCubit.get(context);
               if(state is deleteingorderState||state is LoadOrdersInProgress){
                 return Container(
                   child: Center(
@@ -43,9 +43,9 @@ class ClientOrdersList extends StatelessWidget {
                     return LayoutBuilder(
                       builder: (context, constraints) => InkWell(
                         onTap: () async{
-                         // print(v.myorders[index].OrderOwner.toJson());
-                          await DisplayOrders(v.myorders[index],AppCubit.get(context).currentrepresentative);
-                          //Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateClientPage(v.clients[index],),));
+                         // print(userOrdersCubit.myorders[index].OrderOwner.toJson());
+                          await DisplayOrders(userOrdersCubit.myOrders[index],AppCubit.get(context).currentrepresentative);
+                          //Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateClientPage(userOrdersCubit.clients[index],),));
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -64,7 +64,7 @@ class ClientOrdersList extends StatelessWidget {
                                 width: constraints.maxWidth,
                                 child: FittedBox(
                                   child: AutoSizeText(
-                                    v.myorders[index].OrderOwner.clientname,style: TextStyle(
+                                    userOrdersCubit.myOrders[index].OrderOwner.clientname,style: TextStyle(
                                       fontSize: 22
                                   ),maxLines: 1,
                                   ),
@@ -78,12 +78,11 @@ class ClientOrdersList extends StatelessWidget {
                                       margin: EdgeInsets.only(right: 15),
                                       // width: (constraints.maxWidth-20)*0.2,
                                       child: Text(
-                                        v.myorders[index].dateodorder,style: TextStyle(
+                                        userOrdersCubit.myOrders[index].dateodorder,style: TextStyle(
                                           fontSize: 22
                                       ),),),
                                     Spacer(),
                                     Container(
-                                      // width: ((constraints.maxWidth-20)*0.3)*0.3,
                                       child: IconButton(icon: Icon(Icons.delete,color: Colors.red,size: 30), onPressed: (){
                                         showDialog(context: context, builder: (context) {
                                           return AlertDialog(
@@ -93,8 +92,7 @@ class ClientOrdersList extends StatelessWidget {
                                             actions: [
                                               TextButton(onPressed: (){
                                                 Navigator.pop(context);
-                                                v.deleteorderFromFireBase(v.myorders[index],RepresentaterCubit.get(context).currentrepresentative.id);
-                                                //v.deleteclient(v.clients[index]);
+                                                userOrdersCubit.deleteOrderFromFireBase(userOrdersCubit.myOrders[index],RepresentaterCubit.get(context).currentrepresentative.id);
                                               }, child: Text("نعم")),
                                               TextButton(onPressed: () => Navigator.pop(context), child: Text("لا")),
                                             ],
@@ -107,12 +105,11 @@ class ClientOrdersList extends StatelessWidget {
                               ),
                             ],
                           ),
-                          // child: Text("ddd"),
                         ),
                       ),
                     );
                   },
-                  itemCount: v.myorders.length,
+                  itemCount: userOrdersCubit.myOrders.length,
                 ),
               );
             }

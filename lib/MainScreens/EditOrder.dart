@@ -104,11 +104,7 @@ class EditOrder extends StatelessWidget {
                       },
                       child: Image.file(v.OrderImage)),
                 ),
-                Row(
-                  children: [
-                    gettextfeild((MediaQuery.of(context).size.width - 50), "العنوان", 10, title),
-                  ],
-                ),
+                gettextfeild((MediaQuery.of(context).size.width - 50), "العنوان", 10, title),
               ],
             ),
           ),

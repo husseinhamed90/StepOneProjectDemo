@@ -46,9 +46,7 @@ class _ProductsState extends State<Products> {
               color: Color(0xffe6e6e6),
               padding: const EdgeInsets.all(10),
               child: ListView.builder(
-                itemBuilder: (context, index) {
-                  return BuildProductItem( widget.currentbrand.products[index],brandscubit,index,widget.currentbrand,context);
-                },
+                itemBuilder: (context, index) => BuildProductItem( widget.currentbrand.products[index],brandscubit,index,widget.currentbrand,context),
                 itemCount: widget.currentbrand.products.length,
               ),
             ),
