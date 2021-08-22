@@ -52,14 +52,14 @@ class NewsCubit extends Cubit<NewsCubitState> {
 
   Future<void>editNew(News order,TextEditingController title)async{
     if(NewImage!=null){
-      UploadFile("Update",NewImage, order, collection, this);
+      uploadFile("Update",NewImage, order, collection, this);
     }
     else if(pdfFile!=null){
-      UploadFile("Update",pdfFile, order, collection, this);
+      uploadFile("Update",pdfFile, order, collection, this);
     }
     else{
       emit(newisuploading());
-      UpdateItem(order,collection,this);
+      updateItem(order,collection,this);
     }
   }
 

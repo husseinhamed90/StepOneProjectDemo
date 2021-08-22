@@ -135,7 +135,7 @@ class CatalogCubit extends Cubit<CatalogStates>{
   Future<void>editCatalog(Catalog catalog,TextEditingController title)async{
     emit(Catalogisuploading());
     if(mainimage!=null){
-      UploadTask uploadedFileProgress = SaveFileIntoFireBaseStorage(mainimage);
+      UploadTask uploadedFileProgress = saveFileIntoFireBaseStorage(mainimage);
       uploadedFileProgress.then((TaskSnapshot value){
         value.ref.getDownloadURL().then((valuee) {
           catalog.mainimagepath=valuee;
@@ -150,13 +150,13 @@ class CatalogCubit extends Cubit<CatalogStates>{
   }
   Future<void> UpdateImages(Catalog catalog){
     if(CatalogImage!=null){
-      UploadFile("Update",CatalogImage, catalog, catalogcollection, this);
+      uploadFile("Update",CatalogImage, catalog, catalogcollection, this);
     }
     else if(pdfFile!=null){
-      UploadFile("Update",pdfFile, catalog, catalogcollection, this);
+      uploadFile("Update",pdfFile, catalog, catalogcollection, this);
     }
     else{
-      UpdateItem(catalog,catalogcollection,this);
+      updateItem(catalog,catalogcollection,this);
     }
   }
 

@@ -219,7 +219,7 @@ class EditBrand extends StatelessWidget {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
-              brandsCubit.EditBrand(title, code,currentbrand);
+              brandsCubit.editBrand(title, code,currentbrand);
             },
             child: Icon(Icons.save),
             backgroundColor: Colors.blueAccent,

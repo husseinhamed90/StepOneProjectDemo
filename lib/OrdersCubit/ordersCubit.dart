@@ -84,13 +84,13 @@ class ordersCubit extends Cubit<ordersStates> {
 
   Future<void>editOrder(Order order,TextEditingController title)async{
     if(OrderImage!=null){
-      UploadFile("Update",OrderImage, order, collection, this);
+      uploadFile("Update",OrderImage, order, collection, this);
     }
     else if(OrderDocumentFile!=null){
-      UploadFile("Update",OrderDocumentFile, order, collection, this);
+      uploadFile("Update",OrderDocumentFile, order, collection, this);
     }
     else{
-      UpdateItem(order,collection,this);
+      updateItem(order,collection,this);
     }
   }
   Future<void> deletOrders(Order order)async{

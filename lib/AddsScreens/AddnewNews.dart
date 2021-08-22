@@ -1,10 +1,7 @@
-import 'dart:io';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 import 'package:mime/mime.dart';
 import 'package:steponedemo/Helpers/Shared.dart';
@@ -13,8 +10,6 @@ import 'package:steponedemo/NewsCubit/NewsCubit.dart';
 import 'package:steponedemo/NewsCubit/NewsCubitState.dart';
 import 'package:steponedemo/Widgets/CircularProgressParForUpload.dart';
 import 'package:steponedemo/Widgets/CustomAppBar.dart';
-import '../Helpers/Utilites.dart';
-import 'package:mime_type/mime_type.dart';
 import 'package:path/path.dart' as p;
 import 'package:toast/toast.dart';
 

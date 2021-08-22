@@ -1,3 +1,5 @@
+import 'package:steponedemo/Models/Shippedtem.dart';
+
 class Client{
   String path="";
   String clientname="غير معروف";
@@ -10,6 +12,7 @@ class Client{
   String path2="";
   String clientcode ="-";
   List<dynamic>orderitems=[];
+  Map<String,ShippedItem>mapOfOrderedItems={};
 
   Client(this.clientname, this.clientcode,
       this.phone, this.address,

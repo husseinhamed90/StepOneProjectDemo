@@ -36,7 +36,7 @@ void main()async {
     runApp(MyApp(userId));
   }
   else{
-    user currentUser = await Auth.GetUserInfo(userId);
+    user currentUser = await Auth.getUserInfo(userId);
     if(currentUser!=null){
       await Auth.changeStateOfUser(currentUser);
       Representative representative =await Auth.getReprestatvieInfo(currentUser);
@@ -73,7 +73,7 @@ class _MyAppState extends State<MyApp> {
                 BlocProvider(create: (_) => VisitsCubit(),),
                 (widget.currentUser!=null)? BlocProvider(create: (_) => ClientsCubit()..GetCurrentUser(widget.currentUser.id)..getClintess()) :BlocProvider(create: (_) => ClientsCubit()),
                 BlocProvider(create: (_) => CatalogCubit(),),
-                BlocProvider(create: (_) => BrandsCubit(snapshot.data)..getbrands(),),
+                BlocProvider(create: (_) => BrandsCubit(snapshot.data)..getbrands()..getCachedData(),),
                 (widget.representative!=null)? BlocProvider(create: (_) => RepresentaterCubit()..SetRepresentatvie(widget.representative)):BlocProvider(create: (_) => RepresentaterCubit()),
                 BlocProvider(create: (_) => NewsCubit()..getnews(),)
               ],
@@ -110,10 +110,7 @@ Future<Database> CreateDataBase()async{
     "Order.db"
     ,version: 1,
     onCreate: (db, version) {
-      db.execute('CREATE TABLE myorders (id INTEGER PRIMARY KEY,ClientID TEXT,itemID TEXT,quantity INTEGER,bounce INTEGER,Discountinsteadofbonus REAL,Discountinsteadofadding REAL,specialDiscount REAL)').then((value) {
-        print("Table is Created");
-      });
-      db.execute('CREATE TABLE products (id INTEGER PRIMARY KEY,ClientID TEXT,Item TEXT,Description TEXT,Q INTEGER,Retail REAL,path TEXT)').then((value) {
+      db.execute('CREATE TABLE products (id INTEGER PRIMARY KEY,ClientID TEXT,Item TEXT,Description TEXT,Q INTEGER,Retail REAL,path TEXT,quantity INTEGER,bounce INTEGER,Discountinsteadofbonus REAL,Discountinsteadofadding REAL,specialDiscount REAL)').then((value) {
         print("Table is Created 2");
       });
     },onOpen: (db) {

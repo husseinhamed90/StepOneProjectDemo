@@ -1,22 +1,13 @@
-import 'dart:io';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 import 'package:steponedemo/BrandsCubit/BrandsCubit.dart';
 import 'package:steponedemo/BrandsCubit/BrandsStates.dart';
 import 'package:steponedemo/Helpers/Shared.dart';
-import 'package:steponedemo/Models/Catalog.dart';
-import 'package:steponedemo/Models/brand.dart';
-import 'package:steponedemo/Widgets/CircularProgressIndicatorForDownload.dart';
 import 'package:steponedemo/Widgets/CircularProgressParForUpload.dart';
 import 'package:steponedemo/Widgets/CustomAppBar.dart';
-import '../Helpers/Utilites.dart';
-import 'package:steponedemo/CatalogCubit/CatalogCubit.dart';
-
 import 'package:toast/toast.dart';
 
 class AddnewBrand extends StatelessWidget {
@@ -213,7 +204,7 @@ class AddnewBrand extends StatelessWidget {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
-              brandsCubit.addnewbrand(title, code);
+              brandsCubit.addNewBrand(title, code);
             },
             child: Icon(Icons.save),
             backgroundColor: Colors.blueAccent,

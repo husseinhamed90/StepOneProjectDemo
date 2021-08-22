@@ -40,3 +40,5 @@ class numberoffilestillNow extends BrandsStates{
   numberoffilestillNow(this.numberOfLoadedFiles);
 }
 
+class shippedItemUpdated extends BrandsStates{}
+

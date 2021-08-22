@@ -11,6 +11,7 @@ import 'package:steponedemo/Models/Client.dart';
 import 'package:steponedemo/Models/TRProdct.dart';
 import 'package:steponedemo/Models/brand.dart';
 import '../MainScreens/shoppingCartPage.dart';
+import 'package:get/get.dart';
 
 Widget BuildProductItem(TrProduct trProduct,
     BrandsCubit brandsCubit,
@@ -45,11 +46,6 @@ Widget BuildProductItem(TrProduct trProduct,
         InkWell(
           onTap: () {
             if(AppCubit.get(context).currentUser.usertype=="admin"){
-              // showbootomsheeatWithoutDocument(
-              //     context, brandsCubit, "product",
-              //     currentbrand: Currentbrand,
-              //     index: currentindex);
-
               showModalBottomSheet(context: context, builder: (context) {
                 return Container(
                   height: MediaQuery.of(context).size.height*0.2,
@@ -90,44 +86,60 @@ Widget BuildProductItem(TrProduct trProduct,
           child:  Column(
             children: [
               (AppCubit.get(context).currentUser.usertype == "admin") ?
-              IconButton(
-                icon: Icon(Icons.delete,
-                    color: Colors.red, size: 30),
-                onPressed: () {
-                  ShowDialogbox(context,(){
-                    Navigator.pop(context);
-
-                    brandsCubit.deleteProduct(trProduct,Currentbrand,currentindex,);
-                  });
-                },
-                padding: EdgeInsets.zero,
-              ):Container(),
-              Container(
-                child: (!isitembelongtoclint(trProduct,BrandsCubit.get(context)))?IconButton(
-                  icon: Icon(Icons.shopping_cart,
-                      color: Colors.black, size: 30),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ShoppingCartPage(trProduct,BrandsCubit.get(context).chosenClient),
-                        ));
-                    //brandsCubit.getCachedData();
-                  },
-                  padding: EdgeInsets.zero,
-                ):IconButton(
-                  icon: Icon(Icons.favorite,
-                      color: Colors.green, size: 30),
+              Expanded(
+                child: IconButton(
+                  icon: Icon(Icons.delete,
+                      color: Colors.red, size: 25),
                   onPressed: () {
                     ShowDialogbox(context,(){
                       Navigator.pop(context);
-                      brandsCubit.DeleteItemFromOrderFromDatabase(trProduct);
+
+                      brandsCubit.deleteProduct(trProduct,Currentbrand,currentindex,);
                     });
                   },
                   padding: EdgeInsets.zero,
                 ),
+              ):Container(),
+              Expanded(
+                child: Container(
+                  child: (!isitembelongtoclint(trProduct,BrandsCubit.get(context)))?IconButton(
+                    icon: Icon(Icons.shopping_cart,
+                        color: Colors.black, size: 25),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ShoppingCartPage(trProduct,BrandsCubit.get(context).chosenClient,shippedItem: null,),
+                          ));
+                      //brandsCubit.getCachedData();
+                    },
+                    padding: EdgeInsets.zero,
+                  ):IconButton(
+                    icon: Icon(Icons.favorite,
+                        color: Colors.green, size: 25),
+                    onPressed: () {
+                      ShowDialogbox(context,(){
+                        Navigator.pop(context);
+                        brandsCubit.deleteItemFromOrderFromDatabase(trProduct);
+                      });
+                    },
+                    padding: EdgeInsets.zero,
+                  ),
+                ),
               ),
+              (isitembelongtoclint(trProduct,BrandsCubit.get(context))?Expanded(
+                child: Container(
+                  child: (IconButton(
+                    icon: Icon(Icons.edit,
+                        color: Colors.black, size: 25),
+                    onPressed: () {
+                      Get.to(ShoppingCartPage(trProduct, BrandsCubit.get(context).chosenClient,shippedItem: BrandsCubit.get(context).chosenClient.mapOfOrderedItems[trProduct.Item]));
+                    },
+                    padding: EdgeInsets.zero,
+                  )),
+                ),
+              ):Container())
             ],
           )
           ,

@@ -3,7 +3,7 @@ import 'package:steponedemo/Models/Representative.dart';
 import 'package:steponedemo/Models/User.dart';
 
 class Auth {
-  static Future<user> GetUserInfo(String id) async {
+  static Future<user> getUserInfo(String id) async {
     DocumentSnapshot documentReference = await FirebaseFirestore.instance.collection('Users').doc(id).get();
     user currentUser = user.fromJson(documentReference.data());
     return currentUser;

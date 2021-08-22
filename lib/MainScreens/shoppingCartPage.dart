@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:steponedemo/BrandsCubit/BrandsCubit.dart';
@@ -11,7 +12,8 @@ import 'package:steponedemo/Widgets/CustomAppBar.dart';
 class ShoppingCartPage extends StatelessWidget {
   TrProduct trProduct;
   Client productOwner;
-  ShoppingCartPage(this.trProduct,this.productOwner);
+  ShippedItem shippedItem;
+  ShoppingCartPage(this.trProduct,this.productOwner,{this.shippedItem});
    TextEditingController quantity=TextEditingController();
    TextEditingController bounce=TextEditingController();
    TextEditingController discountReplacementToBounce=TextEditingController();
@@ -20,9 +22,16 @@ class ShoppingCartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if(shippedItem!=null){
+      quantity.text=shippedItem.quantity.toString();
+      bounce.text=shippedItem.bounce.toString();
+      discountReplacementToBounce.text=shippedItem.Discount_instead_of_bonus.toString();
+      addDiscount.text=shippedItem.Discount_instead_of_adding.toString();
+      specialDiscount.text=shippedItem.specialDiscount.toString();
+    }
     return BlocConsumer<BrandsCubit,BrandsStates>(
       listener: (context, state) {
-        if(state is ItemAddedToCart){
+        if(state is ItemAddedToCart||state is shippedItemUpdated){
           Navigator.pop(context);
         }
         else if(state is clientnotchoosen){
@@ -87,15 +96,20 @@ class ShoppingCartPage extends StatelessWidget {
           floatingActionButton: FloatingActionButton(
             child: Icon(Icons.save),
             onPressed: () {
-              ShippedItem shippedItem=ShippedItem(trProduct,
+              ShippedItem newShippedItem=ShippedItem(trProduct,
                   (quantity.text!="")?int.parse(quantity.text):0,
                   (bounce.text!="")?int.parse(bounce.text):0,
                   (discountReplacementToBounce.text!="")?double.parse(discountReplacementToBounce.text):0,
                   (addDiscount.text!="")?double.parse(addDiscount.text):0,
                   (specialDiscount.text!="")?double.parse(specialDiscount.text):0
               );
-              BrandsCubit.get(context).AddProductToCart(shippedItem,productOwner);
-              BrandsCubit.get(context).resetTextFeilds(quantity, bounce, discountReplacementToBounce, addDiscount, specialDiscount);
+              if(shippedItem==null){
+                BrandsCubit.get(context).addProductToCart(newShippedItem,productOwner);
+              }
+              else{
+                BrandsCubit.get(context).updateShippedItem(trProduct.Item, newShippedItem);
+              }
+              BrandsCubit.get(context).resetTextFields(quantity, bounce, discountReplacementToBounce, addDiscount, specialDiscount);
             },
           ),
         );

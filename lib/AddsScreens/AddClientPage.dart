@@ -1,22 +1,19 @@
-import 'dart:io';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 import 'package:steponedemo/ClientsCubit/ClientsCubit.dart';
 import 'package:steponedemo/ClientsCubit/ClientsCubitStates.dart';
 import 'package:steponedemo/Helpers/Shared.dart';
 import 'package:steponedemo/Models/Client.dart';
 import 'package:steponedemo/Widgets/CustomAppBar.dart';
+import 'package:steponedemo/constants.dart';
 import 'package:toast/toast.dart'as ss;
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 class AddnewClientPage  extends StatefulWidget {
   String userid;
-  //String username;
+
   AddnewClientPage([this.userid]);
 
   @override
@@ -24,16 +21,16 @@ class AddnewClientPage  extends StatefulWidget {
 }
 
 class _AddNewrepresentativeState extends State<AddnewClientPage> {
-  TextEditingController Clientname=new TextEditingController();
+  TextEditingController clientName=new TextEditingController();
 
-  TextEditingController Clientcode=new TextEditingController();
+  TextEditingController clientCode=new TextEditingController();
 
-  TextEditingController Clientphone=new TextEditingController();
+  TextEditingController clientPhone=new TextEditingController();
 
-  TextEditingController ClientAddress=new TextEditingController();
+  TextEditingController clientAddress=new TextEditingController();
 
-  TextEditingController ClientArea=new TextEditingController();
-  List<String>listoftypees=['غير محدد','قطاعي','جملة','عقد',];
+  TextEditingController clientArea=new TextEditingController();
+
   String typepneclint="غير محدد";
   //bool open=false;
   bool isvisible=false;
@@ -89,8 +86,8 @@ class _AddNewrepresentativeState extends State<AddnewClientPage> {
                   returnphotoConatiner("insert","اضافة صورة الكارت (2)",context,v,v.image2,imagetype: "second"),
                   Row(
                     children: [
-                      gettextfeild((MediaQuery.of(context).size.width-40)*0.6,"اسم العميل",10,Clientname),
-                      gettextfeild((MediaQuery.of(context).size.width-40)*0.4,"كود العميل ",10,Clientcode),
+                      gettextfeild((MediaQuery.of(context).size.width-40)*0.6,"اسم العميل",10,clientName),
+                      gettextfeild((MediaQuery.of(context).size.width-40)*0.4,"كود العميل ",10,clientCode),
                     ],
                   ),
                   Container(
@@ -118,7 +115,7 @@ class _AddNewrepresentativeState extends State<AddnewClientPage> {
                                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                               ),
                               value: typepneclint,
-                              items: listoftypees.map((String value) {
+                              items: listOfTypes.map((String value) {
                                   return new DropdownMenuItem<String>(
                                     value: value,
                                     child: Container(
@@ -141,9 +138,9 @@ class _AddNewrepresentativeState extends State<AddnewClientPage> {
                           ),
                         ],
                       )),
-                  gettextfeild( ((MediaQuery.of(context).size.width-50)),"رقم التليفون",10,Clientphone),
-                  gettextfeild( ((MediaQuery.of(context).size.width-50)),"العنوان",10,ClientAddress),
-                  gettextfeild( ((MediaQuery.of(context).size.width-50)),"المنطقة",10,ClientArea),
+                  gettextfeild( ((MediaQuery.of(context).size.width-50)),"رقم التليفون",10,clientPhone),
+                  gettextfeild( ((MediaQuery.of(context).size.width-50)),"العنوان",10,clientAddress),
+                  gettextfeild( ((MediaQuery.of(context).size.width-50)),"المنطقة",10,clientArea),
                   Container(
                     height: MediaQuery.of(context).size.height*0.1,
                     margin: EdgeInsets.only(right: 10,left: 10,bottom: 20),
@@ -162,10 +159,10 @@ class _AddNewrepresentativeState extends State<AddnewClientPage> {
                       TextButton(onPressed: ()async{
                         Client client;
                         Navigator.pop(context);
-                        client = Client(Clientname.text,Clientcode.text,Clientphone.text,ClientAddress.text,ClientArea.text,typepneclint);
-                        await v.addClient(client, Clientname, Clientcode,
-                            Clientphone,
-                            ClientAddress,ClientArea,v.image,v.image2,ClientsCubit.get(context).userid);
+                        client = Client(clientName.text,clientCode.text,clientPhone.text,clientAddress.text,clientArea.text,typepneclint);
+                        await v.addClient(client, clientName, clientCode,
+                            clientPhone,
+                            clientAddress,clientArea,v.image,v.image2,ClientsCubit.get(context).userid);
                       }, child: Text("نعم")),
                       TextButton(onPressed: () => Navigator.pop(context), child: Text("لا")),
                     ],

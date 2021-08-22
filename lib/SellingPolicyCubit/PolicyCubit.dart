@@ -50,14 +50,14 @@ class PolicyCubit extends Cubit<PolicyCubitState> {
 
   Future<void>editOrder(Sellingpolicy order,TextEditingController title)async{
     if(PolicyImage!=null){
-      UploadFile("Update",PolicyImage, order, collection, this);
+      uploadFile("Update",PolicyImage, order, collection, this);
     }
     else if(PolicyDocumentFile!=null){
-      UploadFile("Update",PolicyDocumentFile, order, collection, this);
+      uploadFile("Update",PolicyDocumentFile, order, collection, this);
     }
     else{
       emit(Policyisuploading());
-      UpdateItem(order,collection,this);
+      updateItem(order,collection,this);
     }
   }
   void ReturnfileisdownloadedState(){

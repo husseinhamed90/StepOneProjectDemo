@@ -40,16 +40,16 @@ class _AddnewVisitState extends State<AddnewVisit> {
     if (pickedDate != null ){
       setState(() {
         currentDate = pickedDate;
-        List<String> DateInyMEd = [];
-        DateInyMEd = DateFormat.yMEd().add_jms().format(currentDate).split(' ');
-        dayname =getnameofdayinarabic(DateInyMEd[0]);
-        String last = DateInyMEd[1].split('/')[1] +
+        List<String> dateInyMEd = [];
+        dateInyMEd = DateFormat.yMEd().add_jms().format(currentDate).split(' ');
+        dayname =getnameofdayinarabic(dateInyMEd[0]);
+        String last = dateInyMEd[1].split('/')[1] +
             "/" +
-            DateInyMEd[1].split('/')[0] +
+            dateInyMEd[1].split('/')[0] +
             "/" +
-            DateInyMEd[1].split('/')[2] +
+            dateInyMEd[1].split('/')[2] +
             " - " +
-            DateInyMEd[2];
+            dateInyMEd[2];
         List<String> ff = last.split('-');
         setState(() {
           date=ff[0];

@@ -96,15 +96,24 @@ class _BrandsListState extends State<BrandsList> {
                             child: Focus(
                               focusNode: myFocusNode,
                               onFocusChange: (value) {
-                                brandsCubit.textfroemfoucesstate(value);
+                                brandsCubit.textFormFocusState(value);
                               },
                               child: TextFormField(
                                 controller: searchBar,
-                                onChanged: (value) {
-
-                                  brandsCubit.changesuggestionresultList(searchBar.text, ClientsCubit.get(context).clients);
+                                onChanged: (value) async {
+                                  brandsCubit.changeSuggestionResultList(searchBar.text, ClientsCubit.get(context).clients);
                                 },
+
                                 decoration: InputDecoration(
+                                  suffixIcon: IconButton(
+                                    icon: Icon(Icons.clear),
+                                    onPressed: () async {
+                                      brandsCubit.resetSearchBar();
+                                      searchBar.clear();
+                                      await brandsCubit.getCachedData();
+
+                                    },
+                                  ),
                                     border: InputBorder.none,
                                     contentPadding:
                                     EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
@@ -148,10 +157,10 @@ class _BrandsListState extends State<BrandsList> {
                           return LayoutBuilder(
                               builder: (context, constraints) => InkWell(
                                 onTap: () async{
-                                  brandsCubit.setChoosenClient(brandsCubit.suggestionResult[index]);
+                                  brandsCubit.setChosenClient(brandsCubit.suggestionResult[index]);
                                   await brandsCubit.getCachedData();
                                   searchBar.text=brandsCubit.suggestionResult[index].clientname;
-                                  brandsCubit.resetsearchbar();
+                                  brandsCubit.resetSearchBar();
                                 },
                                 child: Container(
                                     padding: EdgeInsets.all(10),
@@ -182,7 +191,7 @@ class _BrandsListState extends State<BrandsList> {
                       height: 55,
                       width: MediaQuery.of(context).size.width*0.5,
                       child: ElevatedButton(onPressed:() {
-                        brandsCubit.InsertOrderIntoFireBase(RepresentaterCubit.get(context).currentrepresentative.id);
+                        brandsCubit.insertOrderIntoFireBase(RepresentaterCubit.get(context).currentrepresentative.id);
                       } , child: Text("حفظ الاوردر")),
                     ),
                   ),

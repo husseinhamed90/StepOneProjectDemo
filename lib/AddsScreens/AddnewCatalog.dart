@@ -1,18 +1,11 @@
-import 'dart:io';
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:steponedemo/Models/Catalog.dart';
-import 'package:steponedemo/Widgets/CircularProgressIndicatorForDownload.dart';
 import 'package:steponedemo/Widgets/CircularProgressParForUpload.dart';
 import 'package:steponedemo/Widgets/CustomAppBar.dart';
 import '../Helpers/Shared.dart';
-import '../Helpers/Utilites.dart';
 import 'package:steponedemo/CatalogCubit/CatalogCubit.dart';
 import 'package:steponedemo/CatalogCubit/CatalogStates.dart';
 

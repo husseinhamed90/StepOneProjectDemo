@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,7 +11,6 @@ import 'package:steponedemo/Models/Client.dart';
 import 'package:steponedemo/Models/Shippedtem.dart';
 import 'package:steponedemo/Models/TRProdct.dart';
 import 'package:steponedemo/Models/brand.dart';
-import 'package:path/path.dart' as p;
 import 'package:steponedemo/BrandsCubit/BrandsStates.dart';
 import '../Helpers/Utilites.dart';
 
@@ -33,15 +31,6 @@ class BrandsCubit extends Cubit<BrandsStates> {
   CollectionReference brandsCollection = FirebaseFirestore.instance.collection('Brands');
   List<brand> brands = [];
 
-  Future<File> getImagefromSourse(ImageSource source, File file, {String typeofitem, brand currentbrand, int index}) async {
-    final pickedFile = await picker.getImage(
-        source: source, preferredCameraDevice: CameraDevice.rear);
-    if (pickedFile != null) {
-      file = File(pickedFile.path);
-      return file;
-    }
-  }
-
   void setImage(File file, {String typeofimage}) async {
     if (typeofimage == "brand")
       image = file;
@@ -59,30 +48,31 @@ class BrandsCubit extends Cubit<BrandsStates> {
 
   Future getCachedData() async {
     await database.rawQuery('SELECT * FROM products WHERE ClientID = "${chosenClient.ClientID}"').then((valuee) {
+      print(valuee);
       valuee.forEach((element) {
-        setClientCachedItems(valuee, element);
+        setClientCachedItems(element);
         emit(datagetfromcashe());
       });
     });
   }
 
-  void setClientCachedItems(List<Map<String, Object>> valuee, Map<String, Object> elementt) {
-    valuee.forEach((element) {
-      TrProduct trProduct = TrProduct.fromJson(element);
-      trProduct.Retail = element['Retail'];
-      ShippedItem shippedItem = ShippedItem(
-          trProduct,
-          elementt['quantity'],
-          elementt['bounce'],
-          elementt['Discountinsteadofbonus'],
-          elementt['Discountinsteadofadding'],
-          elementt['specialDiscount']);
-      chosenClient.orderitems.add(shippedItem);
-      emit(datagetfromcashe());
-    });
+  void setClientCachedItems(Map<String, Object> element) {
+    TrProduct trProduct = TrProduct.fromJson(element);
+    trProduct.Retail = element['Retail'];
+    ShippedItem shippedItem = ShippedItem(
+        trProduct,
+        element['quantity'],
+        element['bounce'],
+        element['Discountinsteadofbonus'],
+        element['Discountinsteadofadding'],
+        element['specialDiscount']);
+    chosenClient.mapOfOrderedItems[trProduct.Item]=shippedItem;
+    chosenClient.orderitems.add(shippedItem);
+    print( chosenClient.orderitems);
+    emit(datagetfromcashe());
   }
 
-  Future DeleteOrderFromDatabase() async {
+  Future deleteOrderFromDatabase() async {
 
     database.transaction((txn) {
       return txn.rawDelete('DELETE FROM products WHERE ClientID ="${chosenClient.ClientID}"').then((value) {
@@ -99,7 +89,7 @@ class BrandsCubit extends Cubit<BrandsStates> {
        suggestionResult = [];
   }
 
-  Future DeleteItemFromOrderFromDatabase(TrProduct trProduct) async {
+  Future deleteItemFromOrderFromDatabase(TrProduct trProduct) async {
     emit(removingitemfromcartinprogress());
     return database.rawDelete('DELETE FROM products WHERE (ClientID = "${chosenClient.ClientID}" AND Item = "${trProduct.Item}")').then((value) {
       removeItemFromChosenClientOrder(trProduct);
@@ -110,66 +100,69 @@ class BrandsCubit extends Cubit<BrandsStates> {
      for (int i = 0; i < chosenClient.orderitems.length; i++) {
       if (chosenClient.orderitems[i].trProduct.Item == trProduct.Item) {
         chosenClient.orderitems.removeAt(i);
+        chosenClient.mapOfOrderedItems.remove(trProduct.Item);
         emit(itemremovedfromcart());
       }
     }
   }
 
-  void InsertOrderIntoFireBase(String representaiveID) {
+  void insertOrderIntoFireBase(String representativeId) {
     if (chosenClient.orderitems.length > 0)
-      insertOrder(representaiveID);
+      insertOrder(representativeId);
     else
       emit(noItemsInCart());
   }
-  void insertOrder(String representaiveID) {
+
+  void insertOrder(String representativeId) {
     emit(addingproducttocardinprogress());
-    List<Map<String, dynamic>> MapOfOrderItems = PutItemsInMap;
-    insertNewOrderIntoFireBase(MapOfOrderItems, representaiveID);
+    List<Map<String, dynamic>> mapOfOrderItems = putItemsInMap;
+    insertNewOrderIntoFireBase(mapOfOrderItems, representativeId);
   }
 
-  void insertNewOrderIntoFireBase(List<Map<String, dynamic>> MapOfOrderItems, String representaiveID) {
-    FirebaseFirestore.instance.collection('ClientOrders').add(getMapOfOrderInformation(MapOfOrderItems, representaiveID)).then((value) {
-      updateLocationOfnewDocument(value);
+  void insertNewOrderIntoFireBase(List<Map<String, dynamic>> mapOfOrderItems, String representativeId) {
+    FirebaseFirestore.instance.collection('ClientOrders').add(getMapOfOrderInformation(mapOfOrderItems, representativeId)).then((value) {
+      updateLocationOfNewDocument(value);
     });
   }
 
-  void updateLocationOfnewDocument(DocumentReference value) {
+  void updateLocationOfNewDocument(DocumentReference value) {
     FirebaseFirestore.instance.collection('ClientOrders').doc(value.id).update({"location": value.id}).then((value) {
-      DeleteOrderFromDatabase().then((value) {
+      deleteOrderFromDatabase().then((value) {
         emit(OrderSavedState());
       });
     });
   }
 
-  Map<String, dynamic> getMapOfOrderInformation(List<Map<String, dynamic>> MapOfOrderItems, String representaiveID) {
+  Map<String, dynamic> getMapOfOrderInformation(List<Map<String, dynamic>> mapOfOrderItems, String representativeId) {
     return {
     "OrderOwner": chosenClient.ClientID,
-    "OrderItems": MapOfOrderItems,
+    "OrderItems": mapOfOrderItems,
     "date": getDateWithoutTime(),
-    "representativeID": representaiveID
-  };
+    "representativeID": representativeId
+   };
   }
 
-  List<Map<String, dynamic>> get PutItemsInMap {
-     List<Map<String, dynamic>> MapOfOrderItems = [];
+  List<Map<String, dynamic>> get putItemsInMap {
+     List<Map<String, dynamic>> mapOfOrderItems = [];
     chosenClient.orderitems.forEach((element) {
-      MapOfOrderItems.add(element.toJson());
+      mapOfOrderItems.add(element.toJson());
     });
-    return MapOfOrderItems;
+    return mapOfOrderItems;
   }
 
-  void setChoosenClient(Client client) {
+  void setChosenClient(Client client) {
     chosenClient = client;
     emit(choosenclientState());
   }
 
-  void resetsearchbar() {
+  void resetSearchBar() {
     suggestionResult = [];
     focusState = false;
+    chosenClient=Client.noClient();
     emit(resetsearchbarState());
   }
 
-  void changesuggestionresultList(String searchedstring, List<Client> clients) {
+  void changeSuggestionResultList(String searchedstring, List<Client> clients) {
 
     getClientsWithThisName(clients, searchedstring);
     emit(newSearchsugestionlist());
@@ -193,38 +186,48 @@ class BrandsCubit extends Cubit<BrandsStates> {
     return newcopyofclint;
   }
 
-  void textfroemfoucesstate(bool b) {
+  void textFormFocusState(bool b) {
     focusState = b;
     emit(tetxformfoucesState());
   }
-  Future InsertProductIntoDatabase(TrProduct trProduct) async {
+
+  Future insertProductIntoDatabase(ShippedItem shippedItem) async {
     database.transaction((txn) {
-      return txn.rawInsert('INSERT INTO products (Item,ClientID,Description,Q,Retail,path) VALUES ("${trProduct.Item}","${chosenClient.ClientID}", "${trProduct.Description}", ${trProduct.Q},${trProduct.Retail},"${trProduct.path}")')
-          .then((value) {
+      return txn.rawInsert('INSERT INTO products (Item,ClientID,Description,Q,Retail,path,quantity,bounce,Discountinsteadofbonus,Discountinsteadofadding,specialDiscount) VALUES ("${shippedItem.trProduct.Item}","${chosenClient.ClientID}", "${shippedItem.trProduct.Description}", ${shippedItem.trProduct.Q},${shippedItem.trProduct.Retail},"${shippedItem.trProduct.path}",${shippedItem.quantity},${shippedItem.bounce},${shippedItem.Discount_instead_of_bonus},${shippedItem.Discount_instead_of_adding},${shippedItem.specialDiscount})').then((value) {
         print("Record added Successfully");
       });
     });
   }
 
-  void AddProductToCart(ShippedItem shippedItem, Client client) async {
+  void updateShippedItem(String itemKey,ShippedItem shippedItem){
+    chosenClient.mapOfOrderedItems[itemKey]=shippedItem;
+    for(int i=0;i<chosenClient.orderitems.length;i++){
+      if(chosenClient.orderitems[i].trProduct.Item==itemKey){
+        chosenClient.orderitems[i]=shippedItem;
+        emit(shippedItemUpdated());
+        return;
+      }
+    }
+  }
+  void addProductToCart(ShippedItem shippedItem, Client client) async {
     emit(addingproducttocardinprogress());
-    InsertProductIntoDatabase(shippedItem.trProduct);
+    insertProductIntoDatabase(shippedItem);
     chosenClient.orderitems.add(shippedItem);
-
+    chosenClient.mapOfOrderedItems[shippedItem.trProduct.Item]=shippedItem;
     emit(ItemAddedToCart());
   }
 
-  void resetTextFeilds(
+  void resetTextFields(
       TextEditingController quantity,
       TextEditingController bounce,
-      TextEditingController discountReplacmentToBounce,
-      TextEditingController Addeddiscount,
-      TextEditingController SpecialDiscount) {
+      TextEditingController discountReplacementToBounce,
+      TextEditingController addedDiscount,
+      TextEditingController specialDiscount) {
       quantity.text = "";
     bounce.text = "";
-    discountReplacmentToBounce.text = "";
-    Addeddiscount.text = "";
-    SpecialDiscount.text = "";
+      discountReplacementToBounce.text = "";
+    addedDiscount.text = "";
+    specialDiscount.text = "";
   }
 
   void deleteProduct(TrProduct trProduct,brand prevbrand,int index)async{
@@ -239,7 +242,7 @@ class BrandsCubit extends Cubit<BrandsStates> {
 
   Future<void> updateProduct(TrProduct trProduct, brand prevbrand, int index) async {
     emit(loadingbrangforupdate());
-    trProduct.path = await getUrlofImage(productImage);
+    trProduct.path = await getUrlOfImage(productImage);
     brandsCollection.where("brandcode", isEqualTo: prevbrand.prandcode).get().then((value) {
       updateBrandInFireBase(prevbrand, index, trProduct, value);
     });
@@ -261,7 +264,7 @@ class BrandsCubit extends Cubit<BrandsStates> {
     });
   }
 
-  void EditBrand(TextEditingController brandname, TextEditingController brandecode, brand currentbrand) async {
+  void editBrand(TextEditingController brandname, TextEditingController brandecode, brand currentbrand) async {
     if (brandname.text == "" || brandecode.text == "") {
       emit(emptystringfound());
     }
@@ -273,7 +276,7 @@ class BrandsCubit extends Cubit<BrandsStates> {
   }
 
   Future<brand> setFilesToNewBrand(brand newBrand, brand currentbrand) async {
-    newBrand = await UpdateBrandImage(newBrand,currentbrand.path);
+    newBrand = await updateBrandImage(newBrand,currentbrand.path);
     if (pdfFile == null && orderedFile == null) {
       newBrand =noFilesChanged(newBrand, currentbrand);
     }
@@ -322,6 +325,7 @@ class BrandsCubit extends Cubit<BrandsStates> {
     newbrand = await generateBrandWithNewFiles(orderedFile, currentbrand, "orderedFile", updatedBrand: newbrand);
     return newbrand;
   }
+
   brand noFilesChanged(brand newbrand,brand currentbrand){
     newbrand.orderedFile = currentbrand.orderedFile;
     newbrand.orderedProducts = currentbrand.orderedProducts;
@@ -329,9 +333,10 @@ class BrandsCubit extends Cubit<BrandsStates> {
     newbrand.products = currentbrand.products;
     return newbrand;
   }
-  Future<brand> UpdateBrandImage(brand newbrand,String oldPath)async{
+
+  Future<brand> updateBrandImage(brand newbrand,String oldPath)async{
     if (image != null) {
-      String path =await getUrlofImage(image);
+      String path =await getUrlOfImage(image);
       newbrand.path = path;
     }
     else {
@@ -339,8 +344,9 @@ class BrandsCubit extends Cubit<BrandsStates> {
     }
     return newbrand;
   }
-  void setUpdatedBrand(String id, brand NewBrand) {
-    brandsCollection.doc(id).update(NewBrand.toJson()).then((value) {
+
+  void setUpdatedBrand(String id, brand newBrand) {
+    brandsCollection.doc(id).update(newBrand.toJson()).then((value) {
       emit(brandupdated());
       getbrands();
     });
@@ -354,16 +360,16 @@ class BrandsCubit extends Cubit<BrandsStates> {
     return orderedBrand;
   }
 
-  Future<void> delectebrand(brand brandss) {
+  Future delectebrand(brand brand) {
     emit(branddeleted());
-    brandsCollection.where("brandcode", isEqualTo: brandss.prandcode).get().then((value) {
+    brandsCollection.where("brandcode", isEqualTo: brand.prandcode).get().then((value) {
       brandsCollection.doc(value.docs.first.id).delete();
       getbrands();
       emit(branddeletedsuccfully());
     });
   }
 
-  Future<List<TrProduct>> orderproducts(List<TrProduct> products, List<TrProduct> orderedProducts) async {
+  Future<List<TrProduct>> orderProducts(List<TrProduct> products, List<TrProduct> orderedProducts) async {
     Map<String, dynamic> orderedBrand = convertListToMap(orderedProducts);
     Map<String, dynamic> orderNumbers = {};
     Map<String, TrProduct> foundItems = {};
@@ -372,7 +378,7 @@ class BrandsCubit extends Cubit<BrandsStates> {
         foundItems[products[i].Item] = products[i];
         orderNumbers[products[i].Item] = orderedBrand[products[i].Item];
       } else {
-        products[i]= PutDefaultDataToItem(products, i);
+        products[i]= putDefaultDataToItem(products, i);
         foundItems[products[i].Item] = products[i];
         orderNumbers[products[i].Item] = orderedBrand.length + 1;
       }
@@ -381,98 +387,92 @@ class BrandsCubit extends Cubit<BrandsStates> {
     return products;
   }
 
-  TrProduct PutDefaultDataToItem(List<TrProduct> products, int i) {
+  TrProduct putDefaultDataToItem(List<TrProduct> products, int i) {
     products[i].Price = "0";
     products[i].Retail = "0";
     products[i].Q = "0";
     return products[i];
   }
 
-  String getFileNameWithExtention(File file) {
-    String extention = p.extension(file.path).split('.')[1];
-    String filename = p.basename(file.path);
-    return '${extention}s/$filename';
-  }
-
-  void emitnumberofloadedfilesfromexel(double numberofFiles) {
+  void emitNumberOfLoadedFilesFromExcel(double numberofFiles) {
     emit(numberoffilestillNow(numberofFiles));
   }
 
-  Future<brand> UpdateOrderedFile(brand updatedBrand, String path, List<TrProduct> products, brand currentbrand) async {
+  Future<brand> updateOrderedFile(brand updatedBrand, String path, List<TrProduct> products, brand currentbrand) async {
     updatedBrand.orderedFile = path;
     updatedBrand.orderedProducts = products;
-    updatedBrand.products = await orderproducts(currentbrand.products, updatedBrand.orderedProducts);
+    updatedBrand.products = await orderProducts(currentbrand.products, updatedBrand.orderedProducts);
     return updatedBrand;
   }
 
-  Future<brand> UpdateMainFile(brand updatedBrand, String path, List<TrProduct> products, brand currentbrand) async {
+  Future<brand> updateMainFile(brand updatedBrand, String path, List<TrProduct> products, brand currentbrand) async {
     emit(orderproductsInProgress());
     updatedBrand.excelfilepath = path;
     if (updatedBrand.orderedProducts == [] || updatedBrand.orderedProducts == null) {
       updatedBrand.products = products;
     }
     else {
-      products = await orderproducts(products, updatedBrand.orderedProducts);
+      products = await orderProducts(products, updatedBrand.orderedProducts);
       updatedBrand.products = products;
     }
     return updatedBrand;
   }
 
-  Future<brand> UpdateBrandWithNewExcelFile(String typeOfFile, String path, List<TrProduct> products, brand updatedBrand, brand currentbrand) async {
+  Future<brand> updateBrandWithNewExcelFile(String typeOfFile, String path, List<TrProduct> products, brand updatedBrand, brand currentbrand) async {
     if (typeOfFile == "orderedFile") {
-      updatedBrand = await UpdateOrderedFile(updatedBrand, path, products, currentbrand);
+      updatedBrand = await updateOrderedFile(updatedBrand, path, products, currentbrand);
     } else {
-      updatedBrand = await UpdateMainFile(updatedBrand, path, products, currentbrand);
+      updatedBrand = await updateMainFile(updatedBrand, path, products, currentbrand);
     }
     print("return updated");
     return updatedBrand;
   }
 
-  Future<brand> orderNewProducts(brand updatedBrand, List<TrProduct> NonOrderedProducts) async {
-    updatedBrand.products = await orderproducts(NonOrderedProducts, updatedBrand.orderedProducts);
+  Future<brand> orderNewProducts(brand updatedBrand, List<TrProduct> nonOrderedProducts) async {
+    updatedBrand.products = await orderProducts(nonOrderedProducts, updatedBrand.orderedProducts);
     return updatedBrand;
   }
 
-  brand AddOrderedFileToNewBrand(brand currentbrand, String path, List<TrProduct> products) {
+  brand addOrderedFileToNewBrand(brand currentbrand, String path, List<TrProduct> products) {
     currentbrand.orderedFile = path;
     currentbrand.orderedProducts = products;
     return currentbrand;
   }
 
-  Future<brand> AddMainFileToNewBrand(brand currentbrand, String path, List<TrProduct> products) async {
+  Future<brand> addMainFileToNewBrand(brand currentbrand, String path, List<TrProduct> products) async {
     emit(orderproductsInProgress());
     currentbrand.excelfilepath = path;
     if (currentbrand.orderedProducts == [] || currentbrand.orderedProducts == null) {
       currentbrand.products = products;
     }
     else {
-      products = await orderproducts(products, currentbrand.orderedProducts);
+      products = await orderProducts(products, currentbrand.orderedProducts);
       currentbrand.products = products;
     }
     return currentbrand;
   }
 
-  Future<brand> AddnewBrandWithExcelSheets(String typeOfFile, brand currentbrand, String path, List<TrProduct> products) async {
+  Future<brand> addNewBrandWithExcelSheets(String typeOfFile, brand currentbrand, String path, List<TrProduct> products) async {
     if (typeOfFile == "orderedFile") {
-      currentbrand = AddOrderedFileToNewBrand(currentbrand, path, products);
+      currentbrand = addOrderedFileToNewBrand(currentbrand, path, products);
     } else {
-      currentbrand = await AddMainFileToNewBrand(currentbrand, path, products);
+      currentbrand = await addMainFileToNewBrand(currentbrand, path, products);
     }
     return currentbrand;
   }
 
   Future<brand> generateBrandWithNewFiles(File file, brand currentBrand, String typeOfFile,{brand updatedBrand}) async {
     emit(loadingbrangforupdate());
-    UploadTask uploadedFileProgress = SaveFileIntoFireBaseStorage(file);
+    UploadTask uploadedFileProgress = saveFileIntoFireBaseStorage(file);
     await uploadedFileProgress.then((value) async {
       await value.ref.getDownloadURL().then((path) async {
         emit(readingexcelFileInProgess());
         List<TrProduct> products = await readExcelFile(file.path, this, typeOfFile);
         if (updatedBrand != null) {
-          updatedBrand=  await UpdateBrandWithNewExcelFile(typeOfFile, path, products, updatedBrand, currentBrand);
+          updatedBrand=  await updateBrandWithNewExcelFile(typeOfFile, path, products, updatedBrand, currentBrand);
         }
         else {
-          currentBrand = await AddnewBrandWithExcelSheets(typeOfFile, currentBrand, path, products);
+          currentBrand = await addNewBrandWithExcelSheets(typeOfFile, currentBrand, path, products);
         }
       });
     });
@@ -484,67 +484,67 @@ class BrandsCubit extends Cubit<BrandsStates> {
     }
   }
 
-  Future<void> addnewbrand(TextEditingController brandname, TextEditingController brandecode) async {
-    if (brandname.text == "" || brandecode.text == "") {
+  Future<void> addNewBrand(TextEditingController brandName, TextEditingController brandeCode) async {
+    if (brandName.text == "" || brandeCode.text == "") {
       emit(emptystringfound());
     }
     else {
-      brand newbrand = brand(brandname.text, brandecode.text);
+      brand newBrand = brand(brandName.text, brandeCode.text);
       emit(loadingbrangforupdate());
-      newbrand = await handleBrandFiles(newbrand);
-      await AddNewBrandToFireBase(newbrand);
+      newBrand = await handleBrandFiles(newBrand);
+      await AddNewBrandToFireBase(newBrand);
     }
   }
 
-  Future<brand> handleBrandFiles(brand newbrand) async {
-    newbrand = await handleImageFile(newbrand);
-    newbrand = await handleorderedFile(newbrand);
-    newbrand = await handleMainFile(newbrand);
-    return newbrand;
+  Future<brand> handleBrandFiles(brand newBrand) async {
+    newBrand = await handleImageFile(newBrand);
+    newBrand = await handleOrderedFile(newBrand);
+    newBrand = await handleMainFile(newBrand);
+    return newBrand;
   }
 
-  Future<brand> handleMainFile(brand newbrand) async {
+  Future<brand> handleMainFile(brand newBrand) async {
     if (pdfFile != null) {
-      newbrand = await generateBrandWithNewFiles(pdfFile, newbrand, "mainFile");
+      newBrand = await generateBrandWithNewFiles(pdfFile, newBrand, "mainFile");
     } else {
-      newbrand = addDefaultMainFilePathAndProducts(newbrand);
+      newBrand = addDefaultMainFilePathAndProducts(newBrand);
     }
-    return newbrand;
+    return newBrand;
   }
 
-  brand addDefaultMainFilePathAndProducts(brand newbrand) {
-    newbrand.excelfilepath = "https://icons.iconarchive.com/icons/custom-icon-design/mono-general-2/512/document-icon.png";
-    newbrand.products = [];
-    return newbrand;
+  brand addDefaultMainFilePathAndProducts(brand newBrand) {
+    newBrand.excelfilepath = "https://icons.iconarchive.com/icons/custom-icon-design/mono-general-2/512/document-icon.png";
+    newBrand.products = [];
+    return newBrand;
   }
 
-  brand addDefaultOrderedFilePathAndOrderedProducts(brand newbrand) {
-    newbrand.orderedFile = "https://icons.iconarchive.com/icons/custom-icon-design/mono-general-2/512/document-icon.png";
-    newbrand.orderedProducts = [];
-    return newbrand;
+  brand addDefaultOrderedFilePathAndOrderedProducts(brand newBrand) {
+    newBrand.orderedFile = "https://icons.iconarchive.com/icons/custom-icon-design/mono-general-2/512/document-icon.png";
+    newBrand.orderedProducts = [];
+    return newBrand;
   }
 
-  Future<brand> handleorderedFile(brand newbrand) async {
+  Future<brand> handleOrderedFile(brand newBrand) async {
     if (orderedFile != null) {
-      newbrand = await generateBrandWithNewFiles(orderedFile, newbrand, "orderedFile");
+      newBrand = await generateBrandWithNewFiles(orderedFile, newBrand, "orderedFile");
     } else {
-      newbrand = addDefaultOrderedFilePathAndOrderedProducts(newbrand);
+      newBrand = addDefaultOrderedFilePathAndOrderedProducts(newBrand);
     }
-    return newbrand;
+    return newBrand;
   }
 
-  Future<brand> handleImageFile(brand newbrand) async {
+  Future<brand> handleImageFile(brand newBrand) async {
     if (image == null) {
-      newbrand.path = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
+      newBrand.path = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
     } else {
-      String path = await getUrlofImage(image);
-      newbrand.path = path;
+      String path = await getUrlOfImage(image);
+      newBrand.path = path;
     }
-    return newbrand;
+    return newBrand;
   }
 
-  Future AddNewBrandToFireBase(brand newbrand) {
-    brandsCollection.add(newbrand.toJson()).then((value) {
+  Future AddNewBrandToFireBase(brand newBrand) {
+    brandsCollection.add(newBrand.toJson()).then((value) {
       brandsCollection.doc(value.id).update({"id": value.id});
       emit(brandadded());
       getbrands();

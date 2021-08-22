@@ -77,7 +77,7 @@ Future<List<TrProduct>> readExcelFile(String fileName,BrandsCubit brandsCubit,St
   var excel = Excel.decodeBytes(bytes);
   List<TrProduct> products = [];
   List<String>columns=[];
-  columns = extractMapOfColumsNames(excel, columns);
+  columns = extractMapOfColumnsNames(excel, columns);
   int numberOfLoadedRowsTillNow =0;
   for (int i = (typeofFile=="orderedFile")?1:2; i < excel.tables["List"].rows.length; i++) {
     List<dynamic> item = extractValuesFromRow(excel, i);
@@ -86,7 +86,7 @@ Future<List<TrProduct>> readExcelFile(String fileName,BrandsCubit brandsCubit,St
       await setImageToItemIfExistOneInServer(map, products);
     }
     numberOfLoadedRowsTillNow++;
-    brandsCubit.emitnumberofloadedfilesfromexel(numberOfLoadedRowsTillNow/(excel.tables["List"].rows.length));
+    brandsCubit.emitNumberOfLoadedFilesFromExcel(numberOfLoadedRowsTillNow/(excel.tables["List"].rows.length));
   }
   return products;
 }
@@ -126,7 +126,7 @@ Future<void> setImageToItemIfExistOneInServer(Map<String, dynamic> map, List<TrP
   });
 }
 
-List<String> extractMapOfColumsNames(Excel excel, List<String> columns) {
+List<String> extractMapOfColumnsNames(Excel excel, List<String> columns) {
   for (int k = 0; k < excel.tables["List"].rows[0].length; k++) {
     if(excel.tables["List"].rows[0][k].contains("Retail")){
       columns.add("Retail المستهلك");
@@ -162,7 +162,7 @@ Future<void> deletItem(file sellingpolicy,CollectionReference collectionReferenc
       .get()
       .then((value) {
     collectionReference.doc(value.docs.first.id).delete();
-    UpdateList(cubit);
+    updateList(cubit);
   });
 }
 
@@ -207,7 +207,8 @@ void itemHaveMainImage(File mainimage, file newFile, FirebaseStorage storage, cu
     UploadDocument(typeofTransaction,pdfFile, cubit, newFile, collection, typeoflist);
   }
 }
-UploadTask SaveFileIntoFireBaseStorage(File file) {
+
+UploadTask saveFileIntoFireBaseStorage(File file) {
   String extention = p.extension(file.path).split('.')[1];
   String filename = p.basename(file.path);
   Reference ref = FirebaseStorage.instance.ref().child('${extention}s/$filename');
@@ -216,7 +217,7 @@ UploadTask SaveFileIntoFireBaseStorage(File file) {
 }
 
 void uploadItemToFireBaseWithMainImage(FirebaseStorage storage, File mainImage, cubit, file newFile, String typeofTransaction, File pdfFile, CollectionReference collection, String typeoflist) {
-  UploadTask uploadedFileProgress = SaveFileIntoFireBaseStorage(mainImage);
+  UploadTask uploadedFileProgress = saveFileIntoFireBaseStorage(mainImage);
   uploadedFileProgress.then((TaskSnapshot value){
     value.ref.getDownloadURL().then((url) {
       newFile.mainimagepath=url;
@@ -231,13 +232,14 @@ String getFileName(File file) {
   String filename = p.basename(file.path);
   return "$filename"+".$extention";
 }
+
 void putMainImageWithDefaultValue(file newsellingpolicy) {
    newsellingpolicy.mainimagepath = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
   newsellingpolicy.defauktphoto = "https://zainabalkhudairi.com/wp-content/uploads/2020/01/%D9%84%D8%A7-%D8%AA%D9%88%D8%AC%D8%AF-%D8%B5%D9%88%D8%B1%D8%A9.png";
 }
 
-Future<void>UploadFile(String typeOfTransaction,File pdfFile,file newsellingpolicy,CollectionReference collection,dynamic cubit)async{
-  UploadTask uploadedFileProgress = SaveFileIntoFireBaseStorage(pdfFile);
+Future<void>uploadFile(String typeOfTransaction,File pdfFile,file newsellingpolicy,CollectionReference collection,dynamic cubit)async{
+  UploadTask uploadedFileProgress = saveFileIntoFireBaseStorage(pdfFile);
   uploadedFileProgress.then((TaskSnapshot value) {
     value.ref.getDownloadURL().then((url) {
       newsellingpolicy.date = getDateWithoutTime();
@@ -249,18 +251,18 @@ Future<void>UploadFile(String typeOfTransaction,File pdfFile,file newsellingpoli
 }
 
 void uploadItemToFireBase(File pdfFile, file newsellingpolicy, String valuee, String typeOfTransaction, CollectionReference collection, cubit) {
-  newsellingpolicy =PutCorrectPathsOfImages(lookupMimeType(getFileName(pdfFile)).split("/")[0],newsellingpolicy,valuee);
+  newsellingpolicy =putCorrectPathsOfImages(lookupMimeType(getFileName(pdfFile)).split("/")[0],newsellingpolicy,valuee);
   if(typeOfTransaction=="Update"){
-    UpdateItem(newsellingpolicy, collection, cubit);
+    updateItem(newsellingpolicy, collection, cubit);
   }
   else{
-    InsertItemToFireStore(collection, newsellingpolicy, cubit);
+    insertItemToFireStore(collection, newsellingpolicy, cubit);
   }
 }
 
-Future<void>UpdateItem(dynamic order,CollectionReference collection,dynamic cubit)async{
+Future<void>updateItem(dynamic order,CollectionReference collection,dynamic cubit)async{
   await collection.doc(order.id).update(order.toJson()).then((value) {
-      UpdateList(cubit);
+      updateList(cubit);
       cubit.ReturnUpdateProcessEnded();
   }).catchError((error) => print("Failed to update item: $error"));
 }
@@ -268,12 +270,12 @@ Future<void>UpdateItem(dynamic order,CollectionReference collection,dynamic cubi
 Future UploadDocument(String typeofTransaction,File pdfFile,dynamic cubit,file newsellingpolicy,CollectionReference collection,String typeoflist){
     if(pdfFile!=null){
       newsellingpolicy.date = getDateWithoutTime();
-      UploadFile(typeofTransaction,pdfFile, newsellingpolicy, collection, cubit);
+      uploadFile(typeofTransaction,pdfFile, newsellingpolicy, collection, cubit);
     }
     else{
       newsellingpolicy.date = getDateWithoutTime();
       newsellingpolicy.defauktphoto="https://img.icons8.com/pastel-glyph/2x/no-document.png";
-      InsertItemToFireStore(collection, newsellingpolicy, cubit);
+      insertItemToFireStore(collection, newsellingpolicy, cubit);
     }
 }
 
@@ -285,16 +287,16 @@ double getRemainingPercentage(TaskSnapshot snapshot) {
   return percentage;
 }
 
-Future<void> InsertItemToFireStore(CollectionReference collection,file newsellingpolicy,dynamic cubit,)async {
+Future<void> insertItemToFireStore(CollectionReference collection,file newsellingpolicy,dynamic cubit,)async {
   collection.add(newsellingpolicy.toJson()).then((value) {
     newsellingpolicy.id = value.id;
     collection.doc(value.id).update({'id': value.id});
     cubit.ReturnEndingProcessState();
-    UpdateList(cubit);
+    updateList(cubit);
   }).catchError((error) => print("Failed to add item: $error"));
 }
 
-file PutCorrectPathsOfImages(String type, file newsellingpolicy,String path) {
+file putCorrectPathsOfImages(String type, file newsellingpolicy,String path) {
   if(type=="image"){
     if(newsellingpolicy.mainimagepath==null){
       newsellingpolicy.mainimagepath=path;
@@ -327,7 +329,7 @@ List<TrProduct> sortProducts(Map<String,dynamic>orderNumbers,Map<String,TrProduc
   return newList;
 }
 
-Future<String> getUrlofImage(File file)async{
+Future<String> getUrlOfImage(File file)async{
   FirebaseStorage storage = FirebaseStorage.instance;
   Reference ref = storage.ref().child("image1" + DateTime.now().toString());
   UploadTask uploadTask = ref.putFile(file);
@@ -337,7 +339,7 @@ Future<String> getUrlofImage(File file)async{
   return path;
 }
 
-void UpdateList(dynamic cubit){
+void updateList(dynamic cubit){
   if(cubit.runtimeType==CatalogCubit){
     cubit.getCatlogs();
   }
