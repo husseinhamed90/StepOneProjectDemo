@@ -1,8 +1,4 @@
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
-import 'package:steponedemo/Helpers/Utilites.dart';
-import 'package:steponedemo/MainCubit/AppCubit.dart';
 import 'package:steponedemo/MainScreens/EditPolicy.dart';
 import 'package:steponedemo/Models/Sellingpolicy.dart';
 import 'package:steponedemo/SellingPolicyCubit/PolicyCubit.dart';

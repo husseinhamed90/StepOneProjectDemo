@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:steponedemo/Widgets/CustomAppBar.dart';
 
@@ -7,11 +6,9 @@ import '../ListsScreens/ClientOrdersList.dart';
 import 'package:steponedemo/ClientsCubit/ClientsCubit.dart';
 import 'package:steponedemo/VisitsCubit/VisitsCubit.dart';
 import 'package:steponedemo/VisitsCubit/VisitsCubitStates.dart';
-import 'package:toast/toast.dart';
 import '../Helpers/Shared.dart';
 import 'tables.dart';
 import 'CreatePdf.dart';
-import 'package:toast/toast.dart'as ss;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:steponedemo/MainCubit/AppCubit.dart';
 class Reports extends StatefulWidget {
@@ -60,7 +57,7 @@ class _LoginState extends State<Reports> {
             body:  BlocConsumer<VisitsCubit,VisitsCubitStates>(
               listener: (context, state) {
                 if(state is LoadVisitsOfSelectedDateIsDone){
-                  DisplayVisits(AppCubit.get(context).currentrepresentative, selectedday,state.visitsoftheday[0].dayOfCurrentVisit,state.visitsoftheday[0].TypeofWork, state.visitsoftheday);
+                  saveTableToPdf(AppCubit.get(context).currentrepresentative, 'زياراتي.pdf',typeofwork: state.visitsoftheday[0].TypeofWork,dayofdate: state.visitsoftheday[0].dayOfCurrentVisit,choosendate: selectedday,visits:state.visitsoftheday );
                 }
                 else if(state is novisitsfoundState){
                   getsnackbar(context, "لا توجد زيارات في هذا اليوم");
@@ -88,7 +85,7 @@ class _LoginState extends State<Reports> {
                             savePdf(AppCubit.get(context).currentrepresentative);
                           },"بيانات المندوب"),
                           CustomTextButtom(()async{
-                           await savetableotoPdf(ClientsCubit.get(context),AppCubit.get(context).currentrepresentative);
+                            await saveTableToPdf(AppCubit.get(context).currentrepresentative, 'بيانات العملاء.pdf',clientsCubit:ClientsCubit.get(context) );
                           },"بيانات العملاء"),
                           CustomTextButtom((){
                             Navigator.push(context, MaterialPageRoute(builder: (context) => ClientOrdersList(),));

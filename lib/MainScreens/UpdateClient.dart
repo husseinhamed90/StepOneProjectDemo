@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 import 'package:steponedemo/ClientsCubit/ClientsCubit.dart';
 import 'package:steponedemo/ClientsCubit/ClientsCubitStates.dart';

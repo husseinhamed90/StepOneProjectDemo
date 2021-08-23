@@ -1,25 +1,62 @@
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
 import 'package:excel/excel.dart';
+import 'package:flutter/services.dart';
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:ext_storage/ext_storage.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:steponedemo/BrandsCubit/BrandsCubit.dart';
 import 'package:steponedemo/CatalogCubit/CatalogCubit.dart';
 import 'package:steponedemo/Models/TRProdct.dart';
 import 'package:steponedemo/Models/Visit.dart';
+import 'package:http/http.dart' as http;
+import 'package:open_file/open_file.dart';
 import 'package:steponedemo/NewsCubit/NewsCubit.dart';
 import 'package:steponedemo/OrdersCubit/ordersCubit.dart';
 import 'package:steponedemo/SellingPolicyCubit/PolicyCubit.dart';
 import '../Models/file.dart';
+
+Future<void> saveAndLaunchFile(List<int> bytes, String fileName,) async {
+  final path = (await getExternalStorageDirectory()).path;
+  final file = File('$path/$fileName');
+  await file.writeAsBytes(bytes, flush: false);
+  OpenFile.open('$path/$fileName');
+
+}
+Future<Font> generateFontType() async {
+  final fontData = await rootBundle.load("assetsfont/fonts/arial.ttf");
+  final ttf = Font.ttf(fontData.buffer.asByteData());
+  return ttf;
+}
+
+Future<String> networkImageToBase64(String mediaUrlString) async {
+  http.Response response = await http.get(Uri.parse(mediaUrlString));
+  final bytes = response?.bodyBytes;
+  return (bytes != null ? base64Encode(bytes) : null);
+}
+List chunk(List<TableRow> list, int chunkSize) {
+
+  List<List<TableRow>>chunks=[];
+  int len = list.length;
+  for (var i = 0; i < len; i += chunkSize) {
+    int size = i+chunkSize;
+    chunks.add(list.sublist(i, size > len ? len : size));
+  }
+  return chunks;
+}
+
+
 List<visit> groupVisitsByTypeOfClock(List<visit> visits) {
   final groups = groupBy(visits, (visit e) {
     return e.typeofclock;

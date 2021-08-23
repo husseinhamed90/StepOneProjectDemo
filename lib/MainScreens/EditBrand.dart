@@ -8,7 +8,6 @@ import 'package:steponedemo/Helpers/Shared.dart';
 import 'package:steponedemo/Models/brand.dart';
 import 'package:steponedemo/Widgets/CircularProgressParForUpload.dart';
 import 'package:steponedemo/Widgets/CustomAppBar.dart';
-import '../Helpers/Utilites.dart';
 
 import 'package:toast/toast.dart';
 

@@ -1,8 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:steponedemo/BrandsCubit/BrandsCubit.dart';
-import 'package:steponedemo/BrandsCubit/BrandsStates.dart';
 import 'package:steponedemo/Helpers/Shared.dart';
 import 'package:steponedemo/MainCubit/AppCubit.dart';
 import 'package:steponedemo/MainScreens/EditBrand.dart';

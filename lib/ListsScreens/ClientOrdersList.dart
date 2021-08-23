@@ -43,9 +43,7 @@ class ClientOrdersList extends StatelessWidget {
                     return LayoutBuilder(
                       builder: (context, constraints) => InkWell(
                         onTap: () async{
-                         // print(userOrdersCubit.myorders[index].OrderOwner.toJson());
-                          await DisplayOrders(userOrdersCubit.myOrders[index],AppCubit.get(context).currentrepresentative);
-                          //Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateClientPage(userOrdersCubit.clients[index],),));
+                          await saveTableToPdf(AppCubit.get(context).currentrepresentative, 'بيانات الاوردر.pdf',userOrder: userOrdersCubit.myOrders[index]);
                         },
                         child: Container(
                           decoration: BoxDecoration(

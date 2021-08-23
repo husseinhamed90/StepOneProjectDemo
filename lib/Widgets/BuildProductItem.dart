@@ -1,13 +1,10 @@
 import 'dart:io';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:steponedemo/BrandsCubit/BrandsCubit.dart';
 import 'package:steponedemo/Helpers/Shared.dart';
-import 'package:steponedemo/Helpers/Utilites.dart';
 import 'package:steponedemo/MainCubit/AppCubit.dart';
-import 'package:steponedemo/Models/Client.dart';
 import 'package:steponedemo/Models/TRProdct.dart';
 import 'package:steponedemo/Models/brand.dart';
 import '../MainScreens/shoppingCartPage.dart';

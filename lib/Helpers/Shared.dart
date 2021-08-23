@@ -10,7 +10,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:steponedemo/BrandsCubit/BrandsCubit.dart';
 import 'package:steponedemo/ClientsCubit/ClientsCubit.dart';
-import 'package:steponedemo/Helpers/Utilites.dart';
 import 'package:steponedemo/Models/User.dart';
 import 'package:steponedemo/VisitsCubit/VisitsCubit.dart';
 
@@ -146,7 +145,6 @@ Container returnphotoConatiner(String typeofoperation,String text,BuildContext c
 }
 
 void showbootomsheeat(BuildContext context,dynamic v, {String imagetype}){
-  print(imagetype);
   showModalBottomSheet(
     context: context,
     builder: (context) {

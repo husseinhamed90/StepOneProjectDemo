@@ -1,11 +1,7 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:steponedemo/MainCubit/AppCubit.dart';
 import 'package:steponedemo/MainScreens/EditOrder.dart';
 import 'package:steponedemo/Models/Order.dart';
-import 'package:steponedemo/Models/Sellingpolicy.dart';
 import 'package:steponedemo/OrdersCubit/ordersCubit.dart';
-import 'package:steponedemo/SellingPolicyCubit/PolicyCubit.dart';
 import 'package:steponedemo/Widgets/BuildItemContent.dart';
 class BuildOrderItem extends StatefulWidget {
   ordersCubit orderscubit;
