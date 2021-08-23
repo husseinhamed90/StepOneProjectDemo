@@ -61,7 +61,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: CreateDataBase(),
+        future: createDataBase(),
         builder: (context, snapshot) {
           if(snapshot.hasData){
             return MultiProvider(
@@ -105,7 +105,7 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-Future<Database> CreateDataBase()async{
+Future<Database> createDataBase()async{
   return await openDatabase(
     "Order.db"
     ,version: 1,
