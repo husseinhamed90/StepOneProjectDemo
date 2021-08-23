@@ -83,10 +83,6 @@ class _BuildUserItemState extends State<BuildUserItem> {
                             Navigator.push(context, MaterialPageRoute(builder: (context) => updateuser(widget.currentuser,widget.CurrentIndex),));
                           },padding: EdgeInsets.zero,),
                         ),
-                        Container(
-                            width:  ((constraints.maxWidth-20)*0.3)*0.3,
-                            child:(widget.currentuser.isonline=="true")?Icon(Icons.circle,color: Colors.green,size: ((constraints.maxWidth-20)*0.3)*0.3-((((constraints.maxWidth-20)*0.3)*0.3)*0.3)):Icon(Icons.circle,color: Colors.red,size: ((constraints.maxWidth-20)*0.3)*0.3-((((constraints.maxWidth-20)*0.3)*0.3)*0.3))
-                        ),
                       ],
                     ),
                   ),

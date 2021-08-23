@@ -187,7 +187,7 @@ class newhomepage extends StatelessWidget {
                                   height: constraints.maxHeight * 0.11,
                                 ),
                                 Container(
-                                  height: constraints.maxHeight * 0.43,
+                                  height: constraints.maxHeight * 0.48,
                                   //  padding: const EdgeInsets.only(top: 10),
                                   child: Image.asset(
                                     images[index],
@@ -195,13 +195,13 @@ class newhomepage extends StatelessWidget {
                                   ),
                                 ),
                                 Container(
-                                  height: constraints.maxHeight * 0.05,
+                                  height: constraints.maxHeight * 0.1,
                                 ),
                                 Container(
                                   width: constraints.maxWidth * 0.85,
-                                  height: constraints.maxHeight * 0.34,
+                                  height: constraints.maxHeight * 0.24,
                                   child: FittedBox(
-                                    child: AutoSizeText(
+                                    child: Text(
                                       names[index],
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
